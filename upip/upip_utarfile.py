@@ -12,12 +12,6 @@ REGTYPE = "file"
 def roundup(val, align):
     return (val + align - 1) & ~(align - 1)
 
-def skip(f, size):
-    assert size % 512 == 0
-    buf = bytearray(512)
-    while size:
-        size -= f.readinto(buf)
-
 class FileSection:
 
     def __init__(self, f, content_len, aligned_len):
@@ -45,7 +39,13 @@ class FileSection:
         return sz
 
     def skip(self):
-        self.f.read(self.content_len + self.align)
+        sz = self.content_len + self.align
+        if sz:
+            buf = bytearray(16)
+            while sz:
+                s = min(sz, 16)
+                self.f.readinto(buf, s)
+                sz -= s
 
 class TarInfo:
 

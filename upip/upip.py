@@ -1,16 +1,17 @@
 import sys
+import gc
 import uos as os
 import uerrno as errno
 import ujson as json
 import uzlib
 import upip_utarfile as tarfile
+gc.collect()
 
-
-DEFAULT_MICROPYPATH = "~/.micropython/lib:/usr/lib/micropython"
 
 debug = False
 install_path = None
 cleanup_files = []
+gzdict_sz = 16 + 15
 
 file_buf = bytearray(512)
 
@@ -31,11 +32,14 @@ def op_split(path):
 def op_basename(path):
     return op_split(path)[1]
 
+# Expects *file* name
 def _makedirs(name, mode=0o777):
     ret = False
     s = ""
-    for c in name.rstrip("/").split("/"):
-        s += c + "/"
+    for c in name.rstrip("/").split("/")[:-1]:
+        if s:
+            s += "/"
+        s += c
         try:
             os.mkdir(s)
             ret = True
@@ -78,19 +82,18 @@ def install_tar(f, prefix):
 
         if save:
             outfname = prefix + fname
-            if info.type == tarfile.DIRTYPE:
-                if _makedirs(outfname):
-                    print("Created " + outfname)
-            else:
+            if info.type != tarfile.DIRTYPE:
                 if debug:
                     print("Extracting " + outfname)
+                _makedirs(outfname)
                 subf = f.extractfile(info)
                 save_file(outfname, subf)
     return meta
 
 def expandhome(s):
-    h = os.getenv("HOME")
-    s = s.replace("~/", h + "/")
+    if "~/" in s:
+        h = os.getenv("HOME")
+        s = s.replace("~/", h + "/")
     return s
 
 import ussl
@@ -118,11 +121,13 @@ def url_open(url):
     l = s.readline()
     protover, status, msg = l.split(None, 2)
     if status != b"200":
-        raise OSError()
+        if status == b"404":
+            print("Package not found")
+        raise ValueError(status)
     while 1:
         l = s.readline()
         if not l:
-            raise OSError()
+            raise ValueError("Unexpected EOF")
         if l == b'\r\n':
             break
 
@@ -145,18 +150,29 @@ def install_pkg(pkg_spec, install_path):
 
     latest_ver = data["info"]["version"]
     packages = data["releases"][latest_ver]
+    del data
+    gc.collect()
     assert len(packages) == 1
     package_url = packages[0]["url"]
     print("Installing %s %s from %s" % (pkg_spec, latest_ver, package_url))
     package_fname = op_basename(package_url)
     f1 = url_open(package_url)
-    f2 = uzlib.DecompIO(f1, 16 + 15)
+    f2 = uzlib.DecompIO(f1, gzdict_sz)
     f3 = tarfile.TarFile(fileobj=f2)
     meta = install_tar(f3, install_path)
     f1.close()
+    del f3
+    del f2
+    gc.collect()
     return meta
 
 def install(to_install, install_path=None):
+    # Calculate gzip dictionary size to use
+    global gzdict_sz
+    sz = gc.mem_free() + gc.mem_alloc()
+    if sz <= 655360:
+        gzdict_sz = 16 + 12
+
     if install_path is None:
         install_path = get_install_path()
     if install_path[-1] != "/":
@@ -188,12 +204,8 @@ def install(to_install, install_path=None):
 def get_install_path():
     global install_path
     if install_path is None:
-        if hasattr(os, "getenv"):
-            install_path = os.getenv("MICROPYPATH")
-        if install_path is None:
-            # sys.path[0] is current module's path
-            install_path = sys.path[1]
-    install_path = install_path.split(":", 1)[0]
+        # sys.path[0] is current module's path
+        install_path = sys.path[1]
     install_path = expandhome(install_path)
     return install_path
 
@@ -208,12 +220,17 @@ def help():
     print("""\
 upip - Simple PyPI package manager for MicroPython
 Usage: micropython -m upip install [-p <path>] <package>... | -r <requirements.txt>
+import upip; upip.install(package_or_list, [<path>])
 
-If -p is not given, packages will be installed to first path component of
-MICROPYPATH, or to ~/.micropython/lib/ by default.
-Note: only MicroPython packages (usually, micropython-*) are supported for
-installation, upip does not support arbitrary code in setup.py.""")
-    sys.exit(1)
+If <path> is not given, packages will be installed into sys.path[1]
+(can be set from MICROPYPATH environment variable, if current system
+supports that).""")
+    print("Current value of sys.path[1]:", sys.path[1])
+    print("""\
+
+Note: only MicroPython packages (usually, named micropython-*) are supported
+for installation, upip does not support arbitrary code in setup.py.
+""")
 
 def main():
     global debug
@@ -222,6 +239,7 @@ def main():
 
     if len(sys.argv) < 2 or sys.argv[1] == "-h" or sys.argv[1] == "--help":
         help()
+        return
 
     if sys.argv[1] != "install":
         fatal("Only 'install' command supported")
@@ -234,6 +252,7 @@ def main():
         i += 1
         if opt == "-h" or opt == "--help":
             help()
+            return
         elif opt == "-p":
             install_path = sys.argv[i]
             i += 1
@@ -254,6 +273,7 @@ def main():
     to_install.extend(sys.argv[i:])
     if not to_install:
         help()
+        return
 
     install(to_install)
 
