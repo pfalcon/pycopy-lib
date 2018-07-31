@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<root>
+<tag1>
+<val>foo</val>
+<val>bar</val>
+<ns:val>kaboom</ns:val>
+<ns:val>kaboom2</ns:val>
+</tag1>
+</root>
