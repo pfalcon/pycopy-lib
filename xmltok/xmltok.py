@@ -128,7 +128,7 @@ def text_of(gen, tag):
     def match_tag(t):
         if t[0] != START_TAG:
             return False
-        if isinstance(tag, ()):
+        if isinstance(tag, tuple):
             return t[1] == tag
         return t[1][1] == tag
 
