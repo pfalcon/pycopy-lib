@@ -115,10 +115,15 @@ class XMLTokenizer:
                 else:
                     res[0] = START_TAG
                     self.putnsident(res)
+                    ns = res[1]
+                    tag = res[2]
                     yield res
                     yield from self.lex_attrs_till(res)
                     if self.match("/"):
-                        yield (END_TAG, tag)
+                        res[0] = END_TAG
+                        res[1] = ns
+                        res[2] = tag
+                        yield res
                     self.expect(">")
             else:
                 text = ""
