@@ -12,6 +12,11 @@ expected = [
 ['TEXT', 'foo bar\n  baz\n  \n', None, None],
 ['END_TAG', 'u', 'GetConnectionTypeInfo', None],
 ['END_TAG', 's', 'Body', None],
+['START_TAG', '', 'foo', None],
+['ATTR', '', 'attr', 'singlequote'],
+['END_TAG', '', 'foo', None],
+['START_TAG', '', 'foo2', None],
+['END_TAG', '', 'foo2', None],
 ['END_TAG', 's', 'Envelope', None],
 ]
 
