@@ -77,11 +77,13 @@ class XMLTokenizer:
             res[0] = ATTR
             self.putnsident(res)
             self.expect("=")
-            self.expect('"')
+            quote = self.getch()
+            if quote != '"' and quote != "'":
+                raise XMLSyntaxError
             val = ""
-            while self.curch() != '"':
+            while self.curch() != quote:
                 val += self.getch()
-            self.expect('"')
+            self.expect(quote)
             res[3] = val
             yield res
             res[3] = None
