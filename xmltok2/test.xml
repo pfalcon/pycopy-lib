@@ -11,4 +11,8 @@
 </u:GetConnectionTypeInfo>
 <!-- Comments, you won't see me after tokenize. -->
 </s:Body>
+
+<foo attr='singlequote'/>
+<foo2 />
+
 </s:Envelope>
