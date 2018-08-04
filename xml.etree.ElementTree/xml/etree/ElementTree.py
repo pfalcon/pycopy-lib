@@ -1,5 +1,5 @@
 import io
-import xmltok
+import xmltok2
 
 
 class ParseError(Exception):
@@ -34,26 +34,26 @@ def parse_el(stream):
     stack = []
     root = None
 
-    for ev in xmltok.tokenize(stream):
+    for ev in xmltok2.tokenize(stream):
         typ = ev[0]
 
-        if typ == xmltok.START_TAG:
+        if typ == xmltok2.START_TAG:
             el = Element()
-            el.tag = ev[1][1]
+            el.tag = ev[2]
             if not stack:
                 root = el
             else:
                 stack[-1]._children.append(el)
             stack.append(el)
 
-        elif typ == xmltok.ATTR:
-            stack[-1].attrib[ev[1][1]] = ev[2]
+        elif typ == xmltok2.ATTR:
+            stack[-1].attrib[ev[2]] = ev[3]
 
-        elif typ == xmltok.TEXT:
+        elif typ == xmltok2.TEXT:
             stack[-1].text = ev[1]
 
-        elif typ == xmltok.END_TAG:
-            if stack[-1].tag != ev[1][1]:
+        elif typ == xmltok2.END_TAG:
+            if stack[-1].tag != ev[2]:
                 raise ParseError("mismatched tag: /%s (expected: /%s)" % (ev[1][1], stack[-1].tag))
             stack.pop()
 
