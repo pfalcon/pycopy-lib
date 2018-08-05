@@ -85,7 +85,11 @@ def make_resource_module(manifest_files):
         resources = []
         # Any non-python file included in manifest is resource
         for fname in manifest_files:
-            ext = fname.rsplit(".", 1)[1]
+            ext = fname.rsplit(".", 1)
+            if len(ext) > 1:
+                ext = ext[1]
+            else:
+                ext = ""
             if ext != "py":
                 resources.append(fname)
 
