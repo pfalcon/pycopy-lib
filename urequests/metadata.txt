@@ -1,5 +1,5 @@
 srctype = micropython-lib
 type = module
-version = 0.6.1
+version = 0.7
 author = Paul Sokolovsky
 long_desc = README.rst
