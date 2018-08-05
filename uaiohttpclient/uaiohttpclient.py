@@ -50,7 +50,11 @@ def request_raw(method, url):
         path = ""
     if proto != "http:":
         raise ValueError("Unsupported protocol: " + proto)
-    reader, writer = yield from asyncio.open_connection(host, 80)
+    port = 80
+    if ":" in host:
+        host, port = host.split(":", 1)
+        port = int(port)
+    reader, writer = yield from asyncio.open_connection(host, port)
     # Use protocol 1.0, because 1.1 always allows to use chunked transfer-encoding
     # But explicitly set Connection: close, even though this should be default for 1.0,
     # because some servers misbehave w/o it.
