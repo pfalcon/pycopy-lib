@@ -29,6 +29,27 @@ setup(name='micropython-%(dist_name)s',
       %(_what_)s=[%(modules)s]%(_inst_req_)s)
 """
 
+TEMPLATE_CPYTHON = """\
+import sys
+# Remove current dir from sys.path, otherwise setuptools will peek up our
+# module instead of system's.
+sys.path.pop(0)
+from setuptools import setup
+sys.path.append("..")
+
+setup(name='micropython-%(dist_name)s',
+      version='%(version)s',
+      description=%(desc)r,
+      long_description=%(long_desc)s,
+      url='https://github.com/pfalcon/micropython-lib',
+      author=%(author)r,
+      author_email=%(author_email)r,
+      maintainer=%(maintainer)r,
+      maintainer_email=%(maintainer_email)r,
+      license=%(license)r,
+      %(_what_)s=[%(modules)s]%(_inst_req_)s)
+"""
+
 DUMMY_DESC = """\
 This is a dummy implementation of a module for MicroPython standard library.
 It contains zero or very little functionality, and primarily intended to
@@ -86,9 +107,9 @@ def parse_metadata(f):
     return data
 
 
-def write_setup(fname, substs):
+def write_setup(fname, template, substs):
     with open(fname, "w") as f:
-        f.write(TEMPLATE % substs)
+        f.write(template % substs)
 
 
 def main():
@@ -99,6 +120,8 @@ def main():
 
         dirname = fname.split("/")[0]
         module = dirname
+        template = TEMPLATE
+
         if data["type"] == "module":
             data["_what_"] = "py_modules"
         elif data["type"] == "package":
@@ -144,6 +167,7 @@ def main():
                 data["license"] = "MIT"
         elif data["srctype"] == "cpython-backport":
             assert module.startswith("cpython-")
+            template = TEMPLATE_CPYTHON
             module = module[len("cpython-"):]
             data["author"] = MICROPYTHON_DEVELS
             data["author_email"] = MICROPYTHON_DEVELS_EMAIL
@@ -173,7 +197,7 @@ def main():
         else:
             data["_inst_req_"] = ""
 
-        write_setup(dirname + "/setup.py", data)
+        write_setup(dirname + "/setup.py", template, data)
 
 
 if __name__ == "__main__":
