@@ -4,10 +4,13 @@ except ImportError:
     uhashlib = None
 
 def init():
-    for i in ("sha1", "sha224", "sha256", "sha384", "sha512"):
+    for i in ("md5", "sha1", "sha224", "sha256", "sha384", "sha512"):
         c = getattr(uhashlib, i, None)
         if not c:
-            c = __import__("_" + i, None, None, (), 1)
+            try:
+                c = __import__("_" + i, None, None, (), 1)
+            except ImportError:
+                continue
             c = getattr(c, i)
         globals()[i] = c
 
