@@ -30,7 +30,8 @@ package starting with "micropython-" aren't part of micropython-lib and
 were released by 3rd parties).
 
 Browse available packages
-[via this URL](https://pypi.python.org/pypi?%3Aaction=search&term=micropython).
+[via this URL](https://pypi.org/search/?q=micropython). (Note: this may
+also include 3rd-party modules which are not part of micropython-lib.)
 
 To install packages from PyPI for usage on your local system, use the
 `upip` tool, which is MicroPython's native package manager, similar to
