@@ -78,3 +78,8 @@ information):
 Guidelines for packaging MicroPython modules for PyPI:
 
  * https://github.com/micropython/micropython/issues/413
+
+Credits
+-------
+micropython-lib is developed and maintained by Paul Sokolovsky with the
+help of MicroPython community.
