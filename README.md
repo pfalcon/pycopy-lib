@@ -59,6 +59,13 @@ available packages will be installed. To install a specific module, add the
 `MOD=<module>` parameter to the end of the `make install` command.
 
 
+Contributing
+------------
+micropython-lib is a community project and can be implemented "fully" only
+by contributions from interested parties. The contributions are expected
+to adhere to [Contribution Guidelines](CONTRIBUTING.md).
+
+
 Links
 -----
 If you would like to trace evolution of MicroPython packaging support,
