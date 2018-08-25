@@ -53,6 +53,36 @@ This machine benchmarks at 93633 pystones/second
 Run `micropython -m upip --help` for more information about `upip`.
 
 
+CPython backports
+-----------------
+While micropython-lib focuses on MicroPython, sometimes it may be beneficial
+to run MicroPython code using CPython, e.g. to use code coverage, debugging,
+etc. tools available for it. To facilitate such usage, micropython-lib also
+provides reimplementations ("backports") of MicroPython modules which run on
+CPython. This first of all applies to the builtin MicroPython "u" modules,
+but as time goes on, backports of micropython-lib's own modules can be
+provided. Backport modules are in the directories named `cpython-*` of
+this repository. On PyPI, these named
+[micropython-cpytion-*](https://pypi.org/search/?q=micropython-cpython-).
+
+These modules should be installed with CPython's pip3 tool. Example session:
+
+~~~
+$ pip3 install --user micropython-cpython-uhashlib
+...
+$ python3
+...
+>>> import uhashlib
+>>> uhashlib.sha1(b"test").hexdigest()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'sha1' object has no attribute 'hexdigest'
+# MicroPython's uhashlib doesn't have hexdigest(), use ubinascii.hexlify(.digest())
+>>> uhashlib.sha1(b"test").digest()
+b'\xa9J\x8f\xe5\xcc\xb1\x9b\xa6\x1cL\x08s\xd3\x91\xe9\x87\x98/\xbb\xd3'
+~~~
+
+
 Development
 -----------
 To install modules during development, use `make install`. By default, all
