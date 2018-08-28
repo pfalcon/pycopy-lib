@@ -1,0 +1,5 @@
+srctype = micropython-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+desc = Lightweight SDL_Image 2.0 bindings for "unix" port of MicroPython.
