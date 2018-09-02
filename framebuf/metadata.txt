@@ -1,0 +1,6 @@
+srctype = micropython-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+desc = Implementation of "framebuf" module (using SDL2) for the "unix" port of MicroPython. (Experimental)
+depends = usdl2
