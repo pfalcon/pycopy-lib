@@ -1,23 +1,20 @@
 import sys
-# Remove current dir from sys.path, otherwise distutils will peek up our
-# module instead of system.
+# Remove current dir from sys.path, otherwise setuptools will peek up our
+# module instead of system's.
 sys.path.pop(0)
 from setuptools import setup
+sys.path.append("..")
+import sdist_upip
 
-
-def desc_dummy(name):
-    return 'Dummy %s module to MicroPython' % name
-def desc_cpython(name):
-    return 'CPython %s module ported to MicroPython' % name
-
-NAME = 'bisect'
-
-setup(name='micropython-' + NAME,
-      version='0.5',
-      description=desc_cpython(NAME),
-      url='https://github.com/micropython/micropython/issues/405',
+setup(name='micropython-bisect',
+      version='3.3.3',
+      description='CPython bisect module ported to MicroPython',
+      long_description='This is a module ported from CPython standard library to be compatible with\nMicroPython interpreter. Usually, this means applying small patches for\nfeatures not supported (yet, or at all) in MicroPython. Sometimes, heavier\nchanges are required. Note that CPython modules are written with availability\nof vast resources in mind, and may not work for MicroPython ports with\nlimited heap. If you are affected by such a case, please help reimplement\nthe module from scratch.',
+      url='https://github.com/pfalcon/micropython-lib',
       author='CPython Developers',
-      maintainer='MicroPython Developers',
-      maintainer_email='micro-python@googlegroups.com',
+      author_email='python-dev@python.org',
+      maintainer='Paul Sokolovsky',
+      maintainer_email='micropython-lib@googlegroups.com',
       license='Python',
-      py_modules=[NAME])
+      cmdclass={'sdist': sdist_upip.sdist},
+      py_modules=['bisect'])
