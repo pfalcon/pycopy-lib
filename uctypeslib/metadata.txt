@@ -1,0 +1,5 @@
+srctype = micropython-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+desc = Experimental module with helpers for 'uctypes' module.
