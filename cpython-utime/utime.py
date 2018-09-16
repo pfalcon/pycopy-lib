@@ -1,6 +1,8 @@
 import time
 
 
+MICROPY_PY_UTIME_TICKS_PERIOD = 2**30
+
 _PASSTHRU = ("sleep", "clock", "localtime")
 
 for f in _PASSTHRU:
@@ -12,3 +14,9 @@ def sleep_ms(t):
 
 def sleep_us(t):
     time.sleep(t / 1000000)
+
+def ticks_ms():
+    return int(time.time() * 1000) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)
+
+def ticks_us():
+    return int(time.time() * 1000000) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)
