@@ -20,3 +20,5 @@ def ticks_ms():
 
 def ticks_us():
     return int(time.time() * 1000000) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)
+
+ticks_cpu = ticks_us
