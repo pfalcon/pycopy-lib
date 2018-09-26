@@ -3,7 +3,7 @@ import time
 
 MICROPY_PY_UTIME_TICKS_PERIOD = 2**30
 
-_PASSTHRU = ("sleep", "clock", "localtime")
+_PASSTHRU = ("time", "sleep", "clock", "localtime")
 
 for f in _PASSTHRU:
     globals()[f] = getattr(time, f)
