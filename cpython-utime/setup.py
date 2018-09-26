@@ -6,7 +6,7 @@ from setuptools import setup
 sys.path.append("..")
 
 setup(name='micropython-cpython-utime',
-      version='0.2',
+      version='0.3',
       description='MicroPython module utime ported to CPython',
       long_description='This is MicroPython compatibility module, allowing applications using\nMicroPython-specific features to run on CPython.\n',
       url='https://github.com/pfalcon/micropython-lib',
