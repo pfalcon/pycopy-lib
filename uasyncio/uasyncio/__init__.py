@@ -78,7 +78,7 @@ class PollEventLoop(EventLoop):
                     # These events are returned even if not requested, and
                     # are sticky, i.e. will be returned again and again.
                     # If the caller doesn't do proper error handling and
-                    # unregister this sock, we'll busy-loop on it, so we
+                    # unregistering this sock, we'll busy-loop on it, so we
                     # as well can unregister it now "just in case".
                     self.remove_reader(sock)
                 if DEBUG and __debug__:
@@ -144,6 +144,7 @@ class StreamReader:
 
     def aclose(self):
         yield IOReadDone(self.polls)
+        # .ios wraps .polls, so closing ios will lead to closure of polls too
         self.ios.close()
 
     def __repr__(self):
