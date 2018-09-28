@@ -52,9 +52,9 @@ class PollEventLoop(EventLoop):
     def remove_writer(self, sock):
         if DEBUG and __debug__:
             log.debug("remove_writer(%s)", sock)
+        self.objmap.pop(id(sock), None)
         try:
             self.poller.unregister(sock)
-            self.objmap.pop(id(sock), None)
         except OSError as e:
             # StreamWriter.awrite() first tries to write to a socket,
             # and if that succeeds, yield IOWrite may never be called
