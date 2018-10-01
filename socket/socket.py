@@ -1,6 +1,7 @@
 from usocket import *
 import usocket as _socket
 
+SOCK_SEQPACKET = 5
 
 _GLOBAL_DEFAULT_TIMEOUT = 30
 IPPROTO_IP = 0
