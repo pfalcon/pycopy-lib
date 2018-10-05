@@ -28,20 +28,40 @@ def UNION(fields):
         off = uctypes.PREV_OFFSET
     return res
 
-def BITFIELD(pos, len, type=UINT32):
-    return (type + (uctypes.BFUINT8 - uctypes.UINT8)) | pos << uctypes.BF_POS | len << uctypes.BF_LEN
 
 bitfield_type = None
 bitfield_pos = None
 
-def C_BITFIELD_1ST(len, type=UINT32):
-    global bitfield_type, bitfield_pos
-    bitfield_type = type + (uctypes.BFUINT8 - uctypes.UINT8)
-    bitfield_pos = len
-    return bitfield_type | 0 << uctypes.BF_POS | len << uctypes.BF_LEN
 
-def C_BITFIELD_NEXT(len):
+# Initial bitfield in set should specify integer type of the field holding
+# this set (UINT8, UNIT16, etc.). Following bitfields should omit "type" param.
+# lsb is a bit position of least significant bit of the bitfield. The least
+# bit of a word has position 0. E.g. in UINT16, least significant 8 bits have
+# position 0, most significant - 8.
+def BITFIELD(lsb, len, type=None):
+    global bitfield_type
+    if type is None:
+        off = uctypes.PREV_OFFSET
+        type = bitfield_type
+    else:
+        off = 0
+        bitfield_type = type
+    return off | (type + (uctypes.BFUINT8 - uctypes.UINT8)) | lsb << uctypes.BF_POS | len << uctypes.BF_LEN
+
+
+# Similar to BITFIELD, but bitfield position is implicit, and is assigned
+# per C language rules (starting from position 0 for little-endian architectures;
+# TODO: support big-endian way, where positions are assigned from most significant
+# bits of a word).
+def C_BITFIELD(len, type=None):
     global bitfield_type, bitfield_pos
-    ret = bitfield_type | bitfield_pos << uctypes.BF_POS | len << uctypes.BF_LEN
+    if type is None:
+        off = uctypes.PREV_OFFSET
+        type = bitfield_type
+    else:
+        off = 0
+        bitfield_type = type
+        bitfield_pos = 0
+    ret = off | (type + (uctypes.BFUINT8 - uctypes.UINT8)) | bitfield_pos << uctypes.BF_POS | len << uctypes.BF_LEN
     bitfield_pos += len
     return ret
