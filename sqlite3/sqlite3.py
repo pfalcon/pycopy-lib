@@ -3,6 +3,8 @@ import sys
 import ffilib
 
 
+PTR_SZ = 8 if ffilib.bitness > 32 else 4
+
 sq3 = ffilib.open("libsqlite3")
 
 sqlite3_open = sq3.func("i", "sqlite3_open", "sp")
@@ -86,7 +88,7 @@ class Cursor:
             params = [quote(v) for v in params]
             sql = sql % tuple(params)
         print(sql)
-        b = bytearray(4)
+        b = bytearray(PTR_SZ)
         s = sqlite3_prepare(self.h, sql, -1, b, None)
         check_error(self.h, s)
         self.stmnt = int.from_bytes(b, sys.byteorder)
@@ -130,7 +132,7 @@ class Cursor:
 
 
 def connect(fname):
-    b = bytearray(4)
+    b = bytearray(PTR_SZ)
     sqlite3_open(fname, b)
     h = int.from_bytes(b, sys.byteorder)
     return Connection(h)
