@@ -1,6 +1,7 @@
 # (c) 2014-2018 Paul Sokolovsky. MIT license.
 import sys
 import ffilib
+import uerrno
 
 
 PTR_SZ = 8 if ffilib.bitness > 32 else 4
@@ -133,8 +134,12 @@ class Cursor:
 
 def connect(fname):
     b = bytearray(PTR_SZ)
-    sqlite3_open(fname, b)
+    res = sqlite3_open(fname, b)
     h = int.from_bytes(b, sys.byteorder)
+    if not h:
+        raise OSError(uerrno.ENOMEM)
+    check_error(h, res)
+    print(h)
     return Connection(h)
 
 
