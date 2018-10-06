@@ -14,6 +14,9 @@ def PTR(typ):
 def ARRAY(typ, sz):
     if isinstance(typ, int):
         return (uctypes.ARRAY, typ | sz)
+    # Unconvert struct
+    if typ[0] == 0:
+        return (uctypes.ARRAY, sz, typ[1])
     return (uctypes.ARRAY, sz, typ)
 
 def UNION(fields):
