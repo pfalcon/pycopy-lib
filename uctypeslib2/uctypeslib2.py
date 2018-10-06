@@ -11,14 +11,22 @@ AGG_TYPE_BITS = const(2)
 assert VAL_TYPE_BITS + BITF_LEN_BITS + BITF_OFF_BITS + OFFSET_BITS == 31
 
 OFFSET_MASK = (1 << OFFSET_BITS) - 1
-TYPES = ("UINT8", "INT8", "UINT16", "INT16", "UINT32", "INT32")
+TYPES = (
+    "UINT8", "INT8", "UINT16", "INT16",
+    "UINT32", "INT32", "UINT64", "INT64",
+
+    "BFUINT8", "BFINT8", "BFUINT16", "BFINT16",
+    "BFUINT32", "BFINT32",
+
+    "FLOAT32", "FLOAT64",
+)
 AGG_TYPES = ("STRUCT", "PTR", "ARRAY")
 
 
 def pprint(desc, stream=None, cur_ind=0):
 
     def valtype(v):
-        return v >> (31 - VAL_TYPE_BITS)
+        return (v & 0x7fff_ffff) >> (31 - VAL_TYPE_BITS)
 
     print("{", file=stream)
 
@@ -47,7 +55,12 @@ def pprint(desc, stream=None, cur_ind=0):
                 assert False, "unimpl: %t" % t
         else:
             t = valtype(v)
-            print("%r: %d | %s," % (k, v & OFFSET_MASK, TYPES[t]))
+            if 8 <= t < 14:
+                pos = (v >> uctypes.BF_POS) & 0x1f
+                sz = (v >> uctypes.BF_LEN) & 0x1f
+                print("%r: %d | %s | %d << uctypes.BF_POS | %d << uctypes.BF_LEN," % (k, v & OFFSET_MASK, TYPES[t], pos, sz))
+            else:
+                print("%r: %d | %s," % (k, v & OFFSET_MASK, TYPES[t]))
 
     end = "\n" if cur_ind == 0 else ""
     print("}", end=end, file=stream)
