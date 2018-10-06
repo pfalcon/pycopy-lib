@@ -1,5 +1,5 @@
 # https://wiki.libsdl.org/SDL_CreateRenderer
-from upysdl2 import *
+from usdl2 import *
 
 NULL = None
 
