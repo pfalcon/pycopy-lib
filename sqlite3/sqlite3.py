@@ -1,3 +1,4 @@
+# (c) 2014-2018 Paul Sokolovsky. MIT license.
 import sys
 import ffilib
 
