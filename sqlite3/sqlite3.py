@@ -62,7 +62,7 @@ def check_error(db, s):
         raise Error(s, sqlite3_errmsg(db))
 
 
-class Connections:
+class Connection:
 
     def __init__(self, h):
         self.h = h
@@ -133,7 +133,7 @@ def connect(fname):
     b = bytearray(4)
     sqlite3_open(fname, b)
     h = int.from_bytes(b, sys.byteorder)
-    return Connections(h)
+    return Connection(h)
 
 
 def quote(val):
