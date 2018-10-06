@@ -9,7 +9,7 @@ desc = od((
         ("b1", uc.UINT8),
     )))),
     ("arr", uc.ARRAY(uctypes.UINT8, 2)),
-    ("arr2", uc.ARRAY({"b": uctypes.UINT8}, 2)),
+    ("arr2", uc.ARRAY(uc.STRUCT(od([("b", uc.UINT8)])), 2)),
 
     ("bitf0", uc.BITFIELD(0, 8, type=uc.UINT16)),
     ("bitf1", uc.BITFIELD(8, 8)),
