@@ -32,8 +32,8 @@ def UNION(fields):
     return res
 
 
-bitfield_type = None
-bitfield_pos = None
+__bitfield_type = None
+__bitfield_pos = None
 
 
 # Initial bitfield in set should specify integer type of the field holding
@@ -42,13 +42,13 @@ bitfield_pos = None
 # bit of a word has position 0. E.g. in UINT16, least significant 8 bits have
 # position 0, most significant - 8.
 def BITFIELD(lsb, len, type=None):
-    global bitfield_type
+    global __bitfield_type
     if type is None:
         off = uctypes.PREV_OFFSET
-        type = bitfield_type
+        type = __bitfield_type
     else:
         off = 0
-        bitfield_type = type
+        __bitfield_type = type
     return off | (type + (uctypes.BFUINT8 - uctypes.UINT8)) | lsb << uctypes.BF_POS | len << uctypes.BF_LEN
 
 
@@ -57,14 +57,14 @@ def BITFIELD(lsb, len, type=None):
 # TODO: support big-endian way, where positions are assigned from most significant
 # bits of a word).
 def C_BITFIELD(len, type=None):
-    global bitfield_type, bitfield_pos
+    global __bitfield_type, __bitfield_pos
     if type is None:
         off = uctypes.PREV_OFFSET
-        type = bitfield_type
+        type = __bitfield_type
     else:
         off = 0
-        bitfield_type = type
-        bitfield_pos = 0
-    ret = off | (type + (uctypes.BFUINT8 - uctypes.UINT8)) | bitfield_pos << uctypes.BF_POS | len << uctypes.BF_LEN
-    bitfield_pos += len
+        __bitfield_type = type
+        __bitfield_pos = 0
+    ret = off | (type + (uctypes.BFUINT8 - uctypes.UINT8)) | __bitfield_pos << uctypes.BF_POS | len << uctypes.BF_LEN
+    __bitfield_pos += len
     return ret
