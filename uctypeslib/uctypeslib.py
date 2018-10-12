@@ -2,7 +2,10 @@
 from ucollections import OrderedDict
 import uctypes
 from uctypes import (
-    UINT8, INT8, UINT16, INT16, UINT32, INT32
+    UINT8, INT8, UINT16, INT16, UINT32, INT32,
+    UINT64, INT64, FLOAT32, FLOAT64,
+    USHORT, SHORT, UINT, INT, ULONG, LONG,
+    ULONGLONG, LONGLONG
 )
 
 def STRUCT(typ):
