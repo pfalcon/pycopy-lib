@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-uurequests',
-      version='0.8',
+      version='0.8.1',
       description='uurequests module for MicroPython',
       long_description=open('README.rst').read(),
       url='https://github.com/pfalcon/micropython-lib',
