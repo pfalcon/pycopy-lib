@@ -3,10 +3,11 @@ try:
 except ImportError:
     import requests
 
-r = requests.get("http://api.xively.com/")
+r = requests.get("https://api.telegram.org/bot")
 print(r)
 print(r.content)
 print(r.text)
+# You can access .content multiple times of course
 print(r.content)
 print(r.json())
 
