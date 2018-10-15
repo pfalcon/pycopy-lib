@@ -1,3 +1,6 @@
-srctype=dummy
-type=module
-version = 0.0.1
+srctype = micropython-lib
+type = module
+version = 0.0.2
+depends = os
+author = Andrew Leech
+author_email = andrew@alelec.net
