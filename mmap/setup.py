@@ -7,9 +7,9 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-mmap',
-      version='0.0.0',
-      description='Dummy mmap module for MicroPython',
-      long_description='This is a dummy implementation of a module for MicroPython standard library.\nIt contains zero or very little functionality, and primarily intended to\navoid import errors (using idea that even if an application imports a\nmodule, it may be not using it onevery code path, so may work at least\npartially). It is expected that more complete implementation of the module\nwill be provided later. Please help with the development if you are\ninterested in this module.',
+      version='0.1',
+      description='mmap module for MicroPython',
+      long_description="This is a module reimplemented specifically for MicroPython standard library,\nwith efficient and lean design in mind. Note that this module is likely work\nin progress and likely supports just a subset of CPython's corresponding\nmodule. Please help with the development if you are interested in this\nmodule.",
       url='https://github.com/pfalcon/micropython-lib',
       author='Paul Sokolovsky',
       author_email='micropython-lib@googlegroups.com',
@@ -17,4 +17,5 @@ setup(name='micropython-mmap',
       maintainer_email='micropython-lib@googlegroups.com',
       license='MIT',
       cmdclass={'sdist': sdist_upip.sdist},
-      py_modules=['mmap'])
+      py_modules=['mmap'],
+      install_requires=['micropython-ffilib'])
