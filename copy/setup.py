@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-copy',
-      version='3.3.3-2',
+      version='3.3.3-3',
       description='CPython copy module ported to MicroPython',
       long_description='This is a module ported from CPython standard library to be compatible with\nMicroPython interpreter. Usually, this means applying small patches for\nfeatures not supported (yet, or at all) in MicroPython. Sometimes, heavier\nchanges are required. Note that CPython modules are written with availability\nof vast resources in mind, and may not work for MicroPython ports with\nlimited heap. If you are affected by such a case, please help reimplement\nthe module from scratch.',
       url='https://github.com/pfalcon/micropython-lib',
@@ -17,4 +17,5 @@ setup(name='micropython-copy',
       maintainer_email='micropython-lib@googlegroups.com',
       license='Python',
       cmdclass={'sdist': sdist_upip.sdist},
-      py_modules=['copy'])
+      py_modules=['copy'],
+      install_requires=['micropython-types'])
