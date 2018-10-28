@@ -112,5 +112,6 @@ Guidelines for packaging MicroPython modules for PyPI:
 
 Credits
 -------
-micropython-lib is developed and maintained by Paul Sokolovsky with the
-help of MicroPython community.
+micropython-lib is developed and maintained by Paul Sokolovsky
+([@pfalcon](https://github.com/pfalcon/)) with the help of MicroPython
+community.
