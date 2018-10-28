@@ -50,7 +50,7 @@ SDL_PACKEDLAYOUT_1010102 = 8
 
 SDL_PIXELFORMAT_ARGB8888 = \
         SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_PACKED32, SDL_PACKEDORDER_ARGB,
-                               SDL_PACKEDLAYOUT_8888, 32, 4),
+                               SDL_PACKEDLAYOUT_8888, 32, 4)
 
 
 _sdl = ffi.open("libSDL2-2.0.so.0")
