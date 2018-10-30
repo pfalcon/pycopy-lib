@@ -17,4 +17,5 @@ setup(name='micropython-test.support',
       maintainer_email='micropython-lib@googlegroups.com',
       license='MIT',
       cmdclass={'sdist': sdist_upip.sdist},
-      packages=['test'])
+      packages=['test'],
+      install_requires=['micropython-unittest', 'micropython-io', 'micropython-contextlib'])
