@@ -189,10 +189,15 @@ def main():
 
         data["modules"] = "'" + data["name"].rsplit(".", 1)[0] + "'"
         if "extra_modules" in data:
-            data["modules"] += ", " + ", ".join(["'" + x.strip() + "'" for x in data["extra_modules"].split(",")])
+            extra_modules = ["'" + x.strip() + "'" for x in data["extra_modules"].split(",")]
+            if any(" " in d for d in extra_modules):
+                raise ValueError("extra_modules should be comma separated")
+            data["modules"] += ", " + ", ".join(extra_modules)
 
         if "depends" in data:
             deps = ["micropython-" + x.strip() for x in data["depends"].split(",")]
+            if any(" " in d for d in deps):
+                raise ValueError("depends should be comma separated")
             data["_inst_req_"] = ",\n      install_requires=['" + "', '".join(deps) + "']"
         else:
             data["_inst_req_"] = ""
