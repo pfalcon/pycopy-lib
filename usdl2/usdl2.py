@@ -89,6 +89,8 @@ SDL_FreeSurface = _sdl.func("v", "SDL_FreeSurface", "P")
 SDL_CreateTexture = _sdl.func("P", "SDL_CreateTexture", "PIiii")
 SDL_CreateTextureFromSurface = _sdl.func("P", "SDL_CreateTextureFromSurface", "PP")
 SDL_UpdateTexture = _sdl.func("i", "SDL_UpdateTexture", "PPPi")
+SDL_LockTexture = _sdl.func("i", "SDL_LockTexture", "pPpp")
+SDL_UnlockTexture = _sdl.func("i", "SDL_UnlockTexture", "p")
 
 SDL_LoadBMP_RW = _sdl.func("P", "SDL_LoadBMP_RW", "Pi")
 SDL_RWFromFile = _sdl.func("P", "SDL_RWFromFile", "ss")
