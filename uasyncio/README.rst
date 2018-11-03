@@ -1,7 +1,7 @@
 uasyncio
 ========
 
-uasyncio is MicroPython's asynchronous sheduling library, roughly
+uasyncio is MicroPython's asynchronous scheduling library, roughly
 modeled after CPython's asyncio.
 
 uasyncio doesn't use naive always-iterating scheduling algorithm,
