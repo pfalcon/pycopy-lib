@@ -34,6 +34,7 @@ class EventLoop:
         # in the event loop (sub-coroutines executed transparently by
         # yield from/await, event loop "doesn't see" them).
         self.cur_task = None
+        self.finished = False
 
     def time(self):
         return time.ticks_ms()
@@ -70,7 +71,7 @@ class EventLoop:
             log.debug("Sleeping for: %s", delay)
         time.sleep_ms(delay)
 
-    def run_forever(self):
+    def _run_forever(self):
         cur_task = [0, 0, 0]
         while True:
             # Expire entries in waitq and move them to runq
@@ -172,6 +173,16 @@ class EventLoop:
                     if delay < 0:
                         delay = 0
             self.wait(delay)
+
+    def run_forever(self):
+        if self.finished:
+            raise RuntimeError("Loop already finished")
+        try:
+            return self._run_forever()
+        except:
+            raise
+        finally:
+            self.finished = True
 
     def run_until_complete(self, coro):
         def _run_and_stop():
