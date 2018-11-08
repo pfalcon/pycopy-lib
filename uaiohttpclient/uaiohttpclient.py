@@ -59,8 +59,12 @@ def request_raw(method, url):
     # But explicitly set Connection: close, even though this should be default for 1.0,
     # because some servers misbehave w/o it.
     query = "%s /%s HTTP/1.0\r\nHost: %s\r\nConnection: close\r\nUser-Agent: compat\r\n\r\n" % (method, path, host)
-    yield from writer.awrite(query.encode('latin-1'))
-#    yield from writer.aclose()
+    try:
+        yield from writer.awrite(query.encode('latin-1'))
+    except:
+        yield from writer.aclose()
+        raise
+
     return reader
 
 
