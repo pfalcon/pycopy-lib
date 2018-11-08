@@ -73,11 +73,11 @@ def request(method, url):
     while redir_cnt < 2:
         reader = yield from request_raw(method, url)
         headers = []
+        chunked = False
         try:
             sline = yield from reader.readline()
             sline = sline.split(None, 2)
             status = int(sline[1])
-            chunked = False
             while True:
                 line = yield from reader.readline()
                 if not line or line == b"\r\n":
