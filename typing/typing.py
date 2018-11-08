@@ -1,10 +1,17 @@
+class _Subscriptable:
+
+    def __getitem__(self, sub):
+        return None
+
+_SubSingleton = _Subscriptable()
+
 class Any: pass
 class NoReturn: pass
 class ClassVar: pass
-class Union: pass
-class Optional: pass
-class Generic: pass
-class NamedTuple: pass
+Union = _SubSingleton
+Optional = _SubSingleton
+Generic = _SubSingleton
+NamedTuple = _SubSingleton
 class Hashable: pass
 class Awaitable: pass
 class Coroutine: pass
@@ -16,27 +23,27 @@ class Reversible: pass
 class Sized: pass
 class Container: pass
 class Collection: pass
-class Callable: pass
-class AbstractSet: pass
-class MutableSet: pass
-class Mapping: pass
-class MutableMapping: pass
-class Sequence: pass
-class MutableSequence: pass
+Callable = _SubSingleton
+AbstractSet = _SubSingleton
+MutableSet = _SubSingleton
+Mapping = _SubSingleton
+MutableMapping = _SubSingleton
+Sequence = _SubSingleton
+MutableSequence = _SubSingleton
 class ByteString: pass
-class Tuple: pass
-class List: pass
+Tuple = _SubSingleton
+List = _SubSingleton
 class Deque: pass
-class Set: pass
-class FrozenSet: pass
+Set = _SubSingleton
+FrozenSet = _SubSingleton
 class MappingView: pass
 class KeysView: pass
 class ItemsView: pass
 class ValuesView: pass
 class ContextManager: pass
 class AsyncContextManager: pass
-class Dict: pass
-class DefaultDict: pass
+Dict = _SubSingleton
+DefaultDict = _SubSingleton
 class Counter: pass
 class ChainMap: pass
 class Generator: pass
