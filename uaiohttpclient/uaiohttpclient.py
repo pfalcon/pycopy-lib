@@ -70,20 +70,24 @@ def request(method, url):
     while redir_cnt < 2:
         reader = yield from request_raw(method, url)
         headers = []
-        sline = yield from reader.readline()
-        sline = sline.split(None, 2)
-        status = int(sline[1])
-        chunked = False
-        while True:
-            line = yield from reader.readline()
-            if not line or line == b"\r\n":
-                break
-            headers.append(line)
-            if line.startswith(b"Transfer-Encoding:"):
-                if b"chunked" in line:
-                    chunked = True
-            elif line.startswith(b"Location:"):
-                url = line.rstrip().split(None, 1)[1].decode("latin-1")
+        try:
+            sline = yield from reader.readline()
+            sline = sline.split(None, 2)
+            status = int(sline[1])
+            chunked = False
+            while True:
+                line = yield from reader.readline()
+                if not line or line == b"\r\n":
+                    break
+                headers.append(line)
+                if line.startswith(b"Transfer-Encoding:"):
+                    if b"chunked" in line:
+                        chunked = True
+                elif line.startswith(b"Location:"):
+                    url = line.rstrip().split(None, 1)[1].decode("latin-1")
+        except:
+            yield from reader.aclose()
+            raise
 
         if 301 <= status <= 303:
             redir_cnt += 1
