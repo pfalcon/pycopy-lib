@@ -70,7 +70,6 @@ def request_raw(method, url):
 
 def request(method, url):
     redir_cnt = 0
-    redir_url = None
     while redir_cnt < 2:
         reader = yield from request_raw(method, url)
         headers = []
