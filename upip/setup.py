@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-upip',
-      version='1.2.4',
+      version='1.2.5',
       description='Simple package manager for MicroPython.',
       long_description='Simple self-hosted package manager for MicroPython (requires usocket, ussl, uzlib, uctypes builtin modules). Compatible only with packages without custom setup.py code.',
       url='https://github.com/pfalcon/micropython-lib',
