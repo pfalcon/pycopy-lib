@@ -224,9 +224,10 @@ def install(to_install, install_path=None):
                 deps = deps.decode("utf-8").split("\n")
                 to_install.extend(deps)
     except Exception as e:
-        print("Error installing '{}': {}, packages may be partially installed".format(
+        print("Error installing '{}': {!r}, packages may be partially installed".format(
                 pkg_spec, e),
             file=sys.stderr)
+        raise e
 
 def get_install_path():
     global install_path
