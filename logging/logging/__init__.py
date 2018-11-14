@@ -103,3 +103,38 @@ def basicConfig(level=INFO, filename=None, stream=None, format=None):
         print("logging.basicConfig: filename arg is not supported")
     if format is not None:
         print("logging.basicConfig: format arg is not supported")
+
+
+class StreamHandler:
+    def __init__(self, stream=None):
+        self._stream = stream or sys.stderr
+        self.terminator = "\n"
+
+    def emit(self, record):
+        self._stream.write(record + self.terminator)
+
+    def flush(self):
+        pass
+
+
+class FileHandler:
+    def __init__(self, filename, mode="a", encoding=None, delay=False):
+        self.encoding = encoding
+        self.mode = mode
+        self.delay = delay
+        self.terminator = "\n"
+        self.filename = filename
+
+        self._f = None
+        if not delay:
+            self._f = open(filename, mode)
+
+    def emit(self, record):
+        if self._f is None:
+            self._f = open(filename, mode)
+
+        self._f.write(record + self.terminator)
+
+    def close(self):
+        if self._f is not None:
+            self._f.close()
