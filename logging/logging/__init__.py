@@ -23,6 +23,7 @@ class Logger:
 
     def __init__(self, name):
         self.name = name
+        self.handlers = None
 
     def _level_str(self, level):
         l = _level_dict.get(level)
@@ -38,11 +39,15 @@ class Logger:
 
     def log(self, level, msg, *args):
         if level >= (self.level or _level):
-            _stream.write("%s:%s:" % (self._level_str(level), self.name))
-            if not args:
-                print(msg, file=_stream)
-            else:
-                print(msg % args, file=_stream)
+            msg = msg if not args else msg % args
+            record = "%s:%s: %s" % (self._level_str(level), self.name, msg)
+            if _stream is not None:
+                _stream.write(record)
+                _stream.write("\n")
+
+            if self.handlers:
+                for hdlr in self.handlers:
+                    hdlr.emit(record)
 
     def debug(self, msg, *args):
         self.log(DEBUG, msg, *args)
@@ -61,10 +66,16 @@ class Logger:
 
     def exc(self, e, msg, *args):
         self.log(ERROR, msg, *args)
-        sys.print_exception(e, _stream)
+        if _stream is not None:
+            sys.print_exception(e, _stream)
 
     def exception(self, msg, *args):
         self.exc(sys.exc_info()[1], msg, *args)
+
+    def addHandler(self, hdlr):
+        if self.handlers is None:
+            self.handlers = []
+        self.handlers.append(hdlr)
 
 
 _level = INFO
