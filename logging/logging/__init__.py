@@ -42,7 +42,7 @@ class Logger:
             msg = msg if not args else msg % args
             record = "%s:%s: %s" % (self._level_str(level), self.name, msg)
             if _stream is not None:
-                _stream.write(record + '\n')
+                _stream.write(record + "\n")
 
             for hdlr in self.handlers:
                 hdlr.emit(record)
@@ -104,7 +104,7 @@ def basicConfig(level=INFO, filename=None, stream=None, format=None):
 class StreamHandler:
     def __init__(self, stream=None):
         self._stream = stream or sys.stderr
-        self.terminator = '\n'
+        self.terminator = "\n"
 
     def emit(self, record):
         self._stream.write(record + self.terminator)
@@ -114,11 +114,11 @@ class StreamHandler:
 
 
 class FileHandler:
-    def __init__(self, filename, mode='a', encoding=None, delay=False):
+    def __init__(self, filename, mode="a", encoding=None, delay=False):
         self.encoding = encoding
         self.mode = mode
         self.delay = delay
-        self.terminator = '\n'
+        self.terminator = "\n"
         self.filename = filename
 
         if delay:
