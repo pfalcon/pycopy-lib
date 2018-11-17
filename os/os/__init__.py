@@ -80,14 +80,20 @@ def mkdir(name, mode=0o777):
     e = mkdir_(name, mode)
     check_error(e)
 
-def rename(old, new):
-    e = rename_(old, new)
-    check_error(e)
+if hasattr(uos, "rename"):
+    rename = uos.rename
+else:
+    def rename(old, new):
+        e = rename_(old, new)
+        check_error(e)
 
-def unlink(name):
-    e = unlink_(name)
-    check_error(e)
-remove = unlink
+if hasattr(uos, "remove"):
+    unlink = remove = uos.remove
+else:
+    def unlink(name):
+        e = unlink_(name)
+        check_error(e)
+    remove = unlink
 
 def rmdir(name):
     e = rmdir_(name)
