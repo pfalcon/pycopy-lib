@@ -72,9 +72,12 @@ def raise_error():
 
 stat = uos.stat
 
-def getcwd():
-    buf = bytearray(512)
-    return getcwd_(buf, 512)
+if hasattr(uos, "getcwd"):
+    getcwd = uos.getcwd
+else:
+    def getcwd():
+        buf = bytearray(512)
+        return getcwd_(buf, 512)
 
 def mkdir(name, mode=0o777):
     e = mkdir_(name, mode)
