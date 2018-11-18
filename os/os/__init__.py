@@ -79,9 +79,12 @@ else:
         buf = bytearray(512)
         return getcwd_(buf, 512)
 
-def mkdir(name, mode=0o777):
-    e = mkdir_(name, mode)
-    check_error(e)
+if hasattr(uos, "mkdir"):
+    mkdir = uos.mkdir
+else:
+    def mkdir(name, mode=0o777):
+        e = mkdir_(name, mode)
+        check_error(e)
 
 if hasattr(uos, "rename"):
     rename = uos.rename
@@ -98,9 +101,12 @@ else:
         check_error(e)
     remove = unlink
 
-def rmdir(name):
-    e = rmdir_(name)
-    check_error(e)
+if hasattr(uos, "rmdir"):
+    rmdir = uos.rmdir
+else:
+    def rmdir(name):
+        e = rmdir_(name)
+        check_error(e)
 
 def makedirs(name, mode=0o777, exist_ok=False):
     s = ""
