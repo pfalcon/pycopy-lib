@@ -206,9 +206,12 @@ def dup(fd):
 def access(path, mode):
     return access_(path, mode) == 0
 
-def chdir(dir):
-    r = chdir_(dir)
-    check_error(r)
+if hasattr(uos, 'chdir'):
+    chdir = uos.chdir
+else:
+    def chdir(dir):
+        r = chdir_(dir)
+        check_error(r)
 
 def fork():
     r = fork_()
