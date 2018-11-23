@@ -1,4 +1,3 @@
-# Note: this test is not compliant with CPython's logging module
 import os
 import logging
 from logging.handlers import RotatingFileHandler
