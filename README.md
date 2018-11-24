@@ -63,7 +63,7 @@ CPython. This first of all applies to the builtin MicroPython "u" modules,
 but as time goes on, backports of micropython-lib's own modules can be
 provided. Backport modules are in the directories named `cpython-*` of
 this repository. On PyPI, these named
-[micropython-cpytion-*](https://pypi.org/search/?q=micropython-cpython-).
+[micropython-cpython-*](https://pypi.org/search/?q=micropython-cpython-).
 
 These modules should be installed with CPython's pip3 tool. Example session:
 
