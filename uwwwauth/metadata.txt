@@ -1,0 +1,4 @@
+srctype = micropython-lib
+type = module
+version = 0.3
+long_desc = Experimental module for authentication (WWW-Authenticate header) handling in HTTP, etc. protocols.
