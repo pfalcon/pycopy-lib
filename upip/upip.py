@@ -240,7 +240,7 @@ def get_install_path():
 def cleanup():
     for fname in cleanup_files:
         try:
-            os.unlink(fname)
+            os.remove(fname)
         except OSError:
             print("Warning: Cannot delete " + fname)
 
