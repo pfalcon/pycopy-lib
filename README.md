@@ -10,6 +10,8 @@ module has its own licensing terms):
 * ported from CPython
 * ported from some other Python implementation, e.g. PyPy
 * some modules actually aren't implemented yet and are dummy
+* some modules are extensions and are not part of CPython's
+  standard library
 
 Note that the main target of micropython-lib is a "Unix" port of the
 aforementioned fork of MicroPython. Actual system requirements vary per
@@ -115,3 +117,24 @@ Credits
 micropython-lib is developed and maintained by Paul Sokolovsky
 ([@pfalcon](https://github.com/pfalcon/)) with the help of MicroPython
 community.
+
+List of modules specific to micropython-lib
+-------------------------------------------
+
+While micropython-lib's primary way is to provide implementation
+of Python standard library, micropython-lib goes further and hosts
+some extension modules which are deemed to be worth being a part
+of "MicroPython standard library". This section lists them to easy
+discovery:
+
+* uaiohttpclient - HTTP client for uasyncio
+* uasyncio - asynchronous scheduling and I/O, roughly based on CPython's
+  asyncio
+* uasycio.core - just a scheduler part of uasyncio
+* ucurses - small subset of curses module
+* udnspkt - DNS packet handling (Sans I/O approach)
+* ulogging - small subset of logging module
+* upip - MicroPython package manager, modelled after "pip" tool
+* upysh - minimalistic filesystem shell using Python syntax
+* utarfile - small subset of tarfile module
+* xmltok2 - small/simple XML tokenizer
