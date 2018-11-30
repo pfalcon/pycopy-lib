@@ -127,11 +127,11 @@ class FileHandler:
 
         self._f = None
         if not delay:
-            self._f = open(filename, mode)
+            self._f = open(self.filename, self.mode)
 
     def emit(self, record):
         if self._f is None:
-            self._f = open(filename, mode)
+            self._f = open(self.filename, self.mode)
 
         self._f.write(record + self.terminator)
 
