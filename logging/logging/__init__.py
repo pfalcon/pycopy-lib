@@ -193,3 +193,16 @@ class Formatter:
         raise NotImplementedError()
 
 
+class LogRecord:
+    def __init__(
+        self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None
+    ):
+        self.name = name
+        self.level = level
+        self.pathname = pathname
+        self.lineno = lineno
+        self.msg = msg
+        self.args = args
+        self.exc_info = exc_info
+        self.func = func
+        self.sinfo = sinfo
