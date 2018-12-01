@@ -1,3 +1,4 @@
+import utime
 import sys
 
 CRITICAL = 50
@@ -138,3 +139,57 @@ class FileHandler:
     def close(self):
         if self._f is not None:
             self._f.close()
+
+
+class Formatter:
+
+    converter = utime.localtime
+    default_time_format = '%Y-%m-%d %H:%M:%S'
+    default_msec_format = '%s,%03d'
+
+    def __init__(self, fmt=None, datefmt=None, style="%"):
+        self.fmt = fmt or "%(message)s"
+        self.datefmt = datefmt
+
+        if style not in ("%", "{"):
+            raise ValueError("Style must be one of: %, {")
+
+        self.style = style
+
+    def format(self, record):
+        # The message attribute of the record is computed using msg % args.
+        record.message = record.msg % record.args
+
+        # If the formatting string contains '(asctime)', formatTime() is called to
+        # format the event time.
+        if "(asctime)" in self.fmt:
+            record.asctime = self.formatTime(record, datefmt=self.datefmt)
+
+        # If there is exception information, it is formatted using formatException()
+        # and appended to the message. The formatted exception information is cached
+        # in attribute exc_text.
+        if record.exc_info is not None:
+            record.exc_text += self.formatException(record.exc_info)
+            record.message += "\n" + record.exc_text
+
+        # The record’s attribute dictionary is used as the operand to a string
+        # formatting operation.
+        if self.style == "%":
+            return self.fmt % record.__dict__
+        elif self.style == "{":
+            return self.fmt.format(record.__dict__)
+        else:
+            raise ValueError(
+                "Style {0} is not supported by logging.".format(self.style)
+            )
+
+    def formatTime(self, record, datefmt=None):
+        raise NotImplementedError()
+
+    def formatException(self, exc_info):
+        raise NotImplementedError()
+
+    def formatStack(self, stack_info):
+        raise NotImplementedError()
+
+
