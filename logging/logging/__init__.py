@@ -16,7 +16,6 @@ _level_dict = {
     DEBUG: "DEBUG",
 }
 
-_stream = sys.stderr
 
 class Logger:
 
@@ -40,11 +39,9 @@ class Logger:
 
     def log(self, level, msg, *args):
         if level >= (self.level or _level):
-            msg = msg if not args else msg % args
-            record = "%s:%s: %s" % (self._level_str(level), self.name, msg)
-            if _stream is not None:
-                _stream.write(record)
-                _stream.write("\n")
+            record = LogRecord(
+                self.name, level, None, None, msg, args, None, None, None
+            )
 
             if self.handlers:
                 for hdlr in self.handlers:
@@ -82,10 +79,19 @@ class Logger:
 _level = INFO
 _loggers = {}
 
-def getLogger(name):
+
+def getLogger(name=None):
+    if name is None:
+        name = "root"
     if name in _loggers:
         return _loggers[name]
-    l = Logger(name)
+    if name == "root":
+        l = Logger(name)
+        sh = StreamHandler()
+        sh.formatter = Formatter()
+        l.addHandler(sh)
+    else:
+        l = Logger(name)
     _loggers[name] = l
     return l
 
@@ -96,23 +102,25 @@ def debug(msg, *args):
     getLogger(None).debug(msg, *args)
 
 def basicConfig(level=INFO, filename=None, stream=None, format=None):
-    global _level, _stream
+    global _level
     _level = level
-    if stream:
-        _stream = stream
-    if filename is not None:
-        print("logging.basicConfig: filename arg is not supported")
-    if format is not None:
-        print("logging.basicConfig: format arg is not supported")
+    if filename:
+        h = FileHandler(filename)
+    else:
+        h = StreamHandler(stream)
+    h.setFormatter(Formatter(format))
+    root.handlers.clear()
+    root.addHandler(h)
 
 
 class StreamHandler:
     def __init__(self, stream=None):
         self._stream = stream or sys.stderr
         self.terminator = "\n"
+        self.formatter = Formatter()
 
     def emit(self, record):
-        self._stream.write(record + self.terminator)
+        self._stream.write(self.formatter.format(record) + self.terminator)
 
     def flush(self):
         pass
@@ -192,6 +200,8 @@ class Formatter:
     def formatStack(self, stack_info):
         raise NotImplementedError()
 
+
+root = getLogger()
 
 class LogRecord:
     def __init__(
