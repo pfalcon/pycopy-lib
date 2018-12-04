@@ -101,14 +101,14 @@ def info(msg, *args):
 def debug(msg, *args):
     getLogger(None).debug(msg, *args)
 
-def basicConfig(level=INFO, filename=None, stream=None, format=None):
+def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
     global _level
     _level = level
     if filename:
         h = FileHandler(filename)
     else:
         h = StreamHandler(stream)
-    h.setFormatter(Formatter(format))
+    h.setFormatter(Formatter(format, style=style))
     root.handlers.clear()
     root.addHandler(h)
 
@@ -170,13 +170,19 @@ class Formatter:
 
         self.style = style
 
+    def usesTime(self):
+        if self.style == "%":
+            return "%(asctime)" in self.fmt
+        elif self.style == "{":
+            return "{asctime" in self.fmt
+
     def format(self, record):
         # The message attribute of the record is computed using msg % args.
         record.message = record.msg % record.args
 
         # If the formatting string contains '(asctime)', formatTime() is called to
         # format the event time.
-        if "(asctime)" in self.fmt:
+        if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
 
         # If there is exception information, it is formatted using formatException()
@@ -191,7 +197,7 @@ class Formatter:
         if self.style == "%":
             return self.fmt % record.__dict__
         elif self.style == "{":
-            return self.fmt.format(record.__dict__)
+            return self.fmt.format(**record.__dict__)
         else:
             raise ValueError(
                 "Style {0} is not supported by logging.".format(self.style)
