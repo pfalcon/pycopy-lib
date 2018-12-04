@@ -1,5 +1,6 @@
 import os
 import sys
+from . import Handler
 
 
 def try_remove(fn: str) -> None:
@@ -15,7 +16,7 @@ def get_filesize(fn: str) -> int:
     return os.stat(fn)[6]
 
 
-class RotatingFileHandler:
+class RotatingFileHandler(Handler):
     """A rotating file handler like RotatingFileHandler.
 
     Compatible with CPythons `logging.handlers.RotatingFileHandler` class.
