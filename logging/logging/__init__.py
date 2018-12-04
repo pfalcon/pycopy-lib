@@ -220,7 +220,8 @@ class LogRecord:
         self.created = ct
         self.msecs = (ct - int(ct)) * 1000
         self.name = name
-        self.level = level
+        self.levelno = level
+        self.levelname = _level_dict.get(level, None)
         self.pathname = pathname
         self.lineno = lineno
         self.msg = msg
