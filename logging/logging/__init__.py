@@ -152,8 +152,6 @@ class FileHandler:
 class Formatter:
 
     converter = utime.localtime
-    default_time_format = '%Y-%m-%d %H:%M:%S'
-    default_msec_format = '%s,%03d'
 
     def __init__(self, fmt=None, datefmt=None, style="%"):
         self.fmt = fmt or "%(message)s"
@@ -171,7 +169,7 @@ class Formatter:
         # If the formatting string contains '(asctime)', formatTime() is called to
         # format the event time.
         if "(asctime)" in self.fmt:
-            record.asctime = self.formatTime(record, datefmt=self.datefmt)
+            record.asctime = self.formatTime(record, self.datefmt)
 
         # If there is exception information, it is formatted using formatException()
         # and appended to the message. The formatted exception information is cached
@@ -192,7 +190,9 @@ class Formatter:
             )
 
     def formatTime(self, record, datefmt=None):
-        raise NotImplementedError()
+        assert datefmt is None  # datefmt is not supported
+        ct = utime.localtime(record.created)
+        return "{0}-{1}-{2} {3}:{4}:{5}".format(*ct)
 
     def formatException(self, exc_info):
         raise NotImplementedError()
@@ -203,10 +203,14 @@ class Formatter:
 
 root = getLogger()
 
+
 class LogRecord:
     def __init__(
         self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None
     ):
+        ct = utime.time()
+        self.created = ct
+        self.msecs = (ct - int(ct)) * 1000
         self.name = name
         self.level = level
         self.pathname = pathname
