@@ -1,5 +1,6 @@
 import utime
 import sys
+import uio
 
 CRITICAL = 50
 ERROR    = 40
@@ -63,9 +64,9 @@ class Logger:
         self.log(CRITICAL, msg, *args)
 
     def exc(self, e, msg, *args):
-        self.log(ERROR, msg, *args)
-        if _stream is not None:
-            sys.print_exception(e, _stream)
+        buf = uio.StringIO()
+        sys.print_exception(e, buf)
+        self.log(ERROR, msg + "\n" + buf.getvalue(), *args)
 
     def exception(self, msg, *args):
         self.exc(sys.exc_info()[1], msg, *args)
