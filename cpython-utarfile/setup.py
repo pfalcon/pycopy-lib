@@ -6,7 +6,7 @@ from setuptools import setup
 sys.path.append("..")
 
 setup(name='micropython-cpython-utarfile',
-      version='0.1',
+      version='0.2',
       description='MicroPython module utarfile ported to CPython',
       long_description='This is MicroPython compatibility module, allowing applications using\nMicroPython-specific features to run on CPython.\n',
       url='https://github.com/pfalcon/micropython-lib',
@@ -15,4 +15,5 @@ setup(name='micropython-cpython-utarfile',
       maintainer='Paul Sokolovsky',
       maintainer_email='micropython-lib@googlegroups.com',
       license='Python',
-      py_modules=['utarfile'])
+      py_modules=['utarfile'],
+      install_requires=['micropython-cpython-micropython'])
