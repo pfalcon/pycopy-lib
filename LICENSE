@@ -1,15 +1,17 @@
 micropython-lib consists of multiple modules from different sources and
 authors. Each module comes under its own licensing terms. Short name of
-a license can be found in a file within a module directory (usually
-metadata.txt or setup.py). Complete text of each license used is provided
-below. Files not belonging to a particular module a provided under MIT
-license, unless explicitly stated otherwise.
+a license and exact authorship information can be found in the "setup.py"
+file within a module directory, and in git history for a module directory.
+Complete text of each license used is provided below. Files not belonging
+to a particular module a provided under MIT license, unless explicitly
+stated otherwise.
 
 =============== MIT License ===============
 
 The MIT License (MIT)
 
-Copyright (c) 2013, 2014 micropython-lib contributors
+Copyright (c) 2013-2018 micropython-lib contributors
+Copyright (c) <year> <individual author(s)>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
