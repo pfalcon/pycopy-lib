@@ -137,6 +137,8 @@ class StreamHandler(Handler):
 
 class FileHandler(Handler):
     def __init__(self, filename, mode="a", encoding=None, delay=False):
+        super().__init__()
+
         self.encoding = encoding
         self.mode = mode
         self.delay = delay
@@ -151,7 +153,7 @@ class FileHandler(Handler):
         if self._f is None:
             self._f = open(self.filename, self.mode)
 
-        self._f.write(record + self.terminator)
+        self._f.write(self.formatter.format(record) + self.terminator)
 
     def close(self):
         if self._f is not None:
