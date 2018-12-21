@@ -14,13 +14,13 @@ class DummyStream:
     def close(self):
         pass
 
-# remove stderr stream
-logging._stream = None
+fmt = logging.Formatter("%(levelname)s:%(name)s: %(message)s")
 
 # StreamHandler
 logger = logging.getLogger("testlogger")
 strm = DummyStream()
 sh = logging.StreamHandler(strm)
+sh.setFormatter(fmt)
 logger.addHandler(sh)
 
 # FileHandler
@@ -30,10 +30,12 @@ except OSError:
     pass
 
 fh = logging.FileHandler("fh.log")
+fh.setFormatter(fmt)
 logger.addHandler(fh)
 
 # RotatingFileHandler
 rfh = RotatingFileHandler("rfh.log", maxBytes=20, backupCount=3)
+rfh.setFormatter(fmt)
 logger.addHandler(rfh)
 
 for i in range(3, -1, -1):
