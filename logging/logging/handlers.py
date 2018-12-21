@@ -23,6 +23,7 @@ class RotatingFileHandler(Handler):
     """
 
     def __init__(self, filename, maxBytes=0, backupCount=0):
+        super().__init__()
         self.filename = filename
         self.maxBytes = maxBytes
         self.backupCount = backupCount
@@ -34,7 +35,8 @@ class RotatingFileHandler(Handler):
 
     def emit(self, record):
         """Write to file."""
-        s_len = len(record)
+        msg = self.formatter.format(record)
+        s_len = len(msg)
 
         if self.maxBytes and self.backupCount and self._counter + s_len > self.maxBytes:
             # remove the last backup file if it is there
@@ -54,6 +56,6 @@ class RotatingFileHandler(Handler):
             self._counter = 0
 
         with open(self.filename, "a") as f:
-            f.write(record + "\n")
+            f.write(msg + "\n")
 
         self._counter += s_len
