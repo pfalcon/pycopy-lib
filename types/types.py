@@ -11,7 +11,11 @@ import sys
 def _f(): pass
 FunctionType = type(_f)
 LambdaType = type(lambda: None)         # Same as FunctionType
-CodeType = None  # TODO: Add better sentinel which can't match anything
+try:
+    CodeType = type(compile("1", "", "eval"))
+except:
+    CodeType = None  # TODO: Add better sentinel which can't match anything
+
 MappingProxyType = None  # TODO: Add better sentinel which can't match anything
 SimpleNamespace = None  # TODO: Add better sentinel which can't match anything
 
