@@ -29,7 +29,8 @@ try:
 except OSError:
     pass
 
-fh = logging.FileHandler("fh.log")
+fh_fname = "fh.log"
+fh = logging.FileHandler(fh_fname)
 fh.setFormatter(fmt)
 logger.addHandler(fh)
 
@@ -43,24 +44,24 @@ for i in range(3, -1, -1):
 
 # this should be the logging result
 res = "\n".join(
-    ("WARN:testlogger: x{0}".format(i) for i in range(3, -1, -1))
+    ("WARNING:testlogger: x{0}".format(i) for i in range(3, -1, -1))
 ) + "\n"
 
 # check StreamHandler output
-assert strm._data == res
+assert strm._data == res, "%r vs %r" % (strm._data, res)
 
 # check FileHandler
-with open(fh.filename) as f:
+with open(fh_fname) as f:
     assert f.read() == res
 
 # check RotatingFileHandler output
 with open("rfh.log") as f:
-    assert f.read() == "WARN:testlogger: x0\n"
+    assert f.read() == "WARNING:testlogger: x0\n"
 
 for i in range(1, 4):
     fn = "rfh.log.%i" % i
     with open(fn) as f:
-        assert f.read() == "WARN:testlogger: x%i\n" % i
+        assert f.read() == "WARNING:testlogger: x%i\n" % i
 
 for fn in ["rfh.log"] + ["rfh.log.{0}".format(i) for i in range(1, 4)]:
     os.remove(fn)
