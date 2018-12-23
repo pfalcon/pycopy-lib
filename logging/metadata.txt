@@ -1,5 +1,5 @@
 srctype = micropython-lib
 type = package
-version = 0.5
+version = 0.5.1
 author = Stefan Lehmann
 depends = os
