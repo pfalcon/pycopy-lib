@@ -10,9 +10,9 @@ DEBUG    = 10
 NOTSET   = 0
 
 _level_dict = {
-    CRITICAL: "CRIT",
+    CRITICAL: "CRITICAL",
     ERROR: "ERROR",
-    WARNING: "WARN",
+    WARNING: "WARNING",
     INFO: "INFO",
     DEBUG: "DEBUG",
 }
