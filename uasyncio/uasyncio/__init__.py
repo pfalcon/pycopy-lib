@@ -53,15 +53,11 @@ class PollEventLoop(EventLoop):
         if DEBUG and __debug__:
             log.debug("remove_writer(%s)", sock)
         self.objmap.pop(id(sock), None)
-        try:
-            self.poller.unregister(sock)
-        except OSError as e:
-            # StreamWriter.awrite() first tries to write to a socket,
-            # and if that succeeds, yield IOWrite may never be called
-            # for that socket, and it will never be added to poller. So,
-            # ignore such error.
-            if e.args[0] != uerrno.ENOENT:
-                raise
+        # StreamWriter.awrite() first tries to write to a socket,
+        # and if that succeeds, yield IOWrite may never be called
+        # for that socket, and it will never be added to poller. So,
+        # ignore such error.
+        self.poller.unregister(sock, False)
 
     def wait(self, delay):
         if DEBUG and __debug__:
