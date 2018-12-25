@@ -22,6 +22,12 @@ assert new_vector == [2.0, -8.4, 10.8]
 ConnectionOptions = Dict[str, str]
 Address = Tuple[str, int]
 Server = Tuple[Address, ConnectionOptions]
+Tuple[int, ...]
 
 def broadcast_message(message: str, servers: List[Server]) -> None:
     ...
+
+
+Optional[int]
+
+Union[int, float, None]
