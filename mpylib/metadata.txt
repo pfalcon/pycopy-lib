@@ -1,5 +1,6 @@
 srctype = micropython-lib
 type = module
-version = 0.1
+version = 0.1.1
 desc = Module to deal with MicroPython compiled bytecode files (.mpy)
 long_desc = Module to deal with MicroPython compiled bytecode files (.mpy)
+depends = opcode
