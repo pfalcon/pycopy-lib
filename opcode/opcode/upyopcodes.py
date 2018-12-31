@@ -154,4 +154,17 @@ def mp_opcode_format(bytecode, ip, opcode_format=make_opcode_format()):
     return f, ip - ip_start
 
 
+# Decode var_uint from byte buffer at position i. Return next position
+# and decoded number.
+def decode_uint(bytecode, i):
+    unum = 0
+    while True:
+        val = bytecode[i]
+        i += 1
+        unum = (unum << 7) | (val & 0x7f)
+        if not (val & 0x80):
+            break
+    return i, unum
+
+
 hascache = (MP_BC_LOAD_NAME, MP_BC_LOAD_GLOBAL, MP_BC_LOAD_ATTR, MP_BC_STORE_ATTR)
