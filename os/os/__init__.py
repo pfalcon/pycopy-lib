@@ -4,6 +4,7 @@ import errno as errno_
 import stat as stat_
 import ffilib
 import uos
+from . import path
 
 R_OK = const(4)
 W_OK = const(2)
