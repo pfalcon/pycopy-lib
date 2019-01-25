@@ -17,7 +17,10 @@ def print_stream(resp):
 def run(url):
     resp = yield from aiohttp.request("GET", url)
     print(resp)
-    yield from print_stream(resp)
+    try:
+        yield from print_stream(resp)
+    finally:
+        yield from resp.aclose()
 
 import sys
 import logging
