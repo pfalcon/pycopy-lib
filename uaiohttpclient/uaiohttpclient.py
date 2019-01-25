@@ -9,6 +9,9 @@ class ClientResponse:
     def read(self, sz=-1):
         return (yield from self.content.read(sz))
 
+    def aclose(self):
+        yield from self.content.aclose()
+
     def __repr__(self):
         return "<ClientResponse %d %s>" % (self.status, self.headers)
 
