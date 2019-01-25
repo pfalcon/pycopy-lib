@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-os',
-      version='0.7.1',
+      version='0.8',
       description='os module for MicroPython',
       long_description="This is a module reimplemented specifically for MicroPython standard library,\nwith efficient and lean design in mind. Note that this module is likely work\nin progress and likely supports just a subset of CPython's corresponding\nmodule. Please help with the development if you are interested in this\nmodule.",
       url='https://github.com/pfalcon/micropython-lib',
@@ -18,4 +18,4 @@ setup(name='micropython-os',
       license='MIT',
       cmdclass={'sdist': sdist_upip.sdist},
       packages=['os'],
-      install_requires=['micropython-ffilib', 'micropython-errno', 'micropython-stat'])
+      install_requires=['micropython-ffilib', 'micropython-errno', 'micropython-stat', 'micropython-os.path'])
