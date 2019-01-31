@@ -268,6 +268,12 @@ def cancel(coro):
     prev = coro.pend_throw(CancelledError())
     if prev is False:
         _event_loop.call_soon(coro)
+    elif isinstance(prev, int):
+        # utimeq id
+        _event_loop.waitq.remove(prev)
+        _event_loop.call_soon(coro)
+    else:
+        assert prev is None
 
 
 class TimeoutObj:
