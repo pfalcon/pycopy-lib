@@ -61,7 +61,9 @@ class EventLoop:
     def call_at_(self, time, callback, args=()):
         if __debug__ and DEBUG:
             log.debug("Scheduling in waitq: %s", (time, callback, args))
-        self.waitq.push(time, callback, args)
+        id = self.waitq.push(time, callback, args)
+        if isinstance(callback, type_gen):
+            prev = callback.pend_throw(id)
 
     def wait(self, delay):
         # Default wait implementation, to be overriden in subclasses
@@ -81,6 +83,10 @@ class EventLoop:
                 if delay > 0:
                     break
                 self.waitq.pop(cur_task)
+
+                if isinstance(cur_task[1], type_gen):
+                    prev = cur_task[1].pend_throw(None)
+
                 if __debug__ and DEBUG:
                     log.debug("Moving from waitq to runq: %s", cur_task[1])
                 self.call_soon(cur_task[1], *cur_task[2])
