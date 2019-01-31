@@ -298,6 +298,11 @@ def wait_for_ms(coro, timeout):
             #print("prev pend", prev)
             if prev is False:
                 _event_loop.call_soon(timeout_obj.coro)
+            elif isinstance(prev, int):
+                _event_loop.waitq.remove(prev)
+                _event_loop.call_soon(timeout_obj.coro)
+            else:
+                assert prev is None
 
     timeout_obj = TimeoutObj(_event_loop.cur_task)
     _event_loop.call_later_ms(timeout, timeout_func, timeout_obj)
