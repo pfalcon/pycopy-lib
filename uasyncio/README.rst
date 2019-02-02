@@ -2,7 +2,10 @@ uasyncio
 ========
 
 uasyncio is MicroPython's asynchronous scheduling library, roughly
-modeled after CPython's asyncio.
+modeled after CPython's asyncio. At the time of writing, MicroPython
+mainline fell behind in its development and maintenance, and uasyncio
+requires `Pycopy <https://github.com/pfalcon/micropython>`_ project
+to run instead.
 
 uasyncio doesn't use naive always-iterating scheduling algorithm,
 but performs a real time-based scheduling, which allows it (and
@@ -42,6 +45,11 @@ Specific differences:
   instead. Also, both StreamReader and StreamWriter have .aclose()
   coroutine method.
 
+Requirements
+------------
+
+At the time of writing, uasyncio requires `Pycopy <https://github.com/pfalcon/micropython>`_
+project to run.
 
 Advanced topics
 ---------------
