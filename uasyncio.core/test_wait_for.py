@@ -10,7 +10,7 @@ import logging
 def looper(iters):
     for i in range(iters):
         print("ping")
-        yield from asyncio.sleep(1.0)
+        yield from asyncio.sleep(1)
     return 10
 
 
