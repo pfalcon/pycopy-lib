@@ -128,6 +128,7 @@ of "MicroPython standard library". This section lists them to easy
 discovery:
 
 * uaiohttpclient - HTTP client for uasyncio
+* uargparse - small subset of argparse module
 * uasyncio - asynchronous scheduling and I/O, roughly based on CPython's
   asyncio
 * uasycio.core - just a scheduler part of uasyncio
