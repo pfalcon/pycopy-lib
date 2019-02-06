@@ -24,3 +24,14 @@ def translate(s, map):
         else:
             sb.write(c)
     return sb.getvalue()
+
+
+# str object methods not available as builtins in MicroPython
+
+def isidentifier(s):
+    if s[0] not in ascii_letters and s[0] != "_":
+        return False
+    for c in s[1:]:
+        if c not in ascii_letters and c not in digits and c != "_":
+            return False
+    return True
