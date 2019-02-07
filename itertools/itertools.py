@@ -1,3 +1,6 @@
+import builtins
+
+
 def count(start=0, step=1):
     while True:
         yield start
@@ -37,7 +40,7 @@ def islice(p, start, stop=(), step=1):
     # TODO: optimizing or breaking semantics?
     if start >= stop:
         return
-    it = iter(p)
+    it = builtins.iter(p)
     for i in range(start):
         next(it)
 
@@ -50,14 +53,14 @@ def islice(p, start, stop=(), step=1):
             return
 
 def tee(iterable, n=2):
-    return [iter(iterable)] * n
+    return [builtins.iter(iterable)] * n
 
 def starmap(function, iterable):
     for args in iterable:
         yield function(*args)
 
 def accumulate(iterable, func=lambda x, y: x + y):
-    it = iter(iterable)
+    it = builtins.iter(iterable)
     try:
         acc = next(it)
     except StopIteration:
@@ -66,3 +69,22 @@ def accumulate(iterable, func=lambda x, y: x + y):
     for element in it:
         acc = func(acc, element)
         yield acc
+
+
+# Full analog of CPython builtin iter with 2 arguments
+def iter(*args):
+
+    if len(args) == 1:
+        return builtins.iter(args[0])
+
+    class _iter:
+
+        def __init__(self, args):
+            self.f, self.sentinel = args
+        def __next__(self):
+            v = self.f()
+            if v == self.sentinel:
+                raise StopIteration
+            return v
+
+    return _iter(args)
