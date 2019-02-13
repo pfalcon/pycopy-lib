@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-mpylib',
-      version='0.1.1',
+      version='0.2',
       description='Module to deal with MicroPython compiled bytecode files (.mpy)',
       long_description='Module to deal with MicroPython compiled bytecode files (.mpy)',
       url='https://github.com/pfalcon/micropython-lib',
