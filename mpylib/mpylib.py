@@ -50,6 +50,34 @@ class CodeType:
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
 
 
+class Bytecode:
+
+    def init_bc(self):
+        self.buf = uio.BytesIO()
+        self.co_names = []
+        self.co_consts = []
+
+    def add(self, opcode, *args):
+        self.buf.write(bytes([opcode]))
+        if args != ():
+            arg = args[0]
+        if opcode == opmap["LOAD_NAME"]:
+            self.buf.write(bytes([0, 0]))
+            # cache
+            self.buf.write(bytes([0]))
+            self.co_names.append(arg)
+        elif opcode == opmap["CALL_FUNCTION"]:
+            MPYOutput.write_uint(None, args[0] + (args[1] << 8), self.buf)
+        elif opcode == opmap["LOAD_CONST_SMALL_INT"]:
+            MPYOutput.write_int(None, arg, self.buf)
+        elif opcode == opmap["LOAD_CONST_OBJ"]:
+            MPYOutput.write_uint(None, len(self.co_consts), self.buf)
+            self.co_consts.append(arg)
+
+    def get_bc(self):
+        return self.buf.getvalue()
+
+
 class MPYInput:
 
     def __init__(self, f):
@@ -208,6 +236,31 @@ class MPYOutput:
             if val == 0:
                 break
             i -= 1
+        f.write(arr[i:])
+
+    def write_int(self, val, f=None):
+        if f is None:
+            f = self.f
+        arr = bytearray(5)
+        i = -1
+        while True:
+            b = val & 0x7f
+            if i != -1:
+                b |= 0x80
+            arr[i] = b
+            val >>= 7
+            if val == 0 or val == -1:
+                break
+            i -= 1
+
+        # If needed, store sign explicitly
+        if val == -1 and arr[i] & 0x40 == 0:
+            i -= 1
+            arr[i] = 0xff
+        elif val == 0 and arr[i] & 0x40 != 0:
+            i -= 1
+            arr[i] = 0x80
+
         f.write(arr[i:])
 
     def write_qstr(self, s):
