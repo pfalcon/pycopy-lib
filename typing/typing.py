@@ -9,6 +9,7 @@ def TypeVar(new_type, *types):
     return None
 
 class Any: pass
+Text = str
 class NoReturn: pass
 class ClassVar: pass
 Union = _SubSingleton
@@ -52,6 +53,9 @@ class ChainMap: pass
 class Generator: pass
 class AsyncGenerator: pass
 class Type: pass
+IO = _SubSingleton
+TextIO = IO[str]
+BinaryIO = IO[bytes]
 
 AnyStr = TypeVar("AnyStr", str, bytes)
 
