@@ -57,7 +57,7 @@ class PollEventLoop(EventLoop):
         # and if that succeeds, yield IOWrite may never be called
         # for that socket, and it will never be added to poller. So,
         # ignore such error.
-        self.poller.unregister(sock, False)
+        self.poller.unregister(sock)
 
     def wait(self, delay):
         if DEBUG and __debug__:
