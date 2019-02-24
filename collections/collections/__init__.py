@@ -29,3 +29,15 @@ def namedtuple(name, fields):
     t = type(name, (_T,), {"_make": _make})
 
     return t
+
+class Sequence:
+    pass
+
+class MutableSequence:
+    pass
+
+class Set:
+    pass
+
+class MutableSet:
+    pass
