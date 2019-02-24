@@ -3,7 +3,6 @@
 """
 
 from collections import Set, Sequence
-from sys import hexversion
 
 from .sortedlist import SortedList, recursive_repr, SortedListWithKey
 from .sortedset import SortedSet
@@ -337,18 +336,17 @@ class SortedDict:
 
     _update = update
 
-    if hexversion >= 0x02070000:
-        def viewkeys(self):
-            "Return ``KeysView`` of dictionary keys."
-            return KeysView(self)
+    def viewkeys(self):
+        "Return ``KeysView`` of dictionary keys."
+        return KeysView(self)
 
-        def viewvalues(self):
-            "Return ``ValuesView`` of dictionary values."
-            return ValuesView(self)
+    def viewvalues(self):
+        "Return ``ValuesView`` of dictionary values."
+        return ValuesView(self)
 
-        def viewitems(self):
-            "Return ``ItemsView`` of dictionary (key, value) item pairs."
-            return ItemsView(self)
+    def viewitems(self):
+        "Return ``ItemsView`` of dictionary (key, value) item pairs."
+        return ItemsView(self)
 
     def __reduce__(self):
         return (self.__class__, (self._key, self._load, list(self._iteritems())))
@@ -380,22 +378,13 @@ class KeysView(Set, Sequence):
 
     The KeysView class implements the Set and Sequence Abstract Base Classes.
     """
-    if hexversion < 0x03000000:
-        def __init__(self, sorted_dict):
-            """
-            Initialize a KeysView from a SortedDict container as *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.viewkeys()
-    else:
-        def __init__(self, sorted_dict):
-            """
-            Initialize a KeysView from a SortedDict container as *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.keys()
+    def __init__(self, sorted_dict):
+        """
+        Initialize a KeysView from a SortedDict container as *sorted_dict*.
+        """
+        # pylint: disable=super-init-not-called, protected-access
+        self._list = sorted_dict._list
+        self._view = sorted_dict._dict.keys()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._view)
@@ -468,14 +457,9 @@ class KeysView(Set, Sequence):
     def __xor__(self, that):
         """Return a SortedSet of the symmetric difference of self and *that*."""
         return SortedSet(self._view ^ that)
-    if hexversion < 0x03000000:
-        def isdisjoint(self, that):
-            """Return True if and only if *that* is disjoint with self."""
-            return not any(key in self._list for key in that)
-    else:
-        def isdisjoint(self, that):
-            """Return True if and only if *that* is disjoint with self."""
-            return self._view.isdisjoint(that)
+    def isdisjoint(self, that):
+        """Return True if and only if *that* is disjoint with self."""
+        return self._view.isdisjoint(that)
     @recursive_repr
     def __repr__(self):
         return 'SortedDict_keys({0})'.format(repr(list(self)))
@@ -489,26 +473,15 @@ class ValuesView(Sequence):
 
     The ValuesView class implements the Sequence Abstract Base Class.
     """
-    if hexversion < 0x03000000:
-        def __init__(self, sorted_dict):
-            """
-            Initialize a ValuesView from a SortedDict container as
-            *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._dict = sorted_dict
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.viewvalues()
-    else:
-        def __init__(self, sorted_dict):
-            """
-            Initialize a ValuesView from a SortedDict container as
-            *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._dict = sorted_dict
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.values()
+    def __init__(self, sorted_dict):
+        """
+        Initialize a ValuesView from a SortedDict container as
+        *sorted_dict*.
+        """
+        # pylint: disable=super-init-not-called, protected-access
+        self._dict = sorted_dict
+        self._list = sorted_dict._list
+        self._view = sorted_dict._dict.values()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._dict)
@@ -559,14 +532,9 @@ class ValuesView(Sequence):
             if value == val:
                 return idx
         raise ValueError('{0} is not in dict'.format(repr(value)))
-    if hexversion < 0x03000000:
-        def count(self, value):
-            """Return the number of occurrences of *value* in self."""
-            return sum(1 for val in self._dict.itervalues() if val == value)
-    else:
-        def count(self, value):
-            """Return the number of occurrences of *value* in self."""
-            return sum(1 for val in self._dict.values() if val == value)
+    def count(self, value):
+        """Return the number of occurrences of *value* in self."""
+        return sum(1 for val in self._dict.values() if val == value)
     def __lt__(self, that):
         raise TypeError
     def __gt__(self, that):
@@ -598,26 +566,15 @@ class ItemsView(Set, Sequence):
     However, the set-like operations (``&``, ``|``, ``-``, ``^``) will only
     operate correctly if all of the dictionary's values are hashable.
     """
-    if hexversion < 0x03000000:
-        def __init__(self, sorted_dict):
-            """
-            Initialize an ItemsView from a SortedDict container as
-            *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._dict = sorted_dict
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.viewitems()
-    else:
-        def __init__(self, sorted_dict):
-            """
-            Initialize an ItemsView from a SortedDict container as
-            *sorted_dict*.
-            """
-            # pylint: disable=super-init-not-called, protected-access
-            self._dict = sorted_dict
-            self._list = sorted_dict._list
-            self._view = sorted_dict._dict.items()
+    def __init__(self, sorted_dict):
+        """
+        Initialize an ItemsView from a SortedDict container as
+        *sorted_dict*.
+        """
+        # pylint: disable=super-init-not-called, protected-access
+        self._dict = sorted_dict
+        self._list = sorted_dict._list
+        self._view = sorted_dict._dict.items()
     def __len__(self):
         """Return the number of entries in the dictionary."""
         return len(self._view)
@@ -703,18 +660,9 @@ class ItemsView(Set, Sequence):
     def __xor__(self, that):
         """Return a SortedSet of the symmetric difference of self and *that*."""
         return SortedSet(self._view ^ that)
-    if hexversion < 0x03000000:
-        def isdisjoint(self, that):
-            """Return True if and only if *that* is disjoint with self."""
-            _dict = self._dict
-            for key, value in that:
-                if key in _dict and _dict[key] == value:
-                    return False
-            return True
-    else:
-        def isdisjoint(self, that):
-            """Return True if and only if *that* is disjoint with self."""
-            return self._view.isdisjoint(that)
+    def isdisjoint(self, that):
+        """Return True if and only if *that* is disjoint with self."""
+        return self._view.isdisjoint(that)
     @recursive_repr
     def __repr__(self):
         return 'SortedDict_items({0})'.format(repr(list(self)))

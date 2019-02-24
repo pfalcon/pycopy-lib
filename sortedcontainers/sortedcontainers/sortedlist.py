@@ -12,21 +12,12 @@ from itertools import chain, repeat, starmap
 from math import log as log_e
 import operator as op
 from operator import iadd, add
-from sys import hexversion
 
-if hexversion < 0x03000000:
-    from itertools import izip as zip
-    from itertools import imap as map
-    try:
-        from thread import get_ident
-    except ImportError:
-        from dummy_thread import get_ident
-else:
-    from functools import reduce
-    try:
-        from _thread import get_ident
-    except ImportError:
-        from _dummy_thread import get_ident # pylint: disable=import-error
+from functools import reduce
+try:
+    from _thread import get_ident
+except ImportError:
+    from _dummy_thread import get_ident # pylint: disable=import-error
 
 def recursive_repr(func):
     """Decorator to prevent infinite repr recursion."""
