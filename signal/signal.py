@@ -22,7 +22,6 @@ siginterrupt = libc.func("i", "siginterrupt", "ii")
 
 _hmap = {}
 
-
 def signal(n, handler):
     if isinstance(handler, int):
         # We don't try to remove callback from _hmap here, as we return old
@@ -35,3 +34,7 @@ def signal(n, handler):
     _hmap[n] = cb
     siginterrupt(n, True)
     return signal_p(n, cb)
+
+def getsignal(n):
+    return _sigs.get(n, SIG_DFL)
+
