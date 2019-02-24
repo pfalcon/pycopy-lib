@@ -1,9 +1,13 @@
-def partial(func, *args, **kwargs):
-    def _partial(*more_args, **more_kwargs):
-        kw = kwargs.copy()
+class partial:
+    def __init__(self, func, *args, **kwargs):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self, *more_args, **more_kwargs):
+        kw = self.kwargs.copy()
         kw.update(more_kwargs)
-        return func(*(args + more_args), **kw)
-    return _partial
+        return self.func(*(self.args + more_args), **kw)
 
 
 def update_wrapper(wrapper, wrapped, assigned=None, updated=None):
