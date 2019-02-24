@@ -10,3 +10,8 @@ def compile(file, cfile=None):
     res = os.system(cmdline)
     if res:
         raise OSError("Error running mpy-cross, rc=%d" % (res >> 8))
+
+if __name__ == "__main__":
+    import sys
+    for f in sys.argv[1:]:
+        compile(f)
