@@ -36,3 +36,24 @@ def choice(seq):
     if not seq:
         raise IndexError
     return seq[randrange(len(seq))]
+
+
+class Random:
+    @staticmethod
+    def randrange(start, stop=None):
+        return randrange(start, stop)
+
+    @staticmethod
+    def randint(start, stop):
+        return randint(start, stop)
+
+    uniform = randint
+
+    @staticmethod
+    def shuffle(seq):
+        return shuffle(seq)
+
+    @staticmethod
+    def choice(seq):
+        return choice(seq)
+
