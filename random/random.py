@@ -22,6 +22,8 @@ def randrange(start, stop=None):
 def randint(start, stop):
     return randrange(start, stop + 1)
 
+uniform = randint
+
 def shuffle(seq):
     l = len(seq)
     if l < 2:
