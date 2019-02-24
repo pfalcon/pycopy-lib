@@ -6,6 +6,9 @@ class deque:
         else:
             self.q = list(iterable)
 
+    def clear(self):
+        self.q = []
+
     def popleft(self):
         return self.q.pop(0)
 
