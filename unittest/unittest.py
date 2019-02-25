@@ -146,6 +146,11 @@ class TestCase:
             msg = "Expected %r to be in %r" % (x, y)
         assert x in y, msg
 
+    def assertNotIn(self, x, y, msg=''):
+        if not msg:
+            msg = "Expected %r to be in %r" % (x, y)
+        assert x not in y, msg
+
     def assertIsInstance(self, x, y, msg=''):
         assert isinstance(x, y), msg
 
