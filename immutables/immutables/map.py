@@ -453,7 +453,8 @@ class Map:
 
     @classmethod
     def _new(cls, count, root):
-        m = Map.__new__(Map)
+        # m = Map.__new__(Map)  ## no __new__
+        m = Map()
         m.__count = count
         m.__root = root
         m.__hash = -1
