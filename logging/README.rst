@@ -15,5 +15,5 @@ Major differences to CPython logging:
 Requirements
 ------------
 
-At the time of writing, logging requires the `os <https://github.com/pfalcon/micropython>`_
+At the time of writing, logging requires the `os <https://github.com/pfalcon/micropython-lib>`_
 package.
