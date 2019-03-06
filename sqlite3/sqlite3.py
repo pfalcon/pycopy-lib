@@ -88,7 +88,7 @@ class Cursor:
         if params:
             params = [quote(v) for v in params]
             sql = sql % tuple(params)
-        print(sql)
+        #print(sql)
         b = bytearray(PTR_SZ)
         s = sqlite3_prepare(self.h, sql, -1, b, None)
         check_error(self.h, s)
@@ -139,7 +139,7 @@ def connect(fname):
     if not h:
         raise OSError(uerrno.ENOMEM)
     check_error(h, res)
-    print(h)
+    #print(h)
     return Connection(h)
 
 
