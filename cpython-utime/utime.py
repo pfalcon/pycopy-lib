@@ -1,4 +1,4 @@
-import time
+import time as _time
 
 
 MICROPY_PY_UTIME_TICKS_PERIOD = 2**30
@@ -6,7 +6,7 @@ MICROPY_PY_UTIME_TICKS_PERIOD = 2**30
 _PASSTHRU = ("time", "sleep", "clock", "localtime")
 
 for f in _PASSTHRU:
-    globals()[f] = getattr(time, f)
+    globals()[f] = getattr(_time, f)
 
 
 def sleep_ms(t):
@@ -22,3 +22,5 @@ def ticks_us():
     return int(time.time() * 1000000) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)
 
 ticks_cpu = ticks_us
+
+del f, _time
