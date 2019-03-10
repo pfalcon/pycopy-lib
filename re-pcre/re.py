@@ -26,9 +26,9 @@ DOTALL = S = 4
 VERBOSE = X = 8
 PCRE_ANCHORED = 0x10
 
-# TODO. Note that Python3 has unicode by default
-ASCII = A = 0
-UNICODE = U = 0
+# ASCII is a special value ditinguishable from 0
+ASCII = A = 0x4000
+UNICODE = U = 0x800
 
 PCRE_INFO_CAPTURECOUNT = 2
 
@@ -39,17 +39,24 @@ class error(Exception):
 
 class PCREMatch:
 
-    def __init__(self, s, num_matches, offsets):
+    def __init__(self, s, is_str, num_matches, offsets):
         self.s = s
+        self.is_str = is_str
         self.num = num_matches
         self.offsets = offsets
 
+    def sub(self, i):
+        s = self.s[self.offsets[i]:self.offsets[i + 1]]
+        if self.is_str:
+            s = s.decode()
+        return s
+
     def group(self, *n):
         if not n:
-            return self.s[self.offsets[0]:self.offsets[1]]
+            return self.sub(0)
         if len(n) == 1:
-            return self.s[self.offsets[n[0]*2]:self.offsets[n[0]*2+1]]
-        return tuple(self.s[self.offsets[i*2]:self.offsets[i*2+1]] for i in n)
+            return self.sub(n[0] * 2)
+        return tuple(self.sub(i * 2) for i in n)
 
     def groups(self, default=None):
         assert default is None
@@ -75,14 +82,18 @@ class PCREPattern:
         buf = array.array('i', [0])
         pcre_fullinfo(self.obj, None, PCRE_INFO_CAPTURECOUNT, buf)
         cap_count = buf[0]
+
         ov = array.array('i', [0, 0, 0] * (cap_count + 1))
+        is_str = isinstance(s, str)
+        if is_str:
+            s = s.encode()
         num = pcre_exec(self.obj, None, s, len(s), pos, _flags, ov, len(ov))
         if num == -1:
             # No match
             return None
         # We don't care how many matching subexpressions we got, we
         # care only about total # of capturing ones (including empty)
-        return PCREMatch(s, cap_count + 1, ov)
+        return PCREMatch(s, is_str, cap_count + 1, ov)
 
     def match(self, s, pos=0, endpos=-1):
         return self.search(s, pos, endpos, PCRE_ANCHORED)
@@ -147,6 +158,11 @@ class PCREPattern:
 
 
 def compile(pattern, flags=0):
+    if flags & ASCII:
+        flags &= ~ASCII
+    else:
+        if isinstance(pattern, str):
+            flags |= UNICODE
     # Assume that long can hold a pointer
     errptr = array.array("l", [0])
     erroffset = array.array("i", [0])
