@@ -124,25 +124,35 @@ def make_opcode_format():
     OC4(U, U, U, U), # 0xfc-0xff
     ))
 
-# this function mirrors that in py/bc.c
-def mp_opcode_format(bytecode, ip, opcode_format=make_opcode_format()):
-    opcode = bytecode[ip]
-    ip_start = ip
+
+def mp_opcode_type(opcode, opcode_format=make_opcode_format()):
     f = (opcode_format[opcode >> 2] >> (2 * (opcode & 3))) & 3
+    extra = 0
+
     if f == MP_OPCODE_QSTR:
         if config.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE:
             if (opcode == MP_BC_LOAD_NAME
                 or opcode == MP_BC_LOAD_GLOBAL
                 or opcode == MP_BC_LOAD_ATTR
                 or opcode == MP_BC_STORE_ATTR):
-                ip += 1
-        ip += 3
+                    extra = 1
     else:
-        extra_byte = (
+        extra = int(
             opcode == MP_BC_RAISE_VARARGS
             or opcode == MP_BC_MAKE_CLOSURE
             or opcode == MP_BC_MAKE_CLOSURE_DEFARGS
         )
+
+    return f, extra
+
+
+def mp_opcode_format(bytecode, ip, opcode_format=make_opcode_format()):
+    opcode = bytecode[ip]
+    ip_start = ip
+    f, extra = mp_opcode_type(opcode)
+    if f == MP_OPCODE_QSTR:
+        ip += 3
+    else:
         ip += 1
         if f == MP_OPCODE_VAR_UINT:
             while bytecode[ip] & 0x80 != 0:
@@ -150,7 +160,7 @@ def mp_opcode_format(bytecode, ip, opcode_format=make_opcode_format()):
             ip += 1
         elif f == MP_OPCODE_OFFSET:
             ip += 2
-        ip += extra_byte
+    ip += extra
     return f, ip - ip_start
 
 
