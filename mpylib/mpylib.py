@@ -2,8 +2,8 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2018 Paul Sokolovsky
-# Copyright (c) 2016-2018 Damien P. George
+# Copyright (c) 2019 Paul Sokolovsky
+# Copyright (c) 2016-2019 Damien P. George
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -78,6 +78,22 @@ class Bytecode:
         return self.buf.getvalue()
 
 
+class QStrWindow:
+    def __init__(self, size):
+        self.window = []
+        self.size = size
+
+    def push(self, val):
+        dprint("push:", val)
+        self.window = [val] + self.window[:self.size - 1]
+
+    def access(self, idx):
+        dprint("access:", idx)
+        val = self.window[idx]
+        self.window = [val] + self.window[:idx] + self.window[idx + 1:]
+        return val
+
+
 class MPYInput:
 
     def __init__(self, f):
@@ -93,6 +109,8 @@ class MPYInput:
 
         self.feature_flags = header[2]
         self.small_int_bits = header[3]
+        self.qstr_winsz = self.read_uint()
+        self.qstr_win = QStrWindow(self.qstr_winsz)
 
     def has_flag(self, flag):
         return self.feature_flags & flag
@@ -108,7 +126,13 @@ class MPYInput:
 
     def read_qstr(self):
         ln = self.read_uint()
-        return self.f.read(ln).decode()
+        if ln & 1:
+            # qstr in table
+            return self.qstr_win.access(ln >> 1)
+        ln >>= 1
+        qs = self.f.read(ln).decode()
+        self.qstr_win.push(qs)
+        return qs
 
     def read_obj(self):
         obj_type = self.f.read(1)
