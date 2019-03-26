@@ -126,6 +126,11 @@ class MPYInput:
 
     def read_qstr(self):
         ln = self.read_uint()
+        if ln == 0:
+            # static qstr
+            static_qstr = self.read_byte()
+            dprint("static qstr:", static_qstr)
+            return "<static>"
         if ln & 1:
             # qstr in table
             return self.qstr_win.access(ln >> 1)
