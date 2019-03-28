@@ -36,6 +36,14 @@ MPY_VERSION = 3
 MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE = 1
 MICROPY_PY_BUILTINS_STR_UNICODE = 2
 
+# Values correspond to mp_raw_code_kind_t enum
+# (they don't have to, but follow mpy-tool.py for now).
+MP_CODE_UNUSED = 0
+MP_CODE_RESERVED = 1
+MP_CODE_BYTECODE = 2
+MP_CODE_NATIVE_PY = 3
+MP_CODE_NATIVE_VIPER = 4
+MP_CODE_NATIVE_ASM = 5
 
 _DEBUG = 0
 
