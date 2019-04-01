@@ -106,6 +106,9 @@ class MPYInput:
 
     def __init__(self, f):
         self.f = f
+        # Count of bytes read so far (can be reset freely). Mostly used to
+        # track the size of variable-length components, while reading them.
+        self.cnt = 0
 
     def read_header(self):
         header = self.f.read(4)
@@ -123,10 +126,17 @@ class MPYInput:
     def has_flag(self, flag):
         return self.feature_flags & flag
 
-    def read_uint(self):
+    def read_byte(self, buf=None):
+        self.cnt += 1
+        b = self.f.read(1)[0]
+        if buf is not None:
+            buf.append(b)
+        return b
+
+    def read_uint(self, buf=None):
         i = 0
         while True:
-            b = self.f.read(1)[0]
+            b = self.read_byte(buf)
             i = (i << 7) | (b & 0x7f)
             if b & 0x80 == 0:
                 break
@@ -144,6 +154,7 @@ class MPYInput:
             return self.qstr_win.access(ln >> 1)
         ln >>= 1
         qs = self.f.read(ln).decode()
+        self.cnt += ln
         self.qstr_win.push(qs)
         return qs
 
