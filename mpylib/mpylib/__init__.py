@@ -27,7 +27,7 @@ import uio
 
 from opcode import upyopcodes
 from opcode import opmap
-
+from .qstrs import static_qstr_list
 
 # Current supported .mpy version
 MPY_VERSION = 4
@@ -148,7 +148,7 @@ class MPYInput:
             # static qstr
             static_qstr = self.read_byte()
             dprint("static qstr:", static_qstr)
-            return "<static>"
+            return static_qstr_list[static_qstr - 1]
         if ln & 1:
             # qstr in table
             return self.qstr_win.access(ln >> 1)
