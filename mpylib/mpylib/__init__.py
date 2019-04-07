@@ -116,7 +116,7 @@ class MPYInput:
         if header[0] != ord('M'):
             raise Exception('not a valid .mpy file')
         if header[1] != MPY_VERSION:
-            raise Exception('incompatible .mpy version')
+            raise Exception('incompatible .mpy version (expected: %d, found: %d)' % (MPY_VERSION, header[1]))
 
         self.feature_flags = header[2]
         self.small_int_bits = header[3]
