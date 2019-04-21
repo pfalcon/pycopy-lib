@@ -59,6 +59,18 @@ class PollEventLoop(EventLoop):
         # ignore such error.
         self.poller.unregister(sock, False)
 
+    def cancel_io(self, sock):
+        if DEBUG and __debug__:
+            log.debug("cancel_io(%s)", sock)
+        # Cancel both reader and writer
+        # Don't remove, in the hope that it will be used again, though
+        # this call is usually used for timeouts, and timeouts are
+        # usually handled as fatal errors (but then underlying stream
+        # should be closed by user).
+        # Use modify() deliberately, to catch a case when we cancel
+        # a socket which was never pended, what shouldn't happen.
+        self.poller.modify(sock, 0)
+
     def wait(self, delay):
         if DEBUG and __debug__:
             log.debug("poll.wait(%d)", delay)
