@@ -123,11 +123,13 @@ class EventLoop:
                         if isinstance(ret, SleepMs):
                             delay = arg
                         elif isinstance(ret, IORead):
-                            cb.pend_throw(False)
+                            # Store stream object so we can call cancel_io()
+                            # for it in case of cancellation.
+                            cb.pend_throw(arg)
                             self.add_reader(arg, cb)
                             continue
                         elif isinstance(ret, IOWrite):
-                            cb.pend_throw(False)
+                            cb.pend_throw(arg)
                             self.add_writer(arg, cb)
                             continue
                         elif isinstance(ret, IOReadDone):
@@ -266,14 +268,16 @@ sleep_ms = SleepMs()
 
 def cancel(coro):
     prev = coro.pend_throw(CancelledError())
-    if prev is False:
-        _event_loop.call_soon(coro)
+    if prev is None:
+        pass
     elif isinstance(prev, int):
         # utimeq id
         _event_loop.waitq.remove(prev)
         _event_loop.call_soon(coro)
     else:
-        assert prev is None
+        # stream obj
+        _event_loop.cancel_io(prev)
+        _event_loop.call_soon(coro)
 
 
 class TimeoutObj:
@@ -296,13 +300,14 @@ def wait_for_ms(coro, timeout):
                 log.debug("timeout_func: cancelling %s", timeout_obj.coro)
             prev = timeout_obj.coro.pend_throw(TimeoutError())
             #print("prev pend", prev)
-            if prev is False:
-                _event_loop.call_soon(timeout_obj.coro)
+            if prev is None:
+                pass
             elif isinstance(prev, int):
                 _event_loop.waitq.remove(prev)
                 _event_loop.call_soon(timeout_obj.coro)
             else:
-                assert prev is None
+                _event_loop.cancel_io(prev)
+                _event_loop.call_soon(timeout_obj.coro)
 
     timeout_obj = TimeoutObj(_event_loop.cur_task)
     _event_loop.call_later_ms(timeout, timeout_func, timeout_obj)
