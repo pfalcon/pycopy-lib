@@ -1,11 +1,10 @@
 uasyncio
 ========
 
-uasyncio is MicroPython's asynchronous scheduling library, roughly
-modeled after CPython's asyncio. At the time of writing, MicroPython
-mainline fell behind in its development and maintenance, and uasyncio
-requires `Pycopy <https://github.com/pfalcon/micropython>`_ project
-to run instead.
+uasyncio is a minimalist asynchronous scheduling library, roughly
+modeled after CPython's asyncio. uasyncio is intended to be used with
+`Pycopy <https://github.com/pfalcon/micropython>`_, an advanced fork
+of MicroPython.
 
 uasyncio doesn't use naive always-iterating scheduling algorithm,
 but performs a real time-based scheduling, which allows it (and
