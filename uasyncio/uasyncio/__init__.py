@@ -1,4 +1,4 @@
-# (c) 2014-2018 Paul Sokolovsky. MIT license.
+# (c) 2014-2019 Paul Sokolovsky. MIT license.
 import uerrno
 import uselect as select
 import usocket as _socket
@@ -21,38 +21,31 @@ class PollEventLoop(EventLoop):
     def __init__(self, runq_len=16, waitq_len=16):
         EventLoop.__init__(self, runq_len, waitq_len)
         self.poller = select.poll()
-        self.objmap = {}
 
     def add_reader(self, sock, cb, *args):
         if DEBUG and __debug__:
             log.debug("add_reader%s", (sock, cb, args))
         if args:
-            self.poller.register(sock, select.POLLIN)
-            self.objmap[id(sock)] = (cb, args)
+            self.poller.register(sock, select.POLLIN, (cb, args))
         else:
-            self.poller.register(sock, select.POLLIN)
-            self.objmap[id(sock)] = cb
+            self.poller.register(sock, select.POLLIN, cb)
 
     def remove_reader(self, sock):
         if DEBUG and __debug__:
             log.debug("remove_reader(%s)", sock)
-        self.objmap.pop(id(sock), None)
         self.poller.unregister(sock)
 
     def add_writer(self, sock, cb, *args):
         if DEBUG and __debug__:
             log.debug("add_writer%s", (sock, cb, args))
         if args:
-            self.poller.register(sock, select.POLLOUT)
-            self.objmap[id(sock)] = (cb, args)
+            self.poller.register(sock, select.POLLOUT, (cb, args))
         else:
-            self.poller.register(sock, select.POLLOUT)
-            self.objmap[id(sock)] = cb
+            self.poller.register(sock, select.POLLOUT, cb)
 
     def remove_writer(self, sock):
         if DEBUG and __debug__:
             log.debug("remove_writer(%s)", sock)
-        self.objmap.pop(id(sock), None)
         # StreamWriter.awrite() first tries to write to a socket,
         # and if that succeeds, yield IOWrite may never be called
         # for that socket, and it will never be added to poller. So,
@@ -80,8 +73,7 @@ class PollEventLoop(EventLoop):
         # Remove "if res" workaround after
         # https://github.com/micropython/micropython/issues/2716 fixed.
         if res:
-            for sock, ev in res:
-                cb = self.objmap[id(sock)]
+            for sock, ev, cb in res:
                 if ev & (select.POLLHUP | select.POLLERR):
                     # These events are returned even if not requested, and
                     # are sticky, i.e. will be returned again and again.
