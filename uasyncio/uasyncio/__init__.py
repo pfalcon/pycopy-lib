@@ -70,24 +70,21 @@ class PollEventLoop(EventLoop):
         # We need one-shot behavior (second arg of 1 to .poll())
         res = self.poller.ipoll(delay, 1)
         #log.debug("poll result: %s", res)
-        # Remove "if res" workaround after
-        # https://github.com/micropython/micropython/issues/2716 fixed.
-        if res:
-            for sock, ev, cb in res:
-                if ev & (select.POLLHUP | select.POLLERR):
-                    # These events are returned even if not requested, and
-                    # are sticky, i.e. will be returned again and again.
-                    # If the caller doesn't do proper error handling and
-                    # unregistering this sock, we'll busy-loop on it, so we
-                    # as well can unregister it now "just in case".
-                    self.remove_reader(sock)
-                if DEBUG and __debug__:
-                    log.debug("Calling IO callback: %r", cb)
-                if isinstance(cb, tuple):
-                    cb[0](*cb[1])
-                else:
-                    cb.pend_throw(None)
-                    self.call_soon(cb)
+        for sock, ev, cb in res:
+            if ev & (select.POLLHUP | select.POLLERR):
+                # These events are returned even if not requested, and
+                # are sticky, i.e. will be returned again and again.
+                # If the caller doesn't do proper error handling and
+                # unregistering this sock, we'll busy-loop on it, so we
+                # as well can unregister it now "just in case".
+                self.remove_reader(sock)
+            if DEBUG and __debug__:
+                log.debug("Calling IO callback: %r", cb)
+            if isinstance(cb, tuple):
+                cb[0](*cb[1])
+            else:
+                cb.pend_throw(None)
+                self.call_soon(cb)
 
 
 class StreamReader:
