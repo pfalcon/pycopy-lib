@@ -113,7 +113,9 @@ class StreamReader:
         while n:
             yield IORead(self.polls)
             res = self.ios.read(n)
-            assert res is not None
+            if res is None:
+                # See comment in read()
+                continue
             if not res:
                 yield IOReadDone(self.polls)
                 break
@@ -128,7 +130,9 @@ class StreamReader:
         while True:
             yield IORead(self.polls)
             res = self.ios.readline()
-            assert res is not None
+            if res is None:
+                # See comment in read()
+                continue
             if not res:
                 yield IOReadDone(self.polls)
                 break
