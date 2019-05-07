@@ -34,6 +34,11 @@ class Response:
 
 def request(method, url, data=None, json=None, headers={}, stream=None, parse_headers=True):
     redir_cnt = 1
+    if json is not None:
+        assert data is None
+        import ujson
+        data = ujson.dumps(json)
+
     while True:
         try:
             proto, dummy, host, path = url.split("/", 3)
@@ -74,9 +79,6 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
                 s.write(headers[k])
                 s.write(b"\r\n")
             if json is not None:
-                assert data is None
-                import ujson
-                data = ujson.dumps(json)
                 s.write(b"Content-Type: application/json\r\n")
             if data:
                 s.write(b"Content-Length: %d\r\n" % len(data))
