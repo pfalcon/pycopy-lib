@@ -76,13 +76,15 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
             if json is not None:
                 assert data is None
                 import ujson
-                data = ujson.dumps(json)
+                _data = ujson.dumps(json)
                 s.write(b"Content-Type: application/json\r\n")
-            if data:
-                s.write(b"Content-Length: %d\r\n" % len(data))
+            else:
+                _data = data
+            if _data:
+                s.write(b"Content-Length: %d\r\n" % len(_data))
             s.write(b"Connection: close\r\n\r\n")
-            if data:
-                s.write(data)
+            if _data:
+                s.write(_data)
 
             l = s.readline()
             #print(l)
