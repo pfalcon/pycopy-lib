@@ -9,7 +9,7 @@ class CalledProcessError(SubprocessError):
 
 
 def check_call(cmd, shell=False):
-    assert shell
+    assert shell, "only shell=True is supported so far"
     res = os.system(cmd)
     if res:
         raise CalledProcessError(res >> 8)
