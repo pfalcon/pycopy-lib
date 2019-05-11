@@ -17,4 +17,5 @@ setup(name='micropython-venv',
       maintainer_email='micropython-lib@googlegroups.com',
       license='MIT',
       cmdclass={'sdist': sdist_upip.sdist},
-      py_modules=['venv'])
+      py_modules=['venv'],
+      install_requires=['micropython-os'])
