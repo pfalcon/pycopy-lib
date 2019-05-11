@@ -22,6 +22,9 @@ O_TRUNC    = 0o0001000
 O_APPEND   = 0o0002000
 O_NONBLOCK = 0o0004000
 
+P_WAIT = 0
+P_NOWAIT = 1
+
 error = OSError
 name = "posix"
 sep = "/"
@@ -297,3 +300,15 @@ def popen(cmd, mode="r"):
     else:
         close(o)
         return builtins.open(i, mode)
+
+def spawnvp(mode, file, args):
+    pid = fork()
+    if pid:
+        if mode == P_NOWAIT:
+            return pid
+        pid, rc = waitpid(pid, 0)
+        sig = rc & 0xff
+        if not sig:
+            return rc >> 8
+        return -sig
+    execvp(file, args)
