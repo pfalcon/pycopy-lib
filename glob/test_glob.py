@@ -50,9 +50,9 @@ class GlobTests(unittest.TestCase):
         p = os.path.join(self.tempdir, pattern)
         res = glob.glob(p, **kwargs)
         self.assertEqual(list(glob.iglob(p, **kwargs)), res)
-        bres = [os.fsencode(x) for x in res]
-        self.assertEqual(glob.glob(os.fsencode(p), **kwargs), bres)
-        self.assertEqual(list(glob.iglob(os.fsencode(p), **kwargs)), bres)
+#        bres = [os.fsencode(x) for x in res]
+#        self.assertEqual(glob.glob(os.fsencode(p), **kwargs), bres)
+#        self.assertEqual(list(glob.iglob(os.fsencode(p), **kwargs)), bres)
         return res
 
     def assertSequencesEqual_noorder(self, l1, l2):
@@ -73,10 +73,10 @@ class GlobTests(unittest.TestCase):
         res = glob.glob(os.path.join(os.curdir, '*'))
         self.assertEqual({type(r) for r in res}, {str})
 
-        res = glob.glob(b'*')
-        self.assertEqual({type(r) for r in res}, {bytes})
-        res = glob.glob(os.path.join(os.fsencode(os.curdir), b'*'))
-        self.assertEqual({type(r) for r in res}, {bytes})
+#        res = glob.glob(b'*')
+#        self.assertEqual({type(r) for r in res}, {bytes})
+#        res = glob.glob(os.path.join(os.fsencode(os.curdir), b'*'))
+#        self.assertEqual({type(r) for r in res}, {bytes})
 
     def test_glob_one_directory(self):
         eq = self.assertSequencesEqual_noorder
@@ -124,6 +124,7 @@ class GlobTests(unittest.TestCase):
                       {self.norm('aaa') + os.sep, self.norm('aab') + os.sep},
                       ])
 
+    @unittest.skip("unsupported on MicroPython")
     def test_glob_bytes_directory_with_trailing_slash(self):
         # Same as test_glob_directory_with_trailing_slash, but with a
         # bytes argument.
@@ -177,6 +178,7 @@ class GlobTests(unittest.TestCase):
         self.assertEqual(glob.escape(arg), expected)
         self.assertEqual(glob.escape(os.fsencode(arg)), os.fsencode(expected))
 
+    @unittest.skip("unsupported on MicroPython")
     def test_escape(self):
         check = self.check_escape
         check('abc', 'abc')
