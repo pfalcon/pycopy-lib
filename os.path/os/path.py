@@ -32,6 +32,9 @@ def split(path):
         head = "/"
     return (head, r[1])
 
+def splitdrive(path):
+    return "", path
+
 def dirname(path):
     return split(path)[0]
 
