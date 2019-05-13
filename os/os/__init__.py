@@ -145,7 +145,7 @@ else:
             import uctypes
             dirent = uctypes.bytes_at(dirent, struct.calcsize(dirent_fmt))
             dirent = struct.unpack(dirent_fmt, dirent)
-            dirent = (dirent[-1].split(b'\0', 1)[0], dirent[-2], dirent[0])
+            dirent = (dirent[-1].split(b'\0', 1)[0], dirent[-2] << 12, dirent[0])
             yield dirent
 
 def listdir(path="."):
@@ -167,7 +167,7 @@ def walk(top, topdown=True):
     files = []
     dirs = []
     for dirent in ilistdir(top):
-        mode = dirent[1] << 12
+        mode = dirent[1]
         fname = fsdecode(dirent[0])
         if stat_.S_ISDIR(mode):
             if fname != "." and fname != "..":
