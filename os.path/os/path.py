@@ -15,11 +15,19 @@ def abspath(s):
     return s
 
 def join(*args):
-    # TODO: this is non-compliant
-    if type(args[0]) is bytes:
-        return b"/".join(args)
-    else:
-        return "/".join(args)
+    is_bytes = isinstance(args[0], bytes)
+    res = ""
+    for a in args:
+        if is_bytes:
+            a = a.decode()
+        if not res or a.startswith("/"):
+            res = a
+        else:
+            res += "/" + a
+    res = res.replace("//", "/")
+    if is_bytes:
+        return res.encode()
+    return res
 
 def split(path):
     if path == "":
