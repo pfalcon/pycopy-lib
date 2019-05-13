@@ -14,6 +14,12 @@ assert split("/foo") == ("/", "foo")
 assert split("/foo/") == ("/foo", "")
 assert split("/foo/bar") == ("/foo", "bar")
 
+assert splitdrive("/foo/bar") == ("", "/foo/bar")
+
+assert join("a", "b") == "a/b"
+assert join("a/", "b") == "a/b"
+assert join("a", "/b") == "/b"
+
 assert exists(dir + "/test_path.py")
 assert not exists(dir + "/test_path.py--")
 
