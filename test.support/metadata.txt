@@ -1,4 +1,4 @@
 srctype=micropython-lib
 type=package
-version = 0.1.4
-depends = unittest, io, contextlib
+version = 0.1.5
+depends = unittest, io, os, contextlib
