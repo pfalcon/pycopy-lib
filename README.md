@@ -131,11 +131,25 @@ discovery:
 * uargparse - small subset of argparse module
 * uasyncio - asynchronous scheduling and I/O, roughly based on CPython's
   asyncio
-* uasycio.core - just a scheduler part of uasyncio
+* uasyncio.core - just a scheduler part of uasyncio
+* uasyncio.queues - subset of CPython's asyncio.Queue
+* uasyncio.synchro - synchronization primitives for uasyncio (subset
+  of asyncio's)
+* uasyncio.udp - UDP support for uasyncio
+* ucontextlib - subset of contextlib functionality
+* uctypelib - higher-level helpers to define structure for the builtin
+  uctype module
+* uctypeslib2 - pretty printing support for uctypes structure definitions
 * ucurses - small subset of curses module
 * udnspkt - DNS packet handling (Sans I/O approach)
 * ulogging - small subset of logging module
+* umqtt.robust
+* umqtt.simple
 * upip - MicroPython package manager, modelled after "pip" tool
 * upysh - minimalistic filesystem shell using Python syntax
+* urequests - subset of "requests" module
+* urlib.urequest - small subset of urlib.request module
 * utarfile - small subset of tarfile module
+* uurequests - very small subset of "requests" module
+* uwwwauth - HTTP Basic/Digest authentication algorithms
 * xmltok2 - small/simple XML tokenizer
