@@ -249,7 +249,12 @@ def start_server(client_coro, host, port, backlog=10):
         yield IORead(s)
         if DEBUG and __debug__:
             log.debug("start_server: After iowait")
-        s2, client_addr = s.accept()
+        try:
+            s2, client_addr = s.accept()
+        except OSError as e:
+            if e.args[0] == uerrno.EAGAIN:
+                continue
+            raise
         s2.setblocking(False)
         if DEBUG and __debug__:
             log.debug("start_server: After accept: %s", s2)
