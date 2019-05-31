@@ -181,6 +181,9 @@ class SortedDict:
         """
         return reversed(self._list)
 
+    def __getitem__(self, key):
+        return self._dict[key]
+
     def __setitem__(self, key, value):
         """Set `d[key]` to *value*."""
         if key not in self:

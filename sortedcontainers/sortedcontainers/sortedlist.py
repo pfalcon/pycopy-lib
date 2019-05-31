@@ -790,7 +790,7 @@ class SortedList(MutableSequence):
         Iterating the Sequence while adding or deleting values may raise a
         `RuntimeError` or fail to iterate over all entries.
         """
-        return chain(self._lists)
+        return chain(*self._lists)
 
     def __reversed__(self):
         """
