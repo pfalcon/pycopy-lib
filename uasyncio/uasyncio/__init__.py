@@ -187,6 +187,10 @@ class StreamWriter:
             if DEBUG and __debug__:
                 log.debug("StreamWriter.awrite(): can write more")
 
+    # This function is tenative, subject to change
+    def awritestr(self, s):
+        yield from self.awrite(s.encode())
+
     # Write piecewise content from iterable (usually, a generator)
     def awriteiter(self, iterable):
         for buf in iterable:
