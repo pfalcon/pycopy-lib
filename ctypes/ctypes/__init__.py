@@ -145,7 +145,7 @@ def _check_size(typ, typecode=None):
         typecode = typ._type_
     actual, required = sizeof(typ), calcsize(typecode)
     if actual != required:
-        raise SystemError("sizeof(%s) wrong: %d instead of %d" % \
+        raise OSError("sizeof(%s) wrong: %d instead of %d" % \
                           (typ, actual, required))
 
 class py_object(_SimpleCData):
@@ -230,7 +230,7 @@ _check_size(c_byte)
 class c_char(_SimpleCData):
     _type_ = "c"
 c_char.__ctype_le__ = c_char.__ctype_be__ = c_char
-_check_size(c_char)
+_check_size(c_char, "b")
 
 class c_char_p(_SimpleCData):
     _type_ = "z"
@@ -262,9 +262,9 @@ def _reset_cache():
     if _os.name == "nt":
         _win_functype_cache.clear()
     # _SimpleCData.c_wchar_p_from_param
-    POINTER(c_wchar).from_param = c_wchar_p.from_param
+#    POINTER(c_wchar).from_param = c_wchar_p.from_param
     # _SimpleCData.c_char_p_from_param
-    POINTER(c_char).from_param = c_char_p.from_param
+#    POINTER(c_char).from_param = c_char_p.from_param
     _pointer_type_cache[None] = c_void_p
 
 def create_unicode_buffer(init, size=None):
@@ -363,9 +363,9 @@ class CDLL(object):
             self._handle = handle
 
     def __repr__(self):
-        return "<%s '%s', handle %x at %#x>" % \
+        return "<%s '%s', handle %s at %#x>" % \
                (self.__class__.__name__, self._name,
-                (self._handle & (_sys.maxsize*2 + 1)),
+                (self._handle),
                 id(self) & (_sys.maxsize*2 + 1))
 
     def __getattr__(self, name):
@@ -475,7 +475,8 @@ elif sizeof(c_ulonglong) == sizeof(c_void_p):
 
 # functions
 
-from _ctypes import _memmove_addr, _memset_addr, _string_at_addr, _cast_addr
+#from _ctypes import _memmove_addr, _memset_addr, _string_at_addr, _cast_addr
+from _ctypes import _memmove_addr, _memset_addr
 
 ## void *memmove(void *, const void *, size_t);
 memmove = CFUNCTYPE(c_void_p, c_void_p, c_void_p, c_size_t)(_memmove_addr)
@@ -490,11 +491,11 @@ def PYFUNCTYPE(restype, *argtypes):
         _flags_ = _FUNCFLAG_CDECL | _FUNCFLAG_PYTHONAPI
     return CFunctionType
 
-_cast = PYFUNCTYPE(py_object, c_void_p, py_object, py_object)(_cast_addr)
+#_cast = PYFUNCTYPE(py_object, c_void_p, py_object, py_object)(_cast_addr)
 def cast(obj, typ):
     return _cast(obj, obj, typ)
 
-_string_at = PYFUNCTYPE(py_object, c_void_p, c_int)(_string_at_addr)
+#_string_at = PYFUNCTYPE(py_object, c_void_p, c_int)(_string_at_addr)
 def string_at(ptr, size=-1):
     """string_at(addr[, size]) -> string
 
@@ -530,7 +531,7 @@ if _os.name == "nt": # COM stuff
             return 0 # S_OK
         return ccom.DllCanUnloadNow()
 
-from ctypes._endian import BigEndianStructure, LittleEndianStructure
+#from ctypes._endian import BigEndianStructure, LittleEndianStructure
 
 # Fill in specifically-sized types
 c_int8 = c_byte
