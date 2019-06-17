@@ -66,6 +66,38 @@ def sizeof(typ):
     return struct.calcsize(tmap.get(code, code))
 
 
+def byref():
+    raise NotImplementedError
+
+
+def addressof():
+    raise NotImplementedError
+
+
+def alignment():
+    raise NotImplementedError
+
+
+def resize():
+    raise NotImplementedError
+
+
+def get_errno():
+    raise NotImplementedError
+
+
+def set_errno():
+    raise NotImplementedError
+
+
+def POINTER(type):
+    raise NotImplementedError
+
+
+def pointer(obj):
+    raise NotImplementedError
+
+
 _libc = ffi.open("libc.so.6")
 _memmove_addr = _libc.addr("memmove")
 _memset_addr = _libc.addr("memset")
