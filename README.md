@@ -1,10 +1,22 @@
 micropython-lib
 ===============
 micropython-lib is a project to develop a non-monolothic standard library
-for "advanced" MicroPython fork (https://github.com/pfalcon/micropython).
-Each module or package is available as a separate distribution package from
-PyPI. Each module comes from one of the following sources (and thus each
-module has its own licensing terms):
+for the Pycopy project (https://github.com/pfalcon/micropython), while
+where possible, staying compatible with other variants of MicroPython, and
+Python in general. The goals of the project are:
+
+* As the main goal, develop Pycopy/MicroPython standard library as close
+  as possible matching that of CPython. It thus necessarily targets "Unix"
+  port of Pycopy.
+* As a side goal, develop individual modules usable/useful on baremetal
+  ports of Pycopy/MicroPython. This is oftentimes conflicts with the
+  first goal (something as close as possible matching CPython functionality
+  is just too big to run on low-memory systems), and necessitates creation
+  of additional modules, or special "micro" (aka "u") versions of them.
+
+Each module or package of micropython-lib is available as a separate
+distribution package from PyPI. Each module comes from one of the following
+sources (and thus each module has its own licensing terms):
 
 * written from scratch specifically for MicroPython
 * ported from CPython
@@ -13,12 +25,12 @@ module has its own licensing terms):
 * some modules are extensions and are not part of CPython's
   standard library
 
-Note that the main target of micropython-lib is a "Unix" port of the
-aforementioned fork of MicroPython. Actual system requirements vary per
+As mentioned above, the main target of micropython-lib is the "Unix" port
+of Pycopy (advanced fork of MicroPython). Actual system requirements vary per
 module. Majority of modules are compatible with the upstream MicroPython,
 though some may require additional functionality/optimizations present in
-the "advanced" fork. Modules not related to I/O may also work without
-problems on bare-metal ports, not just on "Unix" port (e.g. pyboard).
+Pycopy. Modules not related to I/O may also work without problems on
+bare-metal ports, not just on "Unix" port (e.g. pyboard).
 
 
 Usage
