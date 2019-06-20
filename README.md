@@ -162,7 +162,7 @@ discovery:
 * urequests - subset of "requests" module
 * urlib.urequest - small subset of urlib.request module
 * utarfile - small subset of tarfile module
-* utokenize - simple tokenezer for Python source
+* utokenize - simple tokenizer for Python source
 * uurequests - very small subset of "requests" module
 * uwwwauth - HTTP Basic/Digest authentication algorithms
 * xmltok2 - small/simple XML tokenizer
