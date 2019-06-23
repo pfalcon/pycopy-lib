@@ -26,3 +26,9 @@ def copyfileobj(src, dest, length=512):
             if not buf:
                 break
             dest.write(buf)
+
+
+def copyfile(src, dst, follow_symlinks=True):
+    assert follow_symlinks
+    with open(src, "rb") as srcf, open(dst, "wb") as dstf:
+        copyfileobj(srcf, dstf)
