@@ -1,3 +1,4 @@
-srctype=dummy
-type=module
-version = 0.0.1
+srctype = dummy
+type = module
+extra_modules = _imp_empty_mod
+version = 0.1
