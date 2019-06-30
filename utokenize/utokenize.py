@@ -43,7 +43,7 @@ def generate_tokens(readline):
             continue
 
         if i > indent:
-            yield TokenInfo(INDENT, " " * (i - indent), 0, 0, org_l)
+            yield TokenInfo(INDENT, " " * i, 0, 0, org_l)
             indent_lvl += 1
         elif i < indent:
             yield TokenInfo(DEDENT, "", 0, 0, org_l)
