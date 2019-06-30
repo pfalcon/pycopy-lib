@@ -26,6 +26,7 @@ def get_indent(l):
 def generate_tokens(readline):
 
     indent = 0
+    indent_lvl = 0
 
     # generate_tokens() doesn't yield this, only tokenine() does.
     #yield TokenInfo(ENCODING, "utf-8", 0, 0, "")
@@ -43,8 +44,10 @@ def generate_tokens(readline):
 
         if i > indent:
             yield TokenInfo(INDENT, " " * (i - indent), 0, 0, org_l)
+            indent_lvl += 1
         elif i < indent:
             yield TokenInfo(DEDENT, "", 0, 0, org_l)
+            indent_lvl -= 1
         indent = i
 
         while l:
@@ -68,5 +71,9 @@ def generate_tokens(readline):
             else:
                 yield TokenInfo(OP, l[0], 0, 0, org_l)
                 l = l[1:]
+
+    while indent_lvl:
+        yield TokenInfo(DEDENT, "", 0, 0, "")
+        indent_lvl -= 1
 
     yield TokenInfo(ENDMARKER, "", 0, 0, "")
