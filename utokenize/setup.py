@@ -7,7 +7,7 @@ sys.path.append("..")
 import sdist_upip
 
 setup(name='micropython-utokenize',
-      version='0.1',
+      version='0.2',
       description='utokenize module for MicroPython',
       long_description='Simple tokenizer for Python source',
       url='https://github.com/pfalcon/micropython-lib',
