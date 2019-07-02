@@ -3,8 +3,8 @@ from token import *
 from ucollections import namedtuple
 
 
-NL = 55
-ENCODING = 56
+NL = N_TOKENS + 1
+ENCODING = N_TOKENS + 2
 tok_name[NL] = "NL"
 tok_name[ENCODING] = "ENCODING"
 
