@@ -1,0 +1,6 @@
+class AST:
+
+    def __init__(self, **fields):
+        for k, v in fields.items():
+            setattr(self, k, v)
+
