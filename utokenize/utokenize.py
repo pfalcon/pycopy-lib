@@ -3,8 +3,10 @@ from token import *
 from ucollections import namedtuple
 
 
+COMMENT = N_TOKENS + 0
 NL = N_TOKENS + 1
 ENCODING = N_TOKENS + 2
+tok_name[COMMENT] = "COMMENT"
 tok_name[NL] = "NL"
 tok_name[ENCODING] = "ENCODING"
 
@@ -39,6 +41,11 @@ def tokenize(readline):
 
         if l == "\n":
             yield TokenInfo(NL, l, 0, 0, org_l)
+            continue
+
+        if l.startswith("#"):
+            yield TokenInfo(COMMENT, l.rstrip("\n"), 0, 0, org_l)
+            yield TokenInfo(NL, "\n", 0, 0, org_l)
             continue
 
         if i > indent:
