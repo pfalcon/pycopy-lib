@@ -1,5 +1,5 @@
 srctype = micropython-lib
 type = module
-version = 0.2.1
+version = 0.3
 author = Paul Sokolovsky
 long_desc = Simple tokenizer for Python source
