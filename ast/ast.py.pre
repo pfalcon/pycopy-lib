@@ -33,3 +33,10 @@ def dump(t):
         return repr(t)
 
 
+def iter_fields(t):
+    for k in dir(t):
+        if k.startswith("__"):
+            continue
+        yield (k, getattr(t, k))
+
+
