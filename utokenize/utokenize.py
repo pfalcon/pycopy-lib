@@ -66,9 +66,9 @@ def generate_tokens(readline):
                     t += l[0]
                     l = l[1:]
                 yield TokenInfo(NUMBER, t, lineno, 0, org_l)
-            elif l[0].isalpha():
+            elif l[0].isalpha() or l.startswith("_"):
                 name = ""
-                while l and (l[0].isalpha() or l[0].isdigit()):
+                while l and (l[0].isalpha() or l[0].isdigit() or l.startswith("_")):
                     name += l[0]
                     l = l[1:]
                 yield TokenInfo(NAME, name, lineno, 0, org_l)
