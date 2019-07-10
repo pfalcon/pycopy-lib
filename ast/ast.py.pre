@@ -34,9 +34,9 @@ def dump(t):
 
 
 def iter_fields(t):
-    for k in dir(t):
+    for k in t._fields:
         if k.startswith("__"):
             continue
-        yield (k, getattr(t, k))
+        yield (k, getattr(t, k, None))
 
 
