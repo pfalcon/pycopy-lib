@@ -77,7 +77,11 @@ def tokenize(readline):
             elif l[0].isspace():
                 l = l[1:]
             else:
-                for op in ("**",):
+                for op in (
+                    "**=", "//=", ">>=", "<<=", "+=", "-=", "*=", "/=",
+                    "%=", "@=", "&=", "|=", "^=", "**", "//", "<<", ">>",
+                    "==", "!=", ">=", "<="
+                ):
                     if l.startswith(op):
                         yield TokenInfo(OP, op, lineno, 0, org_l)
                         l = l[len(op):]
