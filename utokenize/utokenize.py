@@ -77,8 +77,14 @@ def tokenize(readline):
             elif l[0].isspace():
                 l = l[1:]
             else:
-                yield TokenInfo(OP, l[0], lineno, 0, org_l)
-                l = l[1:]
+                for op in ("**",):
+                    if l.startswith(op):
+                        yield TokenInfo(OP, op, lineno, 0, org_l)
+                        l = l[len(op):]
+                        break
+                else:
+                    yield TokenInfo(OP, l[0], lineno, 0, org_l)
+                    l = l[1:]
 
     while indent_lvl:
         yield TokenInfo(DEDENT, "", lineno, 0, "")
