@@ -76,6 +76,21 @@ def tokenize(readline):
                 break
             elif l[0].isspace():
                 l = l[1:]
+            elif l.startswith('"') or l.startswith("'"):
+                s = sep = l[0]
+                l = l[1:]
+                quoted = False
+                while True:
+                    c = l[0]
+                    l = l[1:]
+                    s += c
+                    if quoted:
+                        quoted = False
+                    elif c == "\\":
+                        quoted = True
+                    elif c == sep:
+                        break
+                yield TokenInfo(STRING, s, lineno, 0, org_l)
             else:
                 for op in (
                     "**=", "//=", ">>=", "<<=", "+=", "-=", "*=", "/=",
