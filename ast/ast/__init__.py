@@ -1,8 +1,4 @@
-class AST:
-
-    def __init__(self, **fields):
-        for k, v in fields.items():
-            setattr(self, k, v)
+from .types import *
 
 
 def dump(t):
@@ -38,5 +34,3 @@ def iter_fields(t):
         if k.startswith("__"):
             continue
         yield (k, getattr(t, k, None))
-
-
