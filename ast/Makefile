@@ -1,5 +1,5 @@
-ast.py: ast.py.pre Python.asdl
-	cat ast.py.pre >$@
+ast/types.py: ast/types.py.pre Python.asdl
+	cat ast/types.py.pre >$@
 	python3 asdl2py.py Python.asdl >>$@
 
 install:
