@@ -1,56 +1,56 @@
-micropython-lib
-===============
-micropython-lib is a project to develop a non-monolothic standard library
-for the Pycopy project (https://github.com/pfalcon/micropython), while
-where possible, staying compatible with other variants of MicroPython, and
-Python in general. The goals of the project are:
+pycopy-lib
+==========
+pycopy-lib is a project to develop a non-monolothic standard library
+for the Pycopy project (https://github.com/pfalcon/pycopy), while
+where possible, staying compatible with other variants and implementations
+of Python. The goals of the project are:
 
-* As the main goal, develop Pycopy/MicroPython standard library as close
-  as possible matching that of CPython. It thus necessarily targets "Unix"
-  port of Pycopy.
+* As the main goal, develop Pycopy standard library as close as possible
+  matching that of CPython. It thus necessarily targets "Unix" port of
+  Pycopy.
 * As a side goal, develop individual modules usable/useful on baremetal
-  ports of Pycopy/MicroPython. This is oftentimes conflicts with the
-  first goal (something as close as possible matching CPython functionality
-  is just too big to run on low-memory systems), and necessitates creation
+  ports of Pycopy. This is oftentimes conflicts with the first goal
+  (something as close as possible matching CPython functionality is just
+  too big to run on low-memory systems), and necessitates creation
   of additional modules, or special "micro" (aka "u") versions of them.
 
-Each module or package of micropython-lib is available as a separate
+Each module or package of `pycopy-lib` is available as a separate
 distribution package from PyPI. Each module comes from one of the following
 sources (and thus each module has its own licensing terms):
 
-* written from scratch specifically for MicroPython
+* written from scratch specifically for Pycopy
 * ported from CPython
 * ported from some other Python implementation, e.g. PyPy
 * some modules actually aren't implemented yet and are dummy
 * some modules are extensions and are not part of CPython's
   standard library
 
-As mentioned above, the main target of micropython-lib is the "Unix" port
-of Pycopy (advanced fork of MicroPython). Actual system requirements vary per
-module. Majority of modules are compatible with the upstream MicroPython,
-though some may require additional functionality/optimizations present in
-Pycopy. Modules not related to I/O may also work without problems on
-bare-metal ports, not just on "Unix" port (e.g. pyboard).
+As mentioned above, the main target of pycopy-lib is the "Unix" port
+of Pycopy. Actual system requirements vary per module. Majority of modules
+are compatible with MicroPython, though some may require additional
+functionality/optimizations present in Pycopy. Modules not
+related to I/O may also work without problems on bare-metal ports, not
+just on "Unix" port (e.g. esp8266).
 
 
 Usage
 -----
-micropython-lib packages are published on PyPI (Python Package Index),
+pycopy-lib packages are published on PyPI (Python Package Index),
 the standard Python community package repository: http://pypi.python.org/ .
-On PyPI, you can search for MicroPython related packages and read
-additional package information. By convention, all micropython-lib package
-names are prefixed with "micropython-" (the reverse is not true - some
-package starting with "micropython-" aren't part of micropython-lib and
-were released by 3rd parties).
+On PyPI, you can search for Pycopy related packages and read
+additional package information. By historical convention, all pycopy-lib
+package names are prefixed with "micropython-" (the reverse is not true -
+some package starting with "micropython-" aren't part of pycopy-lib and
+are released by 3rd parties).
 
 Browse available packages
-[via this URL](https://pypi.org/search/?q=micropython). (Note: this may
-also include 3rd-party modules which are not part of micropython-lib.)
+[via this URL](https://pypi.org/search/?q=micropython-). (Note: this may
+also include 3rd-party modules which are not part of pycopy-lib.)
 
 To install packages from PyPI for usage on your local system, use the
-`upip` tool, which is MicroPython's native package manager, similar to
+`upip` tool, which is Pycopy's native package manager, similar to
 `pip`, which is used to install packages for CPython. `upip` is bundled
-with MicroPython "Unix" port (i.e. if you build "Unix" port, you
+with Pycopy "Unix" port (i.e. if you build "Unix" port, you
 automatically have `upip` tool). Following examples assume that
 `micropython` binary is available on your `PATH`:
 
@@ -69,13 +69,13 @@ Run `micropython -m upip --help` for more information about `upip`.
 
 CPython backports
 -----------------
-While micropython-lib focuses on MicroPython, sometimes it may be beneficial
-to run MicroPython code using CPython, e.g. to use code coverage, debugging,
-etc. tools available for it. To facilitate such usage, micropython-lib also
-provides reimplementations ("backports") of MicroPython modules which run on
-CPython. This first of all applies to the builtin MicroPython "u" modules,
-but as time goes on, backports of micropython-lib's own modules can be
-provided. Backport modules are in the directories named `cpython-*` of
+While pycopy-lib focuses on Pycopy, sometimes it may be beneficial
+to run Pycopy code using CPython, e.g. to use code coverage, debugging,
+etc. tools available for it. To facilitate such usage, pycopy-lib also
+provides reimplementations ("backports") of Pycopy modules, which
+run on CPython. This first of all applies to the builtin Pycopy "u"
+modules, but as time goes on, backports of pycopy-lib's own modules can
+be provided. Backport modules are in the directories named `cpython-*` of
 this repository. On PyPI, these named
 [micropython-cpython-*](https://pypi.org/search/?q=micropython-cpython-).
 
@@ -106,16 +106,16 @@ available packages will be installed. To install a specific module, add the
 
 Contributing
 ------------
-micropython-lib is a community project and can be implemented "fully" only
+pycopy-lib is a community project and can be implemented "fully" only
 by contributions from interested parties. The contributions are expected
 to adhere to [Contribution Guidelines](CONTRIBUTING.md).
 
 
 Links
 -----
-If you would like to trace evolution of MicroPython packaging support,
-you may find following links useful (note that they may contain outdated
-information):
+If you would like to trace evolution of Pycopy packaging support
+(which initially started in MicroPython project), you may find following
+links useful (note that they may contain outdated information):
 
  * https://github.com/micropython/micropython/issues/405
  * http://forum.micropython.org/viewtopic.php?f=5&t=70
@@ -126,17 +126,17 @@ Guidelines for packaging MicroPython modules for PyPI:
 
 Credits
 -------
-micropython-lib is developed and maintained by Paul Sokolovsky
-([@pfalcon](https://github.com/pfalcon/)) with the help of MicroPython
-community.
+pycopy-lib is developed and maintained by Paul Sokolovsky
+([@pfalcon](https://github.com/pfalcon/)) with the help of
+Pycopy/MicroPython community.
 
-List of modules specific to micropython-lib
--------------------------------------------
+List of modules specific to pycopy-lib
+--------------------------------------
 
-While micropython-lib's primary way is to provide implementation
-of Python standard library, micropython-lib goes further and hosts
+While pycopy-lib's primary way is to provide implementation
+of Python standard library, pycopy-lib goes further and hosts
 some extension modules which are deemed to be worth being a part
-of "MicroPython standard library". This section lists them to easy
+of "Pycopy standard library". This section lists them to easy
 discovery:
 
 * uaiohttpclient - HTTP client for uasyncio
@@ -157,7 +157,7 @@ discovery:
 * ulogging - small subset of logging module
 * umqtt.robust
 * umqtt.simple
-* upip - MicroPython package manager, modelled after "pip" tool
+* upip - Pycopy package manager, modelled after "pip" tool
 * upysh - minimalistic filesystem shell using Python syntax
 * urequests - subset of "requests" module
 * urlib.urequest - small subset of urlib.request module
