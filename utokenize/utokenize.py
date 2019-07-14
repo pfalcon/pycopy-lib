@@ -27,8 +27,7 @@ def get_indent(l):
 
 def tokenize(readline):
 
-    indent = 0
-    indent_lvl = 0
+    indent_stack = [0]
     lineno = 0
 
     yield TokenInfo(ENCODING, "utf-8", 0, 0, "")
@@ -50,13 +49,13 @@ def tokenize(readline):
             yield TokenInfo(NL, "\n", lineno, 0, org_l)
             continue
 
-        if i > indent:
+        if i > indent_stack[-1]:
             yield TokenInfo(INDENT, " " * i, lineno, 0, org_l)
-            indent_lvl += 1
-        elif i < indent:
-            yield TokenInfo(DEDENT, "", lineno, 0, org_l)
-            indent_lvl -= 1
-        indent = i
+            indent_stack.append(i)
+        elif i < indent_stack[-1]:
+            while i != indent_stack[-1]:
+                yield TokenInfo(DEDENT, "", lineno, 0, org_l)
+                indent_stack.pop()
 
         while l:
             if l[0].isdigit():
@@ -105,8 +104,8 @@ def tokenize(readline):
                     yield TokenInfo(OP, l[0], lineno, 0, org_l)
                     l = l[1:]
 
-    while indent_lvl:
+    while indent_stack[-1] > 0:
         yield TokenInfo(DEDENT, "", lineno, 0, "")
-        indent_lvl -= 1
+        indent_stack.pop()
 
     yield TokenInfo(ENDMARKER, "", lineno, 0, "")
