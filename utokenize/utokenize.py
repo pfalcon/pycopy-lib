@@ -50,13 +50,14 @@ def tokenize(readline):
             yield TokenInfo(NL, "\n", lineno, 0, org_l)
             continue
 
-        if i > indent_stack[-1]:
-            yield TokenInfo(INDENT, " " * i, lineno, 0, org_l)
-            indent_stack.append(i)
-        elif i < indent_stack[-1]:
-            while i != indent_stack[-1]:
-                yield TokenInfo(DEDENT, "", lineno, 0, org_l)
-                indent_stack.pop()
+        if paren_level == 0:
+            if i > indent_stack[-1]:
+                yield TokenInfo(INDENT, " " * i, lineno, 0, org_l)
+                indent_stack.append(i)
+            elif i < indent_stack[-1]:
+                while i != indent_stack[-1]:
+                    yield TokenInfo(DEDENT, "", lineno, 0, org_l)
+                    indent_stack.pop()
 
         while l:
             if l[0].isdigit():
