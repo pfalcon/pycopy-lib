@@ -91,6 +91,9 @@ def generate_tokens(readline):
                     elif c == sep:
                         break
                 yield TokenInfo(STRING, s, lineno, 0, org_l)
+            elif l.startswith("#"):
+                yield TokenInfo(COMMENT, l.rstrip("\n"), lineno, 0, org_l)
+                l = "\n"
             else:
                 for op in (
                     "**=", "//=", ">>=", "<<=", "+=", "-=", "*=", "/=",
