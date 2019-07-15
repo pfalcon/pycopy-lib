@@ -29,6 +29,7 @@ def generate_tokens(readline):
 
     indent_stack = [0]
     lineno = 0
+    paren_level = 0
 
     # generate_tokens() doesn't yield this, only tokenine() does.
     #yield TokenInfo(ENCODING, "utf-8", 0, 0, "")
@@ -72,7 +73,10 @@ def generate_tokens(readline):
                     l = l[1:]
                 yield TokenInfo(NAME, name, lineno, 0, org_l)
             elif l[0] == "\n":
-                yield TokenInfo(NEWLINE, "\n", lineno, 0, org_l)
+                if paren_level > 0:
+                    yield TokenInfo(NL, "\n", lineno, 0, org_l)
+                else:
+                    yield TokenInfo(NEWLINE, "\n", lineno, 0, org_l)
                 break
             elif l[0].isspace():
                 l = l[1:]
@@ -106,6 +110,10 @@ def generate_tokens(readline):
                         break
                 else:
                     yield TokenInfo(OP, l[0], lineno, 0, org_l)
+                    if l[0] in ("(", "[", "{"):
+                        paren_level += 1
+                    elif l[0] in (")", "]", "}"):
+                        paren_level -= 1
                     l = l[1:]
 
     while indent_stack[-1] > 0:
