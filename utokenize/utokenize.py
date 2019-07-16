@@ -1,4 +1,5 @@
 # (c) 2019 Paul Sokolovsky, MIT license
+# This module is part of the Pycopy project, https://github.com/pfalcon/pycopy
 from token import *
 from ucollections import namedtuple
 
