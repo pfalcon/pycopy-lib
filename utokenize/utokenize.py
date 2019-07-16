@@ -89,6 +89,15 @@ def tokenize(readline):
                 while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
                     t += l[0]
                     l = l[1:]
+                if l[0] in ("e", "E"):
+                    t += l[0]
+                    l = l[1:]
+                    if l[0] in ("+", "-"):
+                        t += l[0]
+                        l = l[1:]
+                    while l and l[0].isdigit():
+                        t += l[0]
+                        l = l[1:]
                 yield TokenInfo(NUMBER, t, lineno, 0, org_l)
             elif l[0].isalpha() or l.startswith("_"):
                 name = ""
