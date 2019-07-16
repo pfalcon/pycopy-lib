@@ -26,6 +26,23 @@ def get_indent(l):
             return i, l[i:]
 
 
+def get_str(l):
+    s = sep = l[0]
+    l = l[1:]
+    quoted = False
+    while True:
+        c = l[0]
+        l = l[1:]
+        s += c
+        if quoted:
+            quoted = False
+        elif c == "\\":
+            quoted = True
+        elif c == sep:
+            break
+    return s, l
+
+
 def tokenize(readline):
 
     indent_stack = [0]
@@ -72,7 +89,11 @@ def tokenize(readline):
                 while l and (l[0].isalpha() or l[0].isdigit() or l.startswith("_")):
                     name += l[0]
                     l = l[1:]
-                yield TokenInfo(NAME, name, lineno, 0, org_l)
+                if l.startswith('"') or l.startswith("'"):
+                    s, l = get_str(l)
+                    yield TokenInfo(STRING, name + s, lineno, 0, org_l)
+                else:
+                    yield TokenInfo(NAME, name, lineno, 0, org_l)
             elif l[0] == "\n":
                 if paren_level > 0:
                     yield TokenInfo(NL, "\n", lineno, 0, org_l)
@@ -82,19 +103,7 @@ def tokenize(readline):
             elif l[0].isspace():
                 l = l[1:]
             elif l.startswith('"') or l.startswith("'"):
-                s = sep = l[0]
-                l = l[1:]
-                quoted = False
-                while True:
-                    c = l[0]
-                    l = l[1:]
-                    s += c
-                    if quoted:
-                        quoted = False
-                    elif c == "\\":
-                        quoted = True
-                    elif c == sep:
-                        break
+                s, l = get_str(l)
                 yield TokenInfo(STRING, s, lineno, 0, org_l)
             elif l.startswith("#"):
                 yield TokenInfo(COMMENT, l.rstrip("\n"), lineno, 0, org_l)
