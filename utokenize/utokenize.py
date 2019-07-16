@@ -80,7 +80,13 @@ def tokenize(readline):
         while l:
             if l[0].isdigit():
                 t = ""
-                while l and (l[0].isdigit() or l[0] == "."):
+                if l.startswith("0x"):
+                    t = "0x"
+                    l = l[2:]
+                elif l.startswith("0o"):
+                    t = "0o"
+                    l = l[2:]
+                while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
                     t += l[0]
                     l = l[1:]
                 yield TokenInfo(NUMBER, t, lineno, 0, org_l)
