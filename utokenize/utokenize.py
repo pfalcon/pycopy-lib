@@ -125,6 +125,9 @@ def tokenize(readline):
                     lineno += lineno_delta
                 else:
                     yield TokenInfo(NAME, name, lineno, 0, org_l)
+            elif l == "\\\n":
+                l = readline()
+                lineno += 1
             elif l[0] == "\n":
                 if paren_level > 0:
                     yield TokenInfo(NL, "\n", lineno, 0, org_l)
