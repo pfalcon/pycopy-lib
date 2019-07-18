@@ -26,7 +26,22 @@ def get_indent(l):
             return i, l[i:]
 
 
-def get_str(l):
+def get_str(l, readline):
+    if l.startswith('"""') or l.startswith("'''"):
+        lineno = 0
+        s = sep = l[0:3]
+        l = l[3:]
+        while True:
+            i = l.find(sep)
+            if i >= 0:
+                break
+            s += l
+            l = readline()
+            assert l
+            lineno += 1
+        s += l[:i + 3]
+        return s, l[i + 3:], lineno
+
     s = sep = l[0]
     l = l[1:]
     quoted = False
@@ -40,7 +55,7 @@ def get_str(l):
             quoted = True
         elif c == sep:
             break
-    return s, l
+    return s, l, 0
 
 
 def tokenize(readline):
@@ -105,8 +120,9 @@ def tokenize(readline):
                     name += l[0]
                     l = l[1:]
                 if l.startswith('"') or l.startswith("'"):
-                    s, l = get_str(l)
+                    s, l, lineno_delta = get_str(l, readline)
                     yield TokenInfo(STRING, name + s, lineno, 0, org_l)
+                    lineno += lineno_delta
                 else:
                     yield TokenInfo(NAME, name, lineno, 0, org_l)
             elif l[0] == "\n":
@@ -118,8 +134,9 @@ def tokenize(readline):
             elif l[0].isspace():
                 l = l[1:]
             elif l.startswith('"') or l.startswith("'"):
-                s, l = get_str(l)
+                s, l, lineno_delta = get_str(l, readline)
                 yield TokenInfo(STRING, s, lineno, 0, org_l)
+                lineno += lineno_delta
             elif l.startswith("#"):
                 yield TokenInfo(COMMENT, l.rstrip("\n"), lineno, 0, org_l)
                 l = "\n"
