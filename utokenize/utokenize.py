@@ -148,7 +148,7 @@ def generate_tokens(readline):
                 for op in (
                     "**=", "//=", ">>=", "<<=", "+=", "-=", "*=", "/=",
                     "%=", "@=", "&=", "|=", "^=", "**", "//", "<<", ">>",
-                    "==", "!=", ">=", "<="
+                    "==", "!=", ">=", "<=", "..."
                 ):
                     if l.startswith(op):
                         yield TokenInfo(OP, op, lineno, 0, org_l)
