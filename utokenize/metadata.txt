@@ -1,5 +1,5 @@
 srctype = micropython-lib
 type = module
-version = 1.1
+version = 1.2
 author = Paul Sokolovsky
 long_desc = Simple tokenizer for Python source code, part of Pycopy project: https://github.com/pfalcon/pycopy .
