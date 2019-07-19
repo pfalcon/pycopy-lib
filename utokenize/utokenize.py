@@ -27,8 +27,9 @@ def get_indent(l):
 
 
 def get_str(l, readline):
+    lineno = 0
+
     if l.startswith('"""') or l.startswith("'''"):
-        lineno = 0
         s = sep = l[0:3]
         l = l[3:]
         while True:
@@ -45,17 +46,22 @@ def get_str(l, readline):
     s = sep = l[0]
     l = l[1:]
     quoted = False
-    while True:
+    while l:
         c = l[0]
         l = l[1:]
         s += c
         if quoted:
             quoted = False
         elif c == "\\":
+            if l == "\n":
+                s += "\n"
+                l = readline()
+                lineno += 1
+                continue
             quoted = True
         elif c == sep:
             break
-    return s, l, 0
+    return s, l, lineno
 
 
 def tokenize(readline):
