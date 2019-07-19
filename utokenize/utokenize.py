@@ -93,7 +93,7 @@ def tokenize(readline):
                     indent_stack.pop()
 
         while l:
-            if l[0].isdigit():
+            if l[0].isdigit() or (l.startswith(".") and len(l) > 1 and l[1].isdigit()):
                 t = ""
                 if l.startswith("0x"):
                     t = "0x"
