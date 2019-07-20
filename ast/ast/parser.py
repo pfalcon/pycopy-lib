@@ -37,8 +37,11 @@ class Parser:
         self.next()
 
     def next(self):
-        self.tok = next(self.tstream)
-        print("next:", self.tok)
+        while True:
+            self.tok = next(self.tstream)
+            print("next:", self.tok)
+            if self.tok.type not in (utokenize.COMMENT, utokenize.NL):
+                break
 
     def error(self, msg="syntax error"):
         print("Error: %s" % msg)
