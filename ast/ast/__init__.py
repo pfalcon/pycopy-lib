@@ -7,7 +7,7 @@ def dump(t):
         res += "("
         comma = False
         for k in dir(t):
-            if k.startswith("__"):
+            if k.startswith("_"):
                 continue
             if comma:
                 res += ", "
@@ -31,6 +31,6 @@ def dump(t):
 
 def iter_fields(t):
     for k in t._fields:
-        if k.startswith("__"):
+        if k.startswith("_"):
             continue
         yield (k, getattr(t, k, None))
