@@ -1,3 +1,4 @@
+# (c) 2019 Paul Sokolovsky. MIT license.
 from .types import *
 
 
