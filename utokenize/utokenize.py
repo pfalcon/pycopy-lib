@@ -32,12 +32,17 @@ def get_str(l, readline):
     if l.startswith('"""') or l.startswith("'''"):
         s = sep = l[0:3]
         l = l[3:]
+        pos = 0
         while True:
-            i = l.find(sep)
+            i = l.find(sep, pos)
             if i >= 0:
+                if i > 0 and l[i - 1] == "\\":
+                    pos = i + 1
+                    continue
                 break
             s += l
             l = readline()
+            pos = 0
             assert l
             lineno += 1
         s += l[:i + 3]
