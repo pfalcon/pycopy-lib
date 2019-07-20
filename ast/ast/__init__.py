@@ -7,12 +7,12 @@ def dump(t):
         res = type(t).__name__
         res += "("
         comma = False
-        for k in dir(t):
+        for k in t._fields:
             if k.startswith("_"):
                 continue
             if comma:
                 res += ", "
-            res += k + "=" + dump(getattr(t, k))
+            res += k + "=" + dump(getattr(t, k, None))
             comma = True
         res += ")"
         return res
