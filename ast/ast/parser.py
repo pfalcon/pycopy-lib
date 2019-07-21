@@ -115,6 +115,8 @@ class Parser:
     def match_small_stmt(self):
         res = self.match_pass_stmt()
         if res: return res
+        res = self.match_import_stmt()
+        if res: return res
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
@@ -141,6 +143,14 @@ class Parser:
     def match_pass_stmt(self):
         if self.match("pass"):
             return ast.Pass()
+
+    def match_import_stmt(self):
+        if self.match("import"):
+            name = self.expect(NAME)
+            asname = None
+            if self.match("as"):
+                asname = self.expect(NAME)
+            return ast.Import(names=[ast.alias(name=name, asname=asname)])
 
     def match_if_stmt(self):
 
