@@ -248,9 +248,11 @@ class Parser:
 
     def match_expr(self):
         res = self.match(NUMBER)
-        if res is None:
-            return res
-        return ast.Num(n=int(res))
+        if res is not None:
+            return ast.Num(n=int(res))
+        res = self.match(NAME)
+        if res is not None:
+            return self.make_name(res)
 
     def require_expr(self):
         res = self.match_expr()
