@@ -113,8 +113,6 @@ class Parser:
         return body
 
     def match_small_stmt(self):
-        res = self.match_pass_stmt()
-        if res: return res
         res = self.match_import_stmt()
         if res: return res
 
@@ -122,6 +120,8 @@ class Parser:
             return ast.Break()
         if self.match("continue"):
             return ast.Continue()
+        if self.match("pass"):
+            return ast.Pass()
 
         res = self.match_expr()
         if res: return ast.Expr(value=res)
@@ -149,10 +149,6 @@ class Parser:
             return body
         else:
             return self.match_simple_stmt()
-
-    def match_pass_stmt(self):
-        if self.match("pass"):
-            return ast.Pass()
 
     def match_import_stmt(self):
         if self.match("import"):
