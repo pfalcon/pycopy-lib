@@ -225,7 +225,12 @@ class Parser:
             exc_body = self.match_suite()
             handlers.append(ast.ExceptHandler(type=exc_sel, name=capture_var, body=exc_body))
 
-        return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=[])
+        finalbody = []
+        if self.match("finally"):
+            self.expect(":")
+            finalbody = self.match_suite()
+
+        return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=finalbody)
 
 
     def match_expr(self):
