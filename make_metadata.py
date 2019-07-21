@@ -15,7 +15,7 @@ from setuptools import setup
 sys.path.append("..")
 import sdist_upip
 
-setup(name='micropython-%(dist_name)s',
+setup(name='pycopy-%(dist_name)s',
       version='%(version)s',
       description=%(desc)r,
       long_description=%(long_desc)s,
@@ -37,7 +37,7 @@ sys.path.pop(0)
 from setuptools import setup
 sys.path.append("..")
 
-setup(name='micropython-%(dist_name)s',
+setup(name='pycopy-%(dist_name)s',
       version='%(version)s',
       description=%(desc)r,
       long_description=%(long_desc)s,
@@ -195,7 +195,7 @@ def main():
             data["modules"] += ", " + ", ".join(extra_modules)
 
         if "depends" in data:
-            deps = ["micropython-" + x.strip() for x in data["depends"].split(",")]
+            deps = ["pycopy-" + x.strip() for x in data["depends"].split(",")]
             if any(" " in d for d in deps):
                 raise ValueError("depends should be comma separated")
             data["_inst_req_"] = ",\n      install_requires=['" + "', '".join(deps) + "']"
