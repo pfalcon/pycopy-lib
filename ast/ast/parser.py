@@ -123,6 +123,10 @@ class Parser:
         if self.match("pass"):
             return ast.Pass()
 
+        if self.match("return"):
+            expr = self.match_expr()
+            return ast.Return(value=expr)
+
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
