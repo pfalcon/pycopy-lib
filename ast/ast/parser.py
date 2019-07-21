@@ -128,6 +128,8 @@ class Parser:
         if res: return res
         res = self.match_while_stmt()
         if res: return res
+        res = self.match_with_stmt()
+        if res: return res
         return None
 
     def match_suite(self):
@@ -190,6 +192,18 @@ class Parser:
         self.expect(":")
         body = self.match_suite()
         return ast.While(test=expr, body=body, orelse=[])
+
+    def match_with_stmt(self):
+        if not self.match("with"):
+            return None
+        expr = self.require_expr()
+        asname = None
+        if self.match("as"):
+            asname = self.expect(NAME)
+            asname = self.make_name(asname, ast.Store)
+        self.expect(":")
+        body = self.match_suite()
+        return ast.With(items=[ast.withitem(context_expr=expr, optional_vars=asname)], body=body)
 
     def match_expr(self):
         res = self.match(NUMBER)
