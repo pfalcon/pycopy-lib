@@ -124,6 +124,8 @@ class Parser:
         if res: return res
         res = self.match_for_stmt()
         if res: return res
+        res = self.match_while_stmt()
+        if res: return res
         return None
 
     def match_suite(self):
@@ -170,6 +172,14 @@ class Parser:
         body = self.match_suite()
         return ast.For(target=self.make_name(var, ast.Store), iter=expr,
             body=body, orelse=[])
+
+    def match_while_stmt(self):
+        if not self.match("while"):
+            return None
+        expr = self.require_expr()
+        self.expect(":")
+        body = self.match_suite()
+        return ast.While(test=expr, body=body, orelse=[])
 
     def match_expr(self):
         res = self.match(NUMBER)
