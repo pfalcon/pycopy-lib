@@ -132,6 +132,10 @@ class Parser:
             expr = self.match_expr()
             return ast.Raise(exc=expr)
 
+        if self.match("del"):
+            exprs = self.match_exprlist(ctx=ast.Del)
+            return ast.Delete(targets=exprs)
+
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
@@ -246,15 +250,24 @@ class Parser:
         return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=finalbody)
 
 
-    def match_expr(self):
+    def match_expr(self, ctx=None):
         res = self.match(NUMBER)
         if res is not None:
             return ast.Num(n=int(res))
         res = self.match(NAME)
         if res is not None:
-            return self.make_name(res)
+            return self.make_name(res, ctx)
 
-    def require_expr(self):
-        res = self.match_expr()
+    def require_expr(self, ctx=None):
+        res = self.match_expr(ctx)
         if res is not None: return res
         self.error("expected expression")
+
+    def match_exprlist(self, ctx=None):
+        res = []
+        while True:
+            expr = self.require_expr(ctx)
+            res.append(expr)
+            if not self.match(","):
+                break
+        return res
