@@ -72,6 +72,13 @@ class Parser:
                 self.error("expected '%s'" % what)
         return res
 
+    @staticmethod
+    def make_name(id, ctx=None):
+        node = ast.Name(id=id)
+        if ctx:
+            node.ctx = ctx()
+        return node
+
     def match_funcdef(self):
         lineno = self.tok.start
         self.match("def")
@@ -115,6 +122,8 @@ class Parser:
     def match_compound_stmt(self):
         res = self.match_if_stmt()
         if res: return res
+        res = self.match_for_stmt()
+        if res: return res
         return None
 
     def match_suite(self):
@@ -150,6 +159,17 @@ class Parser:
 
         if self.match("if"):
             return handle_if()
+
+    def match_for_stmt(self):
+        if not self.match("for"):
+            return None
+        var = self.expect(NAME)
+        self.expect("in")
+        expr = self.require_expr()
+        self.expect(":")
+        body = self.match_suite()
+        return ast.For(target=self.make_name(var, ast.Store), iter=expr,
+            body=body, orelse=[])
 
     def match_expr(self):
         res = self.match(NUMBER)
