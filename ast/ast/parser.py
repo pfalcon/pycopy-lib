@@ -136,6 +136,13 @@ class Parser:
             exprs = self.match_exprlist(ctx=ast.Del)
             return ast.Delete(targets=exprs)
 
+        if self.match("global"):
+            names = self.match_namelist()
+            return ast.Global(names=names)
+        if self.match("nonlocal"):
+            names = self.match_namelist()
+            return ast.Nonlocal(names=names)
+
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
@@ -268,6 +275,15 @@ class Parser:
         while True:
             expr = self.require_expr(ctx)
             res.append(expr)
+            if not self.match(","):
+                break
+        return res
+
+    def match_namelist(self):
+        res = []
+        while True:
+            name = self.expect(NAME)
+            res.append(name)
             if not self.match(","):
                 break
         return res
