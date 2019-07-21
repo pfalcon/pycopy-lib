@@ -130,6 +130,8 @@ class Parser:
         if res: return res
         res = self.match_with_stmt()
         if res: return res
+        res = self.match_try_stmt()
+        if res: return res
         return None
 
     def match_suite(self):
@@ -204,6 +206,27 @@ class Parser:
         self.expect(":")
         body = self.match_suite()
         return ast.With(items=[ast.withitem(context_expr=expr, optional_vars=asname)], body=body)
+
+    def match_try_stmt(self):
+        if not self.match("try"):
+            return None
+        self.expect(":")
+        body = self.match_suite()
+
+        handlers = []
+        while self.match("except"):
+            exc_sel = None
+            capture_var = None
+            if not self.match(":"):
+                exc_sel = self.require_expr()
+                if self.match("as"):
+                    capture_var = self.expect(NAME)
+                self.expect(":")
+            exc_body = self.match_suite()
+            handlers.append(ast.ExceptHandler(type=exc_sel, name=capture_var, body=exc_body))
+
+        return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=[])
+
 
     def match_expr(self):
         res = self.match(NUMBER)
