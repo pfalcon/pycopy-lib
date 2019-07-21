@@ -127,6 +127,10 @@ class Parser:
             expr = self.match_expr()
             return ast.Return(value=expr)
 
+        if self.match("raise"):
+            expr = self.match_expr()
+            return ast.Raise(exc=expr)
+
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
