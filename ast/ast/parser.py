@@ -81,7 +81,8 @@ class Parser:
 
     def match_funcdef(self):
         lineno = self.tok.start
-        self.match("def")
+        if not self.match("def"):
+            return
         name = self.expect(NAME)
         args = ast.arguments(args=[], kwonlyargs=[], kw_defaults=[], defaults=[])
         self.expect("(")
@@ -145,6 +146,8 @@ class Parser:
         res = self.match_with_stmt()
         if res: return res
         res = self.match_try_stmt()
+        if res: return res
+        res = self.match_funcdef()
         if res: return res
         return None
 
