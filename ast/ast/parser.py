@@ -117,6 +117,12 @@ class Parser:
         if res: return res
         res = self.match_import_stmt()
         if res: return res
+
+        if self.match("break"):
+            return ast.Break()
+        if self.match("continue"):
+            return ast.Continue()
+
         res = self.match_expr()
         if res: return ast.Expr(value=res)
         return None
