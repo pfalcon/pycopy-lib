@@ -35,3 +35,17 @@ def isidentifier(s):
         if c not in ascii_letters and c not in digits and c != "_":
             return False
     return True
+
+def expandtabs(s, tabsize=8):
+    res = ""
+    col = 0
+    for c in s:
+        if c == "\t":
+            res += " " * (tabsize - col % tabsize)
+            col = 0  # simplification
+            continue
+        res += c
+        col += 1
+        if c == "\n" or c == "\r":
+            col = 0
+    return res
