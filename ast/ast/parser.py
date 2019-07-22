@@ -56,6 +56,8 @@ class Parser:
 
         if isinstance(what, int):
             if self.tok.type == what:
+                if what == utokenize.ENDMARKER:
+                    return True
                 res = self.tok.string
                 self.next()
                 return res
