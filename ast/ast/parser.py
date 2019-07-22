@@ -24,9 +24,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import ulogging
 from utokenize import *
 import utokenize
 from . import types as ast
+
+
+log = ulogging.Logger(__name__)
 
 
 class Parser:
@@ -39,7 +43,7 @@ class Parser:
     def next(self):
         while True:
             self.tok = next(self.tstream)
-            print("next:", self.tok)
+            log.debug("next: %r", self.tok)
             if self.tok.type not in (utokenize.COMMENT, utokenize.NL):
                 break
 
