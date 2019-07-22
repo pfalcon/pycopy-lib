@@ -287,3 +287,10 @@ class Parser:
             if not self.match(","):
                 break
         return res
+
+    def match_mod(self):
+        body = []
+        while not self.match(ENDMARKER):
+            stmt = self.match_stmt()
+            body.extend(stmt)
+        return ast.Module(body=body)
