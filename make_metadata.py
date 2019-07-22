@@ -51,7 +51,8 @@ setup(name='pycopy-%(dist_name)s',
 """
 
 DUMMY_DESC = """\
-This is a dummy implementation of a module for Pycopy standard library.
+This is a dummy implementation of a module for the standard library of
+Pycopy project (https://github.com/pfalcon/pycopy).
 It contains zero or very little functionality, and primarily intended to
 avoid import errors (using idea that even if an application imports a
 module, it may be not using it onevery code path, so may work at least
@@ -61,32 +62,35 @@ interested in this module."""
 
 CPYTHON_DESC = """\
 This is a module ported from CPython standard library to be compatible with
-Pycopy interpreter. Usually, this means applying small patches for
-features not supported (yet, or at all) in Pycopy. Sometimes, heavier
-changes are required. Note that CPython modules are written with availability
-of vast resources in mind, and may not work for Pycopy ports with
-limited heap. If you are affected by such a case, please help reimplement
+Pycopy project (https://github.com/pfalcon/pycopy). Usually, this means
+applying small patches for features not supported (yet, or at all) in Pycopy.
+Sometimes, heavier changes are required. Note that CPython modules are written
+with availability of vast resources in mind, and may not work for Pycopy ports
+with limited heap. If you are affected by such a case, please help reimplement
 the module from scratch."""
 
 PYPY_DESC = """\
-This is a module ported from PyPy standard library to be compatible with
-Pycopy interpreter. Usually, this means applying small patches for
-features not supported (yet, or at all) in Pycopy. Sometimes, heavier
-changes are required. Note that CPython modules are written with availability
-of vast resources in mind, and may not work for Pycopy ports with
-limited heap. If you are affected by such a case, please help reimplement
+This is a module ported from CPython standard library to be compatible with
+Pycopy project (https://github.com/pfalcon/pycopy). Usually, this means
+applying small patches for features not supported (yet, or at all) in Pycopy.
+Sometimes, heavier changes are required. Note that PyPy modules are written
+with availability of vast resources in mind, and may not work for Pycopy ports
+with limited heap. If you are affected by such a case, please help reimplement
 the module from scratch."""
 
 PYCOPY_LIB_DESC = """\
-This is a module reimplemented specifically for Pycopy standard library,
-with efficient and lean design in mind. Note that this module is likely work
-in progress and likely supports just a subset of CPython's corresponding
-module. Please help with the development if you are interested in this
-module."""
+This is a module for the standard library of Pycopy project:
+https://github.com/pfalcon/pycopy . This module was implemented from
+scratch specifically to target Pycopy, with efficient and lean design
+in mind. Note that this module is likely work in progress and likely
+supports just a subset of CPython’s corresponding module. Please help
+with the development if you are interested in this module.
+"""
 
 BACKPORT_DESC = """\
-This is Pycopy compatibility module, allowing applications using
-Pycopy-specific features to run on CPython.
+This is a compatibility module for the standard library of Pycopy project
+(https://github.com/pfalcon/pycopy). It allows applications using
+Pycopy APIs to run on CPython.
 """
 
 PYCOPY_DEVELS = 'Paul Sokolovsky'
