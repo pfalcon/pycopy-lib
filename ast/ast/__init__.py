@@ -38,12 +38,18 @@ def iter_fields(t):
 
 
 def parse_file(stream, filename="<unknown>", mode="exec"):
-    assert mode == "exec"
     import utokenize as tokenize
     from . import parser
     tstream = tokenize.generate_tokens(stream.readline)
     p = parser.Parser(tstream)
-    t = p.match_mod()
+    if mode == "exec":
+        t = p.match_mod()
+    elif mode == "eval":
+        t = Expression(body=p.require_expr())
+    elif mode == "single":
+        t = Interactive(body=p.match_stmt())
+    else:
+        raise ValueError
     return t
 
 
