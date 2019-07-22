@@ -94,10 +94,10 @@ class Parser:
         return ast.FunctionDef(name=name, args=args, body=body, decorator_list=[], lineno=lineno)
 
     def match_stmt(self):
-        res = self.match_simple_stmt()
-        if res: return res
         res = self.match_compound_stmt()
         if res: return [res]
+        res = self.match_simple_stmt()
+        if res: return res
         self.error("expected statement")
 
     def match_simple_stmt(self):
