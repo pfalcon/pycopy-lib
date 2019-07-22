@@ -35,3 +35,18 @@ def iter_fields(t):
         if k.startswith("_"):
             continue
         yield (k, getattr(t, k, None))
+
+
+def parse_file(stream, filename="<unknown>", mode="exec"):
+    assert mode == "exec"
+    import utokenize as tokenize
+    from . import parser
+    tstream = tokenize.generate_tokens(stream.readline)
+    p = parser.Parser(tstream)
+    t = p.match_mod()
+    return t
+
+
+def parse(source, filename="<unknown>", mode="exec"):
+    import io
+    return parse_file(io.StringIO(source), filename, mode)
