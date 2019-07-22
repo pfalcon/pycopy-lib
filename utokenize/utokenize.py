@@ -115,7 +115,7 @@ def tokenize(readline):
                 while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
                     t += l[0]
                     l = l[1:]
-                if l[0] in ("e", "E"):
+                if l.startswith("e") or l.startswith("E"):
                     t += l[0]
                     l = l[1:]
                     if l[0] in ("+", "-"):
