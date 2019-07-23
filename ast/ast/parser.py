@@ -138,6 +138,13 @@ class Parser:
             expr = self.match_expr()
             return ast.Raise(exc=expr)
 
+        if self.match("assert"):
+            expr = self.match_expr()
+            msg = None
+            if self.match(","):
+                msg = self.match_expr()
+            return ast.Assert(test=expr, msg=msg)
+
         if self.match("del"):
             exprs = self.match_exprlist(ctx=ast.Del)
             return ast.Delete(targets=exprs)
