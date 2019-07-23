@@ -93,16 +93,24 @@ class Parser:
         args = []
         defaults = []
         vararg = None
+        kwarg = None
         self.expect("(")
         while not self.match(")"):
             if self.match("*"):
                 if vararg:
                     self.error(">1 vararg")
                 vararg = True
+            elif self.match("**"):
+                if kwarg:
+                    self.error(">1 kwarg")
+                kwarg = True
             arg = self.expect(NAME)
             arg = ast.arg(arg=arg, annotation=None)
             if vararg:
                 vararg = arg
+                continue
+            elif kwarg:
+                kwarg = arg
                 continue
             args.append(arg)
             if self.match("="):
@@ -111,7 +119,7 @@ class Parser:
             self.match(",")
         self.expect(":")
         body = self.match_suite()
-        arg_spec = ast.arguments(args=args, vararg=vararg, kwonlyargs=[], kw_defaults=[], defaults=defaults)
+        arg_spec = ast.arguments(args=args, vararg=vararg, kwonlyargs=[], kw_defaults=[], kwarg=kwarg, defaults=defaults)
         return ast.FunctionDef(name=name, args=arg_spec, body=body, decorator_list=[], lineno=lineno)
 
     def match_classdef(self):
