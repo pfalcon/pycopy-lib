@@ -90,12 +90,16 @@ class Parser:
         if not self.match("def"):
             return
         name = self.expect(NAME)
-        args = ast.arguments(args=[], kwonlyargs=[], kw_defaults=[], defaults=[])
+        args = []
         self.expect("(")
-        self.expect(")")
+        while not self.match(")"):
+            arg = self.expect(NAME)
+            args.append(ast.arg(arg=arg, annotation=None))
+            self.match(",")
         self.expect(":")
         body = self.match_suite()
-        return ast.FunctionDef(name=name, args=args, body=body, decorator_list=[], lineno=lineno)
+        arg_spec = ast.arguments(args=args, kwonlyargs=[], kw_defaults=[], defaults=[])
+        return ast.FunctionDef(name=name, args=arg_spec, body=body, decorator_list=[], lineno=lineno)
 
     def match_classdef(self):
         lineno = self.tok.start
