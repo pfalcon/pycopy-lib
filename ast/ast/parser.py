@@ -97,6 +97,15 @@ class Parser:
         body = self.match_suite()
         return ast.FunctionDef(name=name, args=args, body=body, decorator_list=[], lineno=lineno)
 
+    def match_classdef(self):
+        lineno = self.tok.start
+        if not self.match("class"):
+            return
+        name = self.expect(NAME)
+        self.expect(":")
+        body = self.match_suite()
+        return ast.ClassDef(name=name, body=body, bases=[], keywords=[], decorator_list=[], lineno=lineno)
+
     def match_stmt(self):
         res = self.match_compound_stmt()
         if res: return [res]
@@ -172,6 +181,8 @@ class Parser:
         res = self.match_try_stmt()
         if res: return res
         res = self.match_funcdef()
+        if res: return res
+        res = self.match_classdef()
         if res: return res
         return None
 
