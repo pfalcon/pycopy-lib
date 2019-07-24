@@ -230,11 +230,21 @@ class Parser:
 
     def match_import_stmt(self):
         if self.match("import"):
-            name = self.expect(NAME)
+            name = self.match_dotted_name()
             asname = None
             if self.match("as"):
                 asname = self.expect(NAME)
             return ast.Import(names=[ast.alias(name=name, asname=asname)])
+        elif self.match("from"):
+            level = 0
+            while self.match("."):
+                level += 1
+            module = None
+            if not self.check("import"):
+                module = self.match_dotted_name()
+            self.expect("import")
+            name = self.expect(NAME)
+            return ast.ImportFrom(module=module, names=[ast.alias(name=name, asname=None)], level=level)
 
     def match_if_stmt(self):
 
@@ -343,6 +353,14 @@ class Parser:
             if not self.match(","):
                 break
         return res
+
+    def match_dotted_name(self):
+        name = self.match(NAME)
+        if name is None:
+            return None
+        while self.match("."):
+            name += "." + self.expect(NAME)
+        return name
 
     def match_mod(self):
         body = []
