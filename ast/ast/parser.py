@@ -243,7 +243,10 @@ class Parser:
             if not self.check("import"):
                 module = self.match_dotted_name()
             self.expect("import")
-            name = self.expect(NAME)
+            if self.match("*"):
+                name = "*"
+            else:
+                name = self.expect(NAME)
             return ast.ImportFrom(module=module, names=[ast.alias(name=name, asname=None)], level=level)
 
     def match_if_stmt(self):
