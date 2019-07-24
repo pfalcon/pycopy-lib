@@ -24,6 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import sys
 import ulogging
 from utokenize import *
 import utokenize
@@ -48,7 +49,7 @@ class Parser:
                 break
 
     def error(self, msg="syntax error"):
-        print("Error: %s" % msg)
+        sys.stderr.write("<input>:%d: error: %s\n" % (self.tok.start, msg))
         raise Exception
 
     def check(self, what):
