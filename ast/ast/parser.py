@@ -51,23 +51,29 @@ class Parser:
         print("Error: %s" % msg)
         raise Exception
 
-    def match(self, what):
+    def check(self, what):
         if isinstance(what, str):
             if self.tok.string == what and self.tok.type in (utokenize.NAME, utokenize.OP):
-                self.next()
                 return True
-            return False
+            return None
 
         if isinstance(what, int):
             if self.tok.type == what:
                 if what == utokenize.ENDMARKER:
                     return True
                 res = self.tok.string
-                self.next()
+                if res == "":
+                    return True
                 return res
             return None
 
         assert False, "Unknown value type to match"
+
+    def match(self, what):
+        res = self.check(what)
+        if res and what != utokenize.ENDMARKER:
+            self.next()
+        return res
 
     def expect(self, what):
         res = self.match(what)
