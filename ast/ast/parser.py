@@ -52,6 +52,18 @@ class Parser:
         sys.stderr.write("<input>:%d: error: %s\n" % (self.tok.start, msg))
         raise Exception
 
+    # Recursively set "lvalue" node access context
+    @staticmethod
+    def set_ctx(t, ctx):
+        if isinstance(t, list):
+            for e in t:
+                Parser.set_ctx(e, ctx)
+        elif isinstance(t, ast.AST):
+            t.ctx = ctx
+            for k in t._fields:
+                v = getattr(t, k, None)
+                Parser.set_ctx(v, ctx)
+
     def check(self, what):
         if isinstance(what, str):
             if self.tok.string == what and self.tok.type in (utokenize.NAME, utokenize.OP):
@@ -198,8 +210,30 @@ class Parser:
             return ast.Nonlocal(names=names)
 
         res = self.match_expr()
-        if res: return ast.Expr(value=res)
-        return None
+        if not res:
+            return None
+
+        if self.check("="):
+            targets = []
+            while self.match("="):
+                self.set_ctx(res, ast.Store())
+                targets.append(res)
+                res = self.match_expr()
+            return ast.Assign(targets=targets, value=res)
+
+        elif self.check(OP) and self.tok.string.endswith("="):
+            self.set_ctx(res, ast.Store())
+            op_type = {
+                "+=": ast.Add, "-=": ast.Sub, "*=": ast.Mult, "/=": ast.Div,
+                "//=": ast.FloorDiv, "%=": ast.Mod, "**=": ast.Pow,
+                "@=": ast.MatMult, "|=": ast.BitOr, "^=": ast.BitXor,
+                "&=": ast.BitAnd, "<<=": ast.LShift, ">>=": ast.RShift,
+            }[self.tok.string]
+            self.next()
+            val = self.match_expr()
+            return ast.AugAssign(target=res, op=op_type(), value=val)
+
+        return ast.Expr(value=res)
 
     def match_compound_stmt(self):
         res = self.match_if_stmt()
