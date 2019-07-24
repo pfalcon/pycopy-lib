@@ -1,0 +1,3 @@
+@foo
+def bar():
+    pass
