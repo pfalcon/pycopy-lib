@@ -52,3 +52,13 @@ assert indents == ['\t', '\t']
 text = "  \thello there\n  \t  how are you?"
 indents = _leading_whitespace_re.findall(text)
 assert indents == ['  \t', '  \t  ']
+
+
+# finditer
+# based on CPython's test_re.py
+iter = re.finditer(r":+", "a:b::c:::d")
+assert [item.group(0) for item in iter] == [":", "::", ":::"]
+
+pat = re.compile(r":+")
+iter = pat.finditer("a:b::c:::d", 3, 8)
+assert [item.group(0) for item in iter] == ["::", "::"]
