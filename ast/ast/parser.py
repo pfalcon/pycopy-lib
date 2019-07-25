@@ -91,6 +91,16 @@ class TokInfixRAssoc(TokBase):
 
 # Concrete tokens
 
+class TokIf(TokBase):
+    lbp = 20
+    @classmethod
+    def led(cls, p, left):
+        cond = p.expr()
+        p.expect("else")
+        orelse = p.expr()
+        node = ast.IfExp(test=cond, body=left, orelse=orelse)
+        return node
+
 class TokOr(TokInfix):
     lbp = 30
     ast_bin_op = ast.Or
@@ -204,6 +214,7 @@ class TokNumber(TokBase):
 
 pratt_token_map = {
     NEWLINE: TokDelim,
+    "if": TokIf, "else": TokDelim,
     "or": TokOr,
     "and": TokAnd,
     "not": TokNot,
