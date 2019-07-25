@@ -164,7 +164,10 @@ class Parser:
 
         body = [res]
         while True:
-            self.match(";")
+            if not self.match(";"):
+                break
+            if self.check(NEWLINE):
+                break
             res = self.match_small_stmt()
             if res is None:
                 break
