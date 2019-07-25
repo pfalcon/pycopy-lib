@@ -123,6 +123,26 @@ class TokGtE(TokInfix):
     lbp = 60
     ast_bin_op = ast.GtE
 
+class TokBinOr(TokInfix):
+    lbp = 70
+    ast_bin_op = ast.BitOr
+
+class TokBinXor(TokInfix):
+    lbp = 80
+    ast_bin_op = ast.BitXor
+
+class TokBinAnd(TokInfix):
+    lbp = 90
+    ast_bin_op = ast.BitAnd
+
+class TokLShift(TokInfix):
+    lbp = 100
+    ast_bin_op = ast.LShift
+
+class TokRShift(TokInfix):
+    lbp = 100
+    ast_bin_op = ast.RShift
+
 class TokPlus(TokInfix):
     lbp = 110
     ast_bin_op = ast.Add
@@ -184,6 +204,11 @@ pratt_token_map = {
     "<=": TokLtE,
     ">": TokGt,
     ">=": TokGtE,
+    "|": TokBinOr,
+    "^": TokBinXor,
+    "&": TokBinAnd,
+    "<<": TokLShift,
+    ">>": TokRShift,
     "+": TokPlus,
     "-": TokMinus,
     "*": TokMul,
