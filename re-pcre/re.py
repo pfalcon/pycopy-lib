@@ -156,6 +156,18 @@ class PCREPattern:
             beg, end = m.span(0)
             start = end
 
+    def finditer(self, s, pos=0, endpos=-1):
+        if endpos != -1:
+            s = s[:endpos]
+        res = []
+        while True:
+            m = self.search(s, pos)
+            if not m:
+                break
+            yield m
+            beg, end = m.span(0)
+            pos = end
+
 
 def compile(pattern, flags=0):
     if flags & ASCII:
@@ -194,6 +206,10 @@ def split(pattern, s, maxsplit=0, flags=0):
 def findall(pattern, s, flags=0):
     r = compile(pattern, flags)
     return r.findall(s)
+
+def finditer(pattern, s, flags=0):
+    r = compile(pattern, flags)
+    return r.finditer(s)
 
 
 def escape(s):
