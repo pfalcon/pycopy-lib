@@ -112,6 +112,9 @@ def tokenize(readline):
                 elif l.startswith("0o") or l.startswith("0O"):
                     t = "0o"
                     l = l[2:]
+                elif l.startswith("0b") or l.startswith("0B"):
+                    t = "0b"
+                    l = l[2:]
                 while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
                     t += l[0]
                     l = l[1:]
