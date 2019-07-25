@@ -67,8 +67,20 @@ class TokInfix(TokBase):
     @classmethod
     def led(cls, p, left):
         right = p.expr(cls.lbp)
-        node = ast.BinOp(op=cls.ast_bin_op(), left=left, right=right)
+        if cls.ast_bin_op in (ast.And, ast.Or) and isinstance(left, ast.BoolOp) and isinstance(left.op, cls.ast_bin_op):
+            left.values.append(right)
+            return left
+        node = cls.bin_op(cls.ast_bin_op, left, right)
         return node
+
+    @staticmethod
+    def bin_op(op, left, right):
+        if op in (ast.And, ast.Or):
+            return ast.BoolOp(op=op(), values=[left, right])
+        elif issubclass(op, ast.cmpop):
+            return ast.Compare(ops=[op()], left=left, comparators=[right])
+        else:
+            return ast.BinOp(op=op(), left=left, right=right)
 
 class TokInfixRAssoc(TokBase):
     @classmethod
@@ -78,6 +90,38 @@ class TokInfixRAssoc(TokBase):
         return node
 
 # Concrete tokens
+
+class TokOr(TokInfix):
+    lbp = 30
+    ast_bin_op = ast.Or
+
+class TokAnd(TokInfix):
+    lbp = 40
+    ast_bin_op = ast.And
+
+class TokEq(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.Eq
+
+class TokNotEq(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.NotEq
+
+class TokLt(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.Lt
+
+class TokGt(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.Gt
+
+class TokLtE(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.LtE
+
+class TokGtE(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.GtE
 
 class TokPlus(TokInfix):
     lbp = 110
@@ -132,6 +176,14 @@ class TokNumber(TokBase):
 
 pratt_token_map = {
     NEWLINE: TokDelim,
+    "or": TokOr,
+    "and": TokAnd,
+    "==": TokEq,
+    "!=": TokNotEq,
+    "<": TokLt,
+    "<=": TokLtE,
+    ">": TokGt,
+    ">=": TokGtE,
     "+": TokPlus,
     "-": TokMinus,
     "*": TokMul,
