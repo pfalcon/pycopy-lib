@@ -143,13 +143,17 @@ class TokRShift(TokInfix):
     lbp = 100
     ast_bin_op = ast.RShift
 
-class TokPlus(TokInfix):
+class TokPlus(TokInfix, TokPrefix):
     lbp = 110
     ast_bin_op = ast.Add
+    nbp = 130
+    ast_un_op = ast.UAdd
 
-class TokMinus(TokInfix):
+class TokMinus(TokInfix, TokPrefix):
     lbp = 110
     ast_bin_op = ast.Sub
+    nbp = 130
+    ast_un_op = ast.USub
 
 class TokMul(TokInfix):
     lbp = 120
