@@ -34,6 +34,117 @@ from . import types as ast
 log = ulogging.Logger(__name__)
 
 
+# Pratt parser token root base class
+class TokBase:
+    # Left denotation and null denotation binding powers, effectively,
+    # operator precedence. As such, we use operator's row number
+    # (starting from 1) in the precedence table at
+    # https://docs.python.org/3.5/reference/expressions.html#operator-precedence
+    # multiplied by 10. Note that not all operators are in that table,
+    # and some may get precedence inbetween (including before 10).
+    # For Pratt algorithm, only LBP needs to be set on each class
+    # (which can be at "left arg available" position, i.e. infix or
+    # postfix operators. NBP is mostly given as commented value for
+    # documentation purposes (actual NBP is encoded as numeric value
+    # in nud() method "for efficiency").
+    lbp = 0
+    #nbp = 0
+
+
+# Token base classes
+
+class TokDelim(TokBase):
+    pass
+
+class TokPrefix(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        arg = p.expr(cls.nbp)
+        node = ast.UnaryOp(op=cls.ast_un_op(), operand=arg)
+        return node
+
+class TokInfix(TokBase):
+    @classmethod
+    def led(cls, p, left):
+        right = p.expr(cls.lbp)
+        node = ast.BinOp(op=cls.ast_bin_op(), left=left, right=right)
+        return node
+
+class TokInfixRAssoc(TokBase):
+    @classmethod
+    def led(cls, p, left):
+        right = p.expr(cls.lbp - 1)
+        node = ast.BinOp(op=cls.ast_bin_op(), left=left, right=right)
+        return node
+
+# Concrete tokens
+
+class TokPlus(TokInfix):
+    lbp = 110
+    ast_bin_op = ast.Add
+
+class TokMinus(TokInfix):
+    lbp = 110
+    ast_bin_op = ast.Sub
+
+class TokMul(TokInfix):
+    lbp = 120
+    ast_bin_op = ast.Mult
+
+class TokDiv(TokInfix):
+    lbp = 120
+    ast_bin_op = ast.Div
+
+class TokFloorDiv(TokInfix):
+    lbp = 120
+    ast_bin_op = ast.FloorDiv
+
+class TokMod(TokInfix):
+    lbp = 120
+    ast_bin_op = ast.Mod
+
+class TokInvert(TokPrefix):
+    nbp = 130
+    ast_un_op = ast.Invert
+
+class TokPow(TokInfixRAssoc):
+    lbp = 140
+    ast_bin_op = ast.Pow
+
+class TokOpenParens(TokBase):
+    #nbp = 170
+    @classmethod
+    def nud(cls, p, t):
+        e = p.expr()
+        p.expect(")")
+        return e
+
+class TokNumber(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        try:
+            v = int(t.string)
+        except ValueError:
+            v = float(t.string)
+        node = ast.Num(n=v)
+        return node
+
+
+pratt_token_map = {
+    NEWLINE: TokDelim,
+    "+": TokPlus,
+    "-": TokMinus,
+    "*": TokMul,
+    "/": TokDiv,
+    "//": TokFloorDiv,
+    "%": TokMod,
+    "~": TokInvert,
+    "**": TokPow,
+    "(": TokOpenParens, ")": TokDelim,
+    NUMBER: TokNumber,
+}
+
+
 class Parser:
 
     def __init__(self, token_stream):
@@ -363,13 +474,28 @@ class Parser:
         return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=finalbody)
 
 
+    @staticmethod
+    def get_token_class(t):
+        cls = pratt_token_map.get(t.type)
+        if cls:
+            return cls
+        cls = pratt_token_map[t.string]
+        return cls
+
+    def expr(self, rbp=0):
+        t = self.tok
+        self.next()
+        cls_nud = self.get_token_class(t)
+        left = cls_nud.nud(self, t)
+        cls_led = self.get_token_class(self.tok)
+        while rbp < cls_led.lbp:
+            self.next()
+            left = cls_led.led(self, left)
+            cls_led = self.get_token_class(self.tok)
+        return left
+
     def match_expr(self, ctx=None):
-        res = self.match(NUMBER)
-        if res is not None:
-            return ast.Num(n=int(res))
-        res = self.match(NAME)
-        if res is not None:
-            return self.make_name(res, ctx)
+        return self.expr()
 
     def require_expr(self, ctx=None):
         res = self.match_expr(ctx)
