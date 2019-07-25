@@ -99,6 +99,10 @@ class TokAnd(TokInfix):
     lbp = 40
     ast_bin_op = ast.And
 
+class TokNot(TokPrefix):
+    nbp = 50
+    ast_un_op = ast.Not
+
 class TokEq(TokInfix):
     lbp = 60
     ast_bin_op = ast.Eq
@@ -202,6 +206,7 @@ pratt_token_map = {
     NEWLINE: TokDelim,
     "or": TokOr,
     "and": TokAnd,
+    "not": TokNot,
     "==": TokEq,
     "!=": TokNotEq,
     "<": TokLt,
