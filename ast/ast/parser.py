@@ -201,6 +201,15 @@ class TokDot(TokBase):
         node = ast.Attribute(value=left, attr=attr, ctx=ast.Load())
         return node
 
+class TokOpenSquare(TokBase):
+    lbp = 160
+    @classmethod
+    def led(cls, p, left):
+        idx = p.expr()
+        p.expect("]")
+        node = ast.Subscript(value=left, slice=ast.Index(value=idx), ctx=ast.Load())
+        return node
+
 class TokOpenParens(TokBase):
     #nbp = 170
     @classmethod
@@ -246,6 +255,7 @@ pratt_token_map = {
     "~": TokInvert,
     "**": TokPow,
     ".": TokDot,
+    "[": TokOpenSquare, "]": TokDelim,
     "(": TokOpenParens, ")": TokDelim,
     NUMBER: TokNumber,
 }
