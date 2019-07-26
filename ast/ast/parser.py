@@ -211,6 +211,19 @@ class TokOpenSquare(TokBase):
         return node
 
 class TokOpenParens(TokBase):
+    lbp = 160
+    @classmethod
+    def led(cls, p, left):
+        args = []
+        if not p.check(")"):
+            while True:
+                args.append(p.expr())
+                if not p.match(","):
+                    break
+        p.expect(")")
+        node = ast.Call(func=left, args=args, keywords=[])
+        return node
+
     #nbp = 170
     @classmethod
     def nud(cls, p, t):
@@ -231,6 +244,7 @@ class TokNumber(TokBase):
 
 pratt_token_map = {
     NEWLINE: TokDelim,
+    ",": TokDelim,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
     "and": TokAnd,
