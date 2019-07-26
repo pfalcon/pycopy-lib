@@ -127,6 +127,9 @@ def tokenize(readline):
                     while l and l[0].isdigit():
                         t += l[0]
                         l = l[1:]
+                if l.startswith("j"):
+                    t += l[0]
+                    l = l[1:]
                 yield TokenInfo(NUMBER, t, lineno, 0, org_l)
             elif l[0].isalpha() or l.startswith("_"):
                 name = ""
