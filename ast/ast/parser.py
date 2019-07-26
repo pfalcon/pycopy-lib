@@ -227,6 +227,9 @@ class TokOpenParens(TokBase):
     #nbp = 170
     @classmethod
     def nud(cls, p, t):
+        if p.match(")"):
+            # Empty tuple
+            return ast.Tuple(elts=[], ctx=ast.Load())
         e = p.expr()
         p.expect(")")
         return e
