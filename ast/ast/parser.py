@@ -193,6 +193,14 @@ class TokPow(TokInfixRAssoc):
     lbp = 140
     ast_bin_op = ast.Pow
 
+class TokDot(TokBase):
+    lbp = 160
+    @classmethod
+    def led(cls, p, left):
+        attr = p.expect(NAME)
+        node = ast.Attribute(value=left, attr=attr, ctx=ast.Load())
+        return node
+
 class TokOpenParens(TokBase):
     #nbp = 170
     @classmethod
@@ -237,6 +245,7 @@ pratt_token_map = {
     "%": TokMod,
     "~": TokInvert,
     "**": TokPow,
+    ".": TokDot,
     "(": TokOpenParens, ")": TokDelim,
     NUMBER: TokNumber,
 }
