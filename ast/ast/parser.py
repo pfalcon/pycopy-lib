@@ -91,6 +91,20 @@ class TokInfixRAssoc(TokBase):
 
 # Concrete tokens
 
+class TokComma(TokBase):
+    lbp = 5
+    # Tuple creation operator
+    @classmethod
+    def led(cls, p, left):
+        elts = [left]
+        while not p.check(ENDMARKER) and not p.check(NEWLINE) and not p.check(")") and not p.check(";"):
+            e = p.expr(5)
+            elts.append(e)
+            if not p.match(","):
+                break
+        node = ast.Tuple(elts=elts, ctx=ast.Load())
+        return node
+
 class TokLambda(TokBase):
     #nbp = 10
     @classmethod
@@ -262,7 +276,7 @@ class TokName(TokBase):
 
 pratt_token_map = {
     NEWLINE: TokDelim,
-    ",": TokDelim,
+    ",": TokComma,
     "lambda": TokLambda,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
