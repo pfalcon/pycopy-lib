@@ -353,36 +353,11 @@ class Parser:
         if not self.match("def"):
             return
         name = self.expect(NAME)
-        args = []
-        defaults = []
-        vararg = None
-        kwarg = None
         self.expect("(")
-        while not self.match(")"):
-            if self.match("*"):
-                if vararg:
-                    self.error(">1 vararg")
-                vararg = True
-            elif self.match("**"):
-                if kwarg:
-                    self.error(">1 kwarg")
-                kwarg = True
-            arg = self.expect(NAME)
-            arg = ast.arg(arg=arg, annotation=None)
-            if vararg:
-                vararg = arg
-                continue
-            elif kwarg:
-                kwarg = arg
-                continue
-            args.append(arg)
-            if self.match("="):
-                dflt = self.require_expr()
-                defaults.append(dflt)
-            self.match(",")
+        arg_spec = self.require_typedargslist()
+        self.expect(")")
         self.expect(":")
         body = self.match_suite()
-        arg_spec = ast.arguments(args=args, vararg=vararg, kwonlyargs=[], kw_defaults=[], kwarg=kwarg, defaults=defaults)
         return ast.FunctionDef(name=name, args=arg_spec, body=body, decorator_list=[], lineno=lineno)
 
     def match_classdef(self):
@@ -652,6 +627,38 @@ class Parser:
             if not self.match(","):
                 break
         return res
+
+    def require_typedargslist(self):
+        args = []
+        defaults = []
+        vararg = None
+        kwarg = None
+        # TODO: This is somewhat adhoc, relies on terminating token for funcdef vs lambda
+        while not self.check(")") and not self.check(":"):
+            if self.match("*"):
+                if vararg:
+                    self.error(">1 vararg")
+                vararg = True
+            elif self.match("**"):
+                if kwarg:
+                    self.error(">1 kwarg")
+                kwarg = True
+            arg = self.expect(NAME)
+            arg = ast.arg(arg=arg, annotation=None)
+            if vararg:
+                vararg = arg
+                continue
+            elif kwarg:
+                kwarg = arg
+                continue
+            args.append(arg)
+            if self.match("="):
+                dflt = self.require_expr()
+                defaults.append(dflt)
+            self.match(",")
+
+        arg_spec = ast.arguments(args=args, vararg=vararg, kwonlyargs=[], kw_defaults=[], kwarg=kwarg, defaults=defaults)
+        return arg_spec
 
     def match_dotted_name(self):
         name = self.match(NAME)
