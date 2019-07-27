@@ -91,6 +91,16 @@ class TokInfixRAssoc(TokBase):
 
 # Concrete tokens
 
+class TokLambda(TokBase):
+    #nbp = 10
+    @classmethod
+    def nud(cls, p, t):
+        arg_spec = p.require_typedargslist()
+        p.expect(":")
+        body = p.expr()
+        node = ast.Lambda(args=arg_spec, body=body)
+        return node
+
 class TokIf(TokBase):
     lbp = 20
     @classmethod
@@ -248,6 +258,7 @@ class TokNumber(TokBase):
 pratt_token_map = {
     NEWLINE: TokDelim,
     ",": TokDelim,
+    "lambda": TokLambda,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
     "and": TokAnd,
