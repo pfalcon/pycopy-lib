@@ -621,6 +621,10 @@ class Parser:
         return left
 
     def match_expr(self, ctx=None):
+        # Adhoc, consider making suitable TokDelim.nud() return None
+        if self.check(NEWLINE) or self.check(";"):
+            return None
+
         n = self.expr()
         if ctx:
             self.set_ctx(n, ctx())
