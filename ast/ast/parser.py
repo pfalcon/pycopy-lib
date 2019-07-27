@@ -621,7 +621,10 @@ class Parser:
         return left
 
     def match_expr(self, ctx=None):
-        return self.expr()
+        n = self.expr()
+        if ctx:
+            self.set_ctx(n, ctx())
+        return n
 
     def require_expr(self, ctx=None):
         res = self.match_expr(ctx)
