@@ -254,6 +254,11 @@ class TokNumber(TokBase):
         node = ast.Num(n=v)
         return node
 
+class TokName(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        return ast.Name(id=t.string, ctx=ast.Load())
+
 
 pratt_token_map = {
     NEWLINE: TokDelim,
@@ -598,8 +603,10 @@ class Parser:
         cls = pratt_token_map.get(t.type)
         if cls:
             return cls
-        cls = pratt_token_map[t.string]
-        return cls
+        cls = pratt_token_map.get(t.string)
+        if cls:
+            return cls
+        return TokName
 
     def expr(self, rbp=0):
         t = self.tok
