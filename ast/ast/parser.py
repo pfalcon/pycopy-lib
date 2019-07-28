@@ -34,6 +34,8 @@ from . import types as ast
 log = ulogging.Logger(__name__)
 
 
+BP_UNTIL_COMMA = 10
+
 # Pratt parser token root base class
 class TokBase:
     # Left denotation and null denotation binding powers, effectively,
@@ -111,7 +113,7 @@ class TokLambda(TokBase):
     def nud(cls, p, t):
         arg_spec = p.require_typedargslist()
         p.expect(":")
-        body = p.expr()
+        body = p.expr(10)
         node = ast.Lambda(args=arg_spec, body=body)
         return node
 
@@ -238,7 +240,7 @@ class TokOpenSquare(TokBase):
     def nud(cls, p, t):
         elts = []
         while not p.match("]"):
-            elts.append(p.expr(10))
+            elts.append(p.expr(BP_UNTIL_COMMA))
             p.match(",")
         node = ast.List(elts=elts, ctx=ast.Load())
         return node
@@ -249,10 +251,10 @@ class TokOpenBrace(TokBase):
         keys = []
         vals = []
         while not p.match("}"):
-            k = p.expr(10)
+            k = p.expr(BP_UNTIL_COMMA)
             keys.append(k)
             p.expect(":")
-            v = p.expr(10)
+            v = p.expr(BP_UNTIL_COMMA)
             vals.append(v)
             p.match(",")
         node = ast.Dict(keys=keys, values=vals)
@@ -265,7 +267,7 @@ class TokOpenParens(TokBase):
         args = []
         if not p.check(")"):
             while True:
-                args.append(p.expr())
+                args.append(p.expr(BP_UNTIL_COMMA))
                 if not p.match(","):
                     break
         p.expect(")")
@@ -493,10 +495,10 @@ class Parser:
             return ast.Raise(exc=expr)
 
         if self.match("assert"):
-            expr = self.match_expr()
+            expr = self.match_expr(rbp=BP_UNTIL_COMMA)
             msg = None
             if self.match(","):
-                msg = self.match_expr()
+                msg = self.match_expr(rbp=BP_UNTIL_COMMA)
             return ast.Assert(test=expr, msg=msg)
 
         if self.match("del"):
@@ -626,7 +628,7 @@ class Parser:
     def match_with_stmt(self):
         if not self.match("with"):
             return None
-        expr = self.require_expr()
+        expr = self.require_expr(rbp=BP_UNTIL_COMMA)
         asname = None
         if self.match("as"):
             asname = self.expect(NAME)
@@ -701,7 +703,7 @@ class Parser:
     def match_exprlist(self, ctx=None):
         res = []
         while True:
-            expr = self.require_expr(ctx, rbp=10)
+            expr = self.require_expr(ctx, rbp=BP_UNTIL_COMMA)
             res.append(expr)
             if not self.match(","):
                 break
@@ -741,7 +743,7 @@ class Parser:
                 continue
             args.append(arg)
             if self.match("="):
-                dflt = self.require_expr()
+                dflt = self.require_expr(rbp=BP_UNTIL_COMMA)
                 defaults.append(dflt)
             self.match(",")
 
