@@ -292,6 +292,14 @@ class TokNumber(TokBase):
         node = ast.Num(n=v)
         return node
 
+class TokString(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        v = t.string
+        # TODO: properly unquote
+        v = v[1:-1]
+        return ast.Str(s=v)
+
 class TokName(TokBase):
     @classmethod
     def nud(cls, p, t):
@@ -330,6 +338,7 @@ pratt_token_map = {
     "{": TokOpenBrace, "}": TokDelim,
     "(": TokOpenParens, ")": TokDelim,
     NUMBER: TokNumber,
+    STRING: TokString,
 }
 
 
