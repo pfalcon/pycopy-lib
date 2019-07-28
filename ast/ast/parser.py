@@ -243,6 +243,21 @@ class TokOpenSquare(TokBase):
         node = ast.List(elts=elts, ctx=ast.Load())
         return node
 
+class TokOpenBrace(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        keys = []
+        vals = []
+        while not p.match("}"):
+            k = p.expr(10)
+            keys.append(k)
+            p.expect(":")
+            v = p.expr(10)
+            vals.append(v)
+            p.match(",")
+        node = ast.Dict(keys=keys, values=vals)
+        return node
+
 class TokOpenParens(TokBase):
     lbp = 160
     @classmethod
@@ -312,6 +327,7 @@ pratt_token_map = {
     "**": TokPow,
     ".": TokDot,
     "[": TokOpenSquare, "]": TokDelim,
+    "{": TokOpenBrace, "}": TokDelim,
     "(": TokOpenParens, ")": TokDelim,
     NUMBER: TokNumber,
 }
