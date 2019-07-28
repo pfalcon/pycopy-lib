@@ -659,25 +659,25 @@ class Parser:
             cls_led = self.get_token_class(self.tok)
         return left
 
-    def match_expr(self, ctx=None):
+    def match_expr(self, ctx=None, rbp=0):
         # Adhoc, consider making suitable TokDelim.nud() return None
         if self.check(NEWLINE) or self.check(";"):
             return None
 
-        n = self.expr()
+        n = self.expr(rbp)
         if ctx:
             self.set_ctx(n, ctx())
         return n
 
-    def require_expr(self, ctx=None):
-        res = self.match_expr(ctx)
+    def require_expr(self, ctx=None, rbp=0):
+        res = self.match_expr(ctx, rbp)
         if res is not None: return res
         self.error("expected expression")
 
     def match_exprlist(self, ctx=None):
         res = []
         while True:
-            expr = self.require_expr(ctx)
+            expr = self.require_expr(ctx, rbp=10)
             res.append(expr)
             if not self.match(","):
                 break
