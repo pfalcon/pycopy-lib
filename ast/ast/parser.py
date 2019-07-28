@@ -99,7 +99,7 @@ class TokComma(TokBase):
     @classmethod
     def led(cls, p, left):
         elts = [left]
-        while not p.check(ENDMARKER) and not p.check(NEWLINE) and not p.check(")") and not p.check(";"):
+        while not p.is_end_of_stmt() and not p.check(")"):
             e = p.expr(5)
             elts.append(e)
             if not p.match(","):
@@ -456,6 +456,9 @@ class Parser:
             else:
                 self.error("expected '%s'" % what)
         return res
+
+    def is_end_of_stmt(self):
+        return self.check(NEWLINE) or self.check(";") or self.check(ENDMARKER)
 
     @staticmethod
     def make_name(id, ctx=None):
