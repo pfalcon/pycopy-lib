@@ -37,7 +37,7 @@ def iter_fields(t):
         yield (k, getattr(t, k, None))
 
 
-def parse_file(stream, filename="<unknown>", mode="exec"):
+def parse_stream(stream, filename="<unknown>", mode="exec"):
     import utokenize as tokenize
     from . import parser
     tstream = tokenize.tokenize(stream.readline)
@@ -56,4 +56,4 @@ def parse_file(stream, filename="<unknown>", mode="exec"):
 
 def parse(source, filename="<unknown>", mode="exec"):
     import io
-    return parse_file(io.StringIO(source), filename, mode)
+    return parse_stream(io.StringIO(source), filename, mode)
