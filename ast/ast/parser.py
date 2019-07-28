@@ -504,9 +504,20 @@ class Parser:
         if not self.match("class"):
             return
         name = self.expect(NAME)
+        bases = []
+        keywords = []
+        if self.match("("):
+            while not self.match(")"):
+                base = self.expect(NAME)
+                if self.match("="):
+                    val = self.match_expr(rbp=BP_UNTIL_COMMA)
+                    keywords.append(ast.keyword(arg=base, value=val))
+                else:
+                    bases.append(self.make_name(base, ast.Load))
+                self.match(",")
         self.expect(":")
         body = self.match_suite()
-        return ast.ClassDef(name=name, body=body, bases=[], keywords=[], decorator_list=[], lineno=lineno)
+        return ast.ClassDef(name=name, body=body, bases=bases, keywords=keywords, decorator_list=[], lineno=lineno)
 
     def match_stmt(self):
         res = self.match_compound_stmt()
