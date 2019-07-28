@@ -456,6 +456,16 @@ class Parser:
             node.ctx = ctx()
         return node
 
+    def match_async(self):
+        if not self.match("async"):
+            return
+        res = self.match_funcdef()
+        if not res:
+            return None
+        return ast.AsyncFunctionDef(
+            name=res.name, args=res.args, body=res.body, decorator_list=res.decorator_list
+        )
+
     def match_funcdef(self):
         lineno = self.tok.start
         if not self.match("def"):
@@ -579,6 +589,8 @@ class Parser:
         res = self.match_funcdef()
         if res: return res
         res = self.match_classdef()
+        if res: return res
+        res = self.match_async()
         if res: return res
         return None
 
