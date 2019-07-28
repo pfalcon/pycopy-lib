@@ -139,6 +139,15 @@ class TokNot(TokPrefix):
     nbp = 50
     ast_un_op = ast.Not
 
+    lbp = 60  # not in
+    ast_bin_op = ast.NotIn
+    @classmethod
+    def led(cls, p, left):
+        p.expect("in")
+        right = p.expr(cls.lbp)
+        node = ast.Compare(ops=[ast.NotIn()], left=left, comparators=[right])
+        return node
+
 class TokEq(TokInfix):
     lbp = 60
     ast_bin_op = ast.Eq
