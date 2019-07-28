@@ -244,6 +244,13 @@ class TokPow(TokInfixRAssoc):
     lbp = 140
     ast_bin_op = ast.Pow
 
+class TokAwait(TokPrefix):
+    #nbp = 150
+    @classmethod
+    def nud(cls, p, t):
+        value = p.expr(150)
+        return ast.Await(value=value)
+
 class TokDot(TokBase):
     lbp = 160
     @classmethod
@@ -374,6 +381,7 @@ pratt_token_map = {
     "%": TokMod,
     "~": TokInvert,
     "**": TokPow,
+    "await": TokAwait,
     ".": TokDot,
     "[": TokOpenSquare, "]": TokDelim,
     "{": TokOpenBrace, "}": TokDelim,
