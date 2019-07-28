@@ -93,6 +93,15 @@ class TokInfixRAssoc(TokBase):
 
 # Concrete tokens
 
+class TokYield(TokBase):
+    #nbp = 3
+    @classmethod
+    def nud(cls, p, t):
+        value = None
+        if not p.is_end_of_stmt():
+            value = p.expr(4)
+        return ast.Yield(value=value)
+
 class TokComma(TokBase):
     lbp = 5
     # Tuple creation operator
@@ -355,6 +364,7 @@ class TokFalse(TokConst):
 pratt_token_map = {
     NEWLINE: TokDelim,
     ",": TokComma,
+    "yield": TokYield,
     "lambda": TokLambda,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
