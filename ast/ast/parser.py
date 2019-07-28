@@ -234,6 +234,15 @@ class TokOpenSquare(TokBase):
         node = ast.Subscript(value=left, slice=ast.Index(value=idx), ctx=ast.Load())
         return node
 
+    @classmethod
+    def nud(cls, p, t):
+        elts = []
+        while not p.match("]"):
+            elts.append(p.expr(10))
+            p.match(",")
+        node = ast.List(elts=elts, ctx=ast.Load())
+        return node
+
 class TokOpenParens(TokBase):
     lbp = 160
     @classmethod
