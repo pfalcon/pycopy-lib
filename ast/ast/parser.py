@@ -163,6 +163,18 @@ class TokGtE(TokInfix):
     lbp = 60
     ast_bin_op = ast.GtE
 
+class TokIs(TokInfix):
+    lbp = 60
+    # Overriden to handle both "is" and "is not"
+    @classmethod
+    def led(cls, p, left):
+        op = ast.Is
+        if p.match("not"):
+            op = ast.IsNot
+        right = p.expr(cls.lbp)
+        node = ast.Compare(ops=[op()], left=left, comparators=[right])
+        return node
+
 class TokBinOr(TokInfix):
     lbp = 70
     ast_bin_op = ast.BitOr
@@ -334,6 +346,7 @@ pratt_token_map = {
     "<=": TokLtE,
     ">": TokGt,
     ">=": TokGtE,
+    "is": TokIs,
     "|": TokBinOr,
     "^": TokBinXor,
     "&": TokBinAnd,
