@@ -175,6 +175,10 @@ class TokIs(TokInfix):
         node = ast.Compare(ops=[op()], left=left, comparators=[right])
         return node
 
+class TokIn(TokInfix):
+    lbp = 60
+    ast_bin_op = ast.In
+
 class TokBinOr(TokInfix):
     lbp = 70
     ast_bin_op = ast.BitOr
@@ -347,6 +351,7 @@ pratt_token_map = {
     ">": TokGt,
     ">=": TokGtE,
     "is": TokIs,
+    "in": TokIn,
     "|": TokBinOr,
     "^": TokBinXor,
     "&": TokBinAnd,
