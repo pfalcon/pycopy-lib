@@ -35,6 +35,7 @@ log = ulogging.Logger(__name__)
 
 
 BP_UNTIL_COMMA = 10
+BP_LVALUE = 160 - 1
 
 # Pratt parser token root base class
 class TokBase:
@@ -680,13 +681,16 @@ class Parser:
     def match_for_stmt(self):
         if not self.match("for"):
             return None
-        var = self.expect(NAME)
+        target = self.match_expr(ctx=ast.Store, rbp=BP_LVALUE)
+        if self.check(","):
+            target = ast.Tuple(elts=[target], ctx=ast.Store())
+            while self.match(","):
+                target.elts.append(self.match_expr(ctx=ast.Store, rbp=BP_LVALUE))
         self.expect("in")
         expr = self.require_expr()
         self.expect(":")
         body = self.match_suite()
-        return ast.For(target=self.make_name(var, ast.Store), iter=expr,
-            body=body, orelse=[])
+        return ast.For(target=target, iter=expr, body=body, orelse=[])
 
     def match_while_stmt(self):
         if not self.match("while"):
