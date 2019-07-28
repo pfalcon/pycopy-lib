@@ -4,3 +4,6 @@ ast/types.py: ast/types.py.pre Python.asdl
 
 install:
 	pip3 install --user asdl
+
+test:
+	./runtests.sh
