@@ -652,11 +652,20 @@ class Parser:
             if not self.check("import"):
                 module = self.match_dotted_name()
             self.expect("import")
+            names = []
             if self.match("*"):
                 name = "*"
+                names.append(ast.alias(name="*", asname=None))
             else:
-                name = self.expect(NAME)
-            return ast.ImportFrom(module=module, names=[ast.alias(name=name, asname=None)], level=level)
+                while True:
+                    name = self.expect(NAME)
+                    asname = None
+                    if self.match("as"):
+                        asname = self.expect(NAME)
+                    names.append(ast.alias(name=name, asname=asname))
+                    if not self.match(","):
+                        break
+            return ast.ImportFrom(module=module, names=names, level=level)
 
     def match_if_stmt(self):
 
