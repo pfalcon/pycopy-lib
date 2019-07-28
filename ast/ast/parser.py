@@ -305,6 +305,18 @@ class TokName(TokBase):
     def nud(cls, p, t):
         return ast.Name(id=t.string, ctx=ast.Load())
 
+class TokConst(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        return ast.NameConstant(value=cls.value)
+
+class TokNone(TokConst):
+    value = None
+class TokTrue(TokConst):
+    value = True
+class TokFalse(TokConst):
+    value = False
+
 
 pratt_token_map = {
     NEWLINE: TokDelim,
@@ -337,6 +349,9 @@ pratt_token_map = {
     "[": TokOpenSquare, "]": TokDelim,
     "{": TokOpenBrace, "}": TokDelim,
     "(": TokOpenParens, ")": TokDelim,
+    "None": TokNone,
+    "True": TokTrue,
+    "False": TokFalse,
     NUMBER: TokNumber,
     STRING: TokString,
 }
