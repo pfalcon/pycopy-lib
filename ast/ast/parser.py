@@ -467,6 +467,8 @@ class Parser:
                 Parser.set_ctx(e, ctx)
         elif isinstance(t, ast.AST):
             t.ctx = ctx
+            if isinstance(t, ast.Subscript):
+                return
             for k in t._fields:
                 v = getattr(t, k, None)
                 if not (isinstance(t, ast.Attribute) and k == "value"):
