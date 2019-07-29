@@ -776,7 +776,11 @@ class Parser:
         expr = self.require_expr()
         self.expect(":")
         body = self.match_suite()
-        return ast.While(test=expr, body=body, orelse=[])
+        orelse = []
+        if self.match("else"):
+            self.expect(":")
+            orelse = self.match_suite()
+        return ast.While(test=expr, body=body, orelse=orelse)
 
     def match_with_stmt(self):
         if not self.match("with"):
