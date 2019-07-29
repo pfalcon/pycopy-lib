@@ -489,6 +489,12 @@ class Parser:
     def is_end_of_stmt(self):
         return self.check(NEWLINE) or self.check(";") or self.check(ENDMARKER)
 
+    def is_delim(self):
+        if self.is_end_of_stmt():
+            return True
+        if self.tok.type == OP and self.tok.string in ("]", ":"):
+            return True
+
     @staticmethod
     def make_name(id, ctx=None):
         node = ast.Name(id=id)
@@ -816,7 +822,7 @@ class Parser:
 
     def match_expr(self, ctx=None, rbp=0):
         # Adhoc, consider making suitable TokDelim.nud() return None
-        if self.check(NEWLINE) or self.check(";"):
+        if self.is_delim():
             return None
 
         n = self.expr(rbp)
