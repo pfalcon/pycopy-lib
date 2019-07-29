@@ -274,8 +274,16 @@ class TokOpenSquare(TokBase):
     @classmethod
     def led(cls, p, left):
         idx = p.expr()
+        if p.match(":"):
+            upper = p.expr()
+            step = None
+            if p.match(":"):
+                step = p.expr()
+            slc = ast.Slice(lower=idx, upper=upper, step=step)
+        else:
+            slc = ast.Index(value=idx)
         p.expect("]")
-        node = ast.Subscript(value=left, slice=ast.Index(value=idx), ctx=ast.Load())
+        node = ast.Subscript(value=left, slice=slc, ctx=ast.Load())
         return node
 
     @classmethod
