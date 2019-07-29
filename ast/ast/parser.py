@@ -101,9 +101,7 @@ class TokYield(TokBase):
         yield_from = False
         if p.match("from"):
             yield_from = True
-        value = None
-        if not p.is_end_of_stmt():
-            value = p.expr(4)
+        value = p.match_expr(rbp=4)
         if yield_from:
             return ast.YieldFrom(value=value)
         else:
