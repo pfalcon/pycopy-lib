@@ -411,6 +411,7 @@ class Parser:
         self.tstream = token_stream
         self.tok = None
         self.next()
+        self.decorators = []
 
     def next(self):
         while True:
@@ -497,8 +498,14 @@ class Parser:
         arg_spec = self.require_typedargslist()
         self.expect(")")
         self.expect(":")
+        decorator_list = self.decorators
+        self.decorators = []
         body = self.match_suite()
-        return ast.FunctionDef(name=name, args=arg_spec, body=body, decorator_list=[], lineno=lineno)
+        node = ast.FunctionDef(
+            name=name, args=arg_spec, body=body,
+            decorator_list=decorator_list, lineno=lineno
+        )
+        return node
 
     def match_classdef(self):
         lineno = self.tok.start
@@ -517,12 +524,23 @@ class Parser:
                     bases.append(self.make_name(base, ast.Load))
                 self.match(",")
         self.expect(":")
+        decorator_list = self.decorators
+        self.decorators = []
         body = self.match_suite()
-        return ast.ClassDef(name=name, body=body, bases=bases, keywords=keywords, decorator_list=[], lineno=lineno)
+        return ast.ClassDef(
+            name=name, body=body, bases=bases, keywords=keywords,
+            decorator_list=decorator_list, lineno=lineno
+        )
 
     def match_stmt(self):
-        res = self.match_compound_stmt()
-        if res: return [res]
+        while True:
+            res = self.match_compound_stmt()
+            # True means a decorator matched
+            if res is not True:
+                break
+        if res:
+            log.debug("match_stmt: %r", res)
+            return [res]
         res = self.match_simple_stmt()
         if res: return res
         self.error("expected statement")
@@ -609,6 +627,22 @@ class Parser:
         return ast.Expr(value=res)
 
     def match_compound_stmt(self):
+        if self.match("@"):
+            decor = self.match_expr(rbp=BP_LVALUE)
+            self.expect(NEWLINE)
+            self.decorators.append(decor)
+            return True
+
+        res = self.match_funcdef()
+        if res: return res
+        res = self.match_classdef()
+        if res: return res
+        res = self.match_async()
+        if res: return res
+
+        if self.decorators:
+            self.error("Unexpected decorator")
+
         res = self.match_if_stmt()
         if res: return res
         res = self.match_for_stmt()
@@ -618,12 +652,6 @@ class Parser:
         res = self.match_with_stmt()
         if res: return res
         res = self.match_try_stmt()
-        if res: return res
-        res = self.match_funcdef()
-        if res: return res
-        res = self.match_classdef()
-        if res: return res
-        res = self.match_async()
         if res: return res
         return None
 
