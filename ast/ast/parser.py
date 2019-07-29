@@ -762,9 +762,7 @@ class Parser:
         if self.match("if"):
             return handle_if()
 
-    def match_for_stmt(self):
-        if not self.match("for"):
-            return None
+    def match_for_in(self):
         target = self.match_expr(ctx=ast.Store, rbp=BP_LVALUE)
         if self.check(","):
             target = ast.Tuple(elts=[target], ctx=ast.Store())
@@ -772,6 +770,12 @@ class Parser:
                 target.elts.append(self.match_expr(ctx=ast.Store, rbp=BP_LVALUE))
         self.expect("in")
         expr = self.require_expr()
+        return target, expr
+
+    def match_for_stmt(self):
+        if not self.match("for"):
+            return None
+        target, expr = self.match_for_in()
         self.expect(":")
         body = self.match_suite()
         orelse = []
