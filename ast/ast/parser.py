@@ -307,13 +307,20 @@ class TokOpenParens(TokBase):
     @classmethod
     def led(cls, p, left):
         args = []
+        keywords = []
         if not p.check(")"):
             while True:
-                args.append(p.expr(BP_UNTIL_COMMA))
+                arg = p.expr(BP_UNTIL_COMMA)
+                if p.match("="):
+                    assert isinstance(arg, ast.Name)
+                    val = p.expr(BP_UNTIL_COMMA)
+                    keywords.append(ast.keyword(arg=arg.id, value=val))
+                else:
+                    args.append(arg)
                 if not p.match(","):
                     break
         p.expect(")")
-        node = ast.Call(func=left, args=args, keywords=[])
+        node = ast.Call(func=left, args=args, keywords=keywords)
         return node
 
     #nbp = 170
