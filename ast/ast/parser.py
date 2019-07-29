@@ -729,6 +729,7 @@ class Parser:
                 name = "*"
                 names.append(ast.alias(name="*", asname=None))
             else:
+                is_paren = self.match("(")
                 while True:
                     name = self.expect(NAME)
                     asname = None
@@ -737,6 +738,8 @@ class Parser:
                     names.append(ast.alias(name=name, asname=asname))
                     if not self.match(","):
                         break
+                if is_paren:
+                    self.match(")")
             return ast.ImportFrom(module=module, names=names, level=level)
 
     def match_if_stmt(self):
