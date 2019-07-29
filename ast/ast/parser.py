@@ -439,7 +439,8 @@ class Parser:
         sys.stderr.write("<input>:%d: error: %s\n" % (self.tok.start, msg))
         raise Exception
 
-    # Recursively set "lvalue" node access context
+    # Recursively set "lvalue" node access context (to other value than
+    # default ast.Load).
     @staticmethod
     def set_ctx(t, ctx):
         if isinstance(t, list):
@@ -449,7 +450,8 @@ class Parser:
             t.ctx = ctx
             for k in t._fields:
                 v = getattr(t, k, None)
-                Parser.set_ctx(v, ctx)
+                if not (isinstance(t, ast.Attribute) and k == "value"):
+                    Parser.set_ctx(v, ctx)
 
     def check(self, what):
         if isinstance(what, str):
