@@ -1,4 +1,4 @@
 srctype = pycopy-lib
 type = package
 author = Paul Sokolovsky
-version = 1.4
+version = 1.5
