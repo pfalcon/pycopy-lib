@@ -792,14 +792,19 @@ class Parser:
     def match_with_stmt(self):
         if not self.match("with"):
             return None
-        expr = self.require_expr(rbp=BP_UNTIL_COMMA)
-        asname = None
-        if self.match("as"):
-            asname = self.expect(NAME)
-            asname = self.make_name(asname, ast.Store)
+        items = []
+        while True:
+            expr = self.require_expr(rbp=BP_UNTIL_COMMA)
+            asname = None
+            if self.match("as"):
+                asname = self.expect(NAME)
+                asname = self.make_name(asname, ast.Store)
+            items.append(ast.withitem(context_expr=expr, optional_vars=asname))
+            if not self.match(","):
+                break
         self.expect(":")
         body = self.match_suite()
-        return ast.With(items=[ast.withitem(context_expr=expr, optional_vars=asname)], body=body)
+        return ast.With(items=items, body=body)
 
     def match_try_stmt(self):
         if not self.match("try"):
