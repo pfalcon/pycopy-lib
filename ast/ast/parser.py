@@ -238,6 +238,11 @@ class TokMul(TokInfix):
     lbp = 120
     ast_bin_op = ast.Mult
 
+    @classmethod
+    def nud(cls, p, t):
+        value = p.expr(160 - 1)
+        return ast.Starred(value=value, ctx=ast.Load())
+
 class TokDiv(TokInfix):
     lbp = 120
     ast_bin_op = ast.Div
