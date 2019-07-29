@@ -121,6 +121,15 @@ class TokComma(TokBase):
         node = ast.Tuple(elts=elts, ctx=ast.Load())
         return node
 
+class TokFor(TokBase):
+    lbp = 7
+    @classmethod
+    def led(cls, p, left):
+        target, expr = p.match_for_in()
+        return ast.GeneratorExp(
+            elt=left, generators=[ast.comprehension(target=target, iter=expr, ifs=[])]
+        )
+
 class TokLambda(TokBase):
     #nbp = 10
     @classmethod
@@ -400,6 +409,7 @@ pratt_token_map = {
     NEWLINE: TokDelim,
     ",": TokComma,
     "yield": TokYield,
+    "for": TokFor,
     "lambda": TokLambda,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
