@@ -904,11 +904,13 @@ class Parser:
                 kwarg = True
             arg = self.expect(NAME)
             arg = ast.arg(arg=arg, annotation=None)
-            if vararg:
+            if vararg is True:
                 vararg = arg
+                self.match(",")
                 continue
-            elif kwarg:
+            elif kwarg is True:
                 kwarg = arg
+                self.match(",")
                 continue
             args.append(arg)
             if self.match("="):
