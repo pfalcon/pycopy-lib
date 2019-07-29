@@ -98,10 +98,16 @@ class TokYield(TokBase):
     #nbp = 3
     @classmethod
     def nud(cls, p, t):
+        yield_from = False
+        if p.match("from"):
+            yield_from = True
         value = None
         if not p.is_end_of_stmt():
             value = p.expr(4)
-        return ast.Yield(value=value)
+        if yield_from:
+            return ast.YieldFrom(value=value)
+        else:
+            return ast.Yield(value=value)
 
 class TokComma(TokBase):
     lbp = 5
