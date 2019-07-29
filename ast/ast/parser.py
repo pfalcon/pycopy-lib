@@ -273,12 +273,12 @@ class TokOpenSquare(TokBase):
     lbp = 160
     @classmethod
     def led(cls, p, left):
-        idx = p.expr()
+        idx = p.match_expr()
         if p.match(":"):
-            upper = p.expr()
+            upper = p.match_expr()
             step = None
             if p.match(":"):
-                step = p.expr()
+                step = p.match_expr()
             slc = ast.Slice(lower=idx, upper=upper, step=step)
         else:
             slc = ast.Index(value=idx)
