@@ -800,12 +800,17 @@ class Parser:
             exc_body = self.match_suite()
             handlers.append(ast.ExceptHandler(type=exc_sel, name=capture_var, body=exc_body))
 
+        orelse = []
+        if self.match("else"):
+            self.expect(":")
+            orelse = self.match_suite()
+
         finalbody = []
         if self.match("finally"):
             self.expect(":")
             finalbody = self.match_suite()
 
-        return ast.Try(body=body, handlers=handlers, orelse=[], finalbody=finalbody)
+        return ast.Try(body=body, handlers=handlers, orelse=orelse, finalbody=finalbody)
 
 
     @staticmethod
