@@ -318,18 +318,23 @@ class TokOpenParens(TokBase):
         keywords = []
         if not p.check(")"):
             while True:
-                starred = False
+                starred = None
                 if p.match("*"):
-                    starred = True
+                    starred = "*"
+                elif p.match("**"):
+                    starred = "**"
                 arg = p.expr(BP_UNTIL_COMMA)
                 if p.match("="):
                     assert isinstance(arg, ast.Name)
                     val = p.expr(BP_UNTIL_COMMA)
                     keywords.append(ast.keyword(arg=arg.id, value=val))
                 else:
-                    if starred:
-                        arg = ast.Starred(value=arg, ctx=ast.Load())
-                    args.append(arg)
+                    if starred == "**":
+                        keywords.append(ast.keyword(arg=None, value=arg))
+                    else:
+                        if starred == "*":
+                            arg = ast.Starred(value=arg, ctx=ast.Load())
+                        args.append(arg)
                 if not p.match(","):
                     break
         p.expect(")")
