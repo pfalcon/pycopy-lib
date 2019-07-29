@@ -508,7 +508,7 @@ class Parser:
     def is_delim(self):
         if self.is_end_of_stmt():
             return True
-        if self.tok.type == OP and self.tok.string in ("]", ":"):
+        if self.tok.type == OP and self.tok.string in ("]", "}", ")", ":"):
             return True
 
     @staticmethod
