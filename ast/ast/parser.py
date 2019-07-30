@@ -40,9 +40,12 @@ BP_LVALUE = 160 - 1
 
 def literal_eval(s):
     if s.endswith('"') or s.endswith("'"):
-        sep = s[-1]
+        if s.endswith('"""') or s.endswith("'''"):
+            sep = s[-3:]
+        else:
+            sep = s[-1]
         prefix, s = s.split(sep, 1)
-        s = s[:-1]
+        s = s[:-len(sep)]
         res = ""
         while s:
             if s[0] == "\\":
