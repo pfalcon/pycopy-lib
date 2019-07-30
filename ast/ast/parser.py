@@ -94,7 +94,7 @@ class TokPrefix(TokBase):
 
 class TokInfix(TokBase):
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         right = p.expr(cls.lbp)
         if cls.ast_bin_op in (ast.And, ast.Or) and isinstance(left, ast.BoolOp) and isinstance(left.op, cls.ast_bin_op):
             left.values.append(right)
@@ -117,7 +117,7 @@ class TokInfix(TokBase):
 
 class TokInfixRAssoc(TokBase):
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         right = p.expr(cls.lbp - 1)
         node = ast.BinOp(op=cls.ast_bin_op(), left=left, right=right)
         return node
@@ -141,7 +141,7 @@ class TokComma(TokBase):
     lbp = 5
     # Tuple creation operator
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         elts = [left]
         while not p.is_end_of_stmt() and not p.check(")"):
             e = p.expr(5)
@@ -154,7 +154,7 @@ class TokComma(TokBase):
 class TokFor(TokBase):
     lbp = 7
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         target, expr = p.match_for_in(20)
         ifs = []
         if p.match("if"):
@@ -176,7 +176,7 @@ class TokLambda(TokBase):
 class TokIf(TokBase):
     lbp = 20
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         cond = p.expr()
         p.expect("else")
         orelse = p.expr()
@@ -198,7 +198,7 @@ class TokNot(TokPrefix):
     lbp = 60  # not in
     ast_bin_op = ast.NotIn
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         p.expect("in")
         right = p.expr(cls.lbp)
         node = ast.Compare(ops=[ast.NotIn()], left=left, comparators=[right])
@@ -232,7 +232,7 @@ class TokIs(TokInfix):
     lbp = 60
     # Overriden to handle both "is" and "is not"
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         op = ast.Is
         if p.match("not"):
             op = ast.IsNot
@@ -315,7 +315,7 @@ class TokAwait(TokPrefix):
 class TokDot(TokBase):
     lbp = 160
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         attr = p.expect(NAME)
         node = ast.Attribute(value=left, attr=attr, ctx=ast.Load())
         return node
@@ -323,7 +323,7 @@ class TokDot(TokBase):
 class TokOpenSquare(TokBase):
     lbp = 160
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         idx = p.match_expr()
         if p.match(":"):
             upper = p.match_expr()
@@ -372,7 +372,7 @@ class TokOpenBrace(TokBase):
 class TokOpenParens(TokBase):
     lbp = 160
     @classmethod
-    def led(cls, p, left):
+    def led(cls, p, left, t):
         args = []
         keywords = []
         if not p.check(")"):
@@ -911,11 +911,13 @@ class Parser:
         self.next()
         cls_nud = self.get_token_class(t)
         left = cls_nud.nud(self, t)
-        cls_led = self.get_token_class(self.tok)
+        t = self.tok
+        cls_led = self.get_token_class(t)
         while rbp < cls_led.lbp:
             self.next()
-            left = cls_led.led(self, left)
-            cls_led = self.get_token_class(self.tok)
+            left = cls_led.led(self, left, t)
+            t = self.tok
+            cls_led = self.get_token_class(t)
         return left
 
     def match_expr(self, ctx=None, rbp=0):
