@@ -421,6 +421,14 @@ class TokNumber(TokBase):
         return node
 
 class TokString(TokBase):
+    lbp = 200
+    # Adjacent strings
+    @classmethod
+    def led(cls, p, left, t):
+        assert isinstance(left, (ast.Str, ast.Bytes))
+        left.s += literal_eval(t.string)
+        return left
+
     @classmethod
     def nud(cls, p, t):
         v = literal_eval(t.string)
