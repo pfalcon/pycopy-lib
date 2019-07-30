@@ -456,7 +456,10 @@ class TokNumber(TokBase):
         try:
             v = int(t.string)
         except ValueError:
-            v = float(t.string)
+            if t.string.endswith("j"):
+                v = complex(t.string)
+            else:
+                v = float(t.string)
         node = ast.Num(n=v)
         return node
 
