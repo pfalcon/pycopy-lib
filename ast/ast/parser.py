@@ -81,6 +81,10 @@ class TokInfix(TokBase):
         if op in (ast.And, ast.Or):
             return ast.BoolOp(op=op(), values=[left, right])
         elif issubclass(op, ast.cmpop):
+            if isinstance(left, ast.Compare):
+                left.ops.append(op())
+                left.comparators.append(right)
+                return left
             return ast.Compare(ops=[op()], left=left, comparators=[right])
         else:
             return ast.BinOp(op=op(), left=left, right=right)
