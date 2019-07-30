@@ -777,11 +777,16 @@ class Parser:
 
     def match_import_stmt(self):
         if self.match("import"):
-            name = self.match_dotted_name()
-            asname = None
-            if self.match("as"):
-                asname = self.expect(NAME)
-            return ast.Import(names=[ast.alias(name=name, asname=asname)])
+            names = []
+            while True:
+                name = self.match_dotted_name()
+                asname = None
+                if self.match("as"):
+                    asname = self.expect(NAME)
+                names.append(ast.alias(name=name, asname=asname))
+                if not self.match(","):
+                    break
+            return ast.Import(names=names)
         elif self.match("from"):
             level = 0
             while self.match("."):
