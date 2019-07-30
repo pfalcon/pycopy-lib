@@ -49,7 +49,7 @@ def literal_eval(s):
         res = ""
         while s:
             if s[0] == "\\":
-                nc = {"n": "\n", "\\": "\\"}[s[1]]
+                nc = {"n": "\n", "\\": "\\", "'": "'", '"': '"'}[s[1]]
                 res += nc
                 s = s[2:]
             else:
