@@ -494,6 +494,11 @@ class TokTrue(TokConst):
 class TokFalse(TokConst):
     value = False
 
+class TokEllipsis(TokBase):
+    @classmethod
+    def nud(cls, p, t):
+        return ast.Ellipsis()
+
 
 pratt_token_map = {
     NEWLINE: TokDelim,
@@ -535,6 +540,7 @@ pratt_token_map = {
     "None": TokNone,
     "True": TokTrue,
     "False": TokFalse,
+    "...": TokEllipsis,
     NUMBER: TokNumber,
     STRING: TokString,
 }
