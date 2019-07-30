@@ -75,6 +75,12 @@ def literal_eval(s):
                         else:
                             nc = chr(int(s[2:4], 16))
                         s = s[4:]
+                    elif c == "u":
+                        nc = chr(int(s[2:6], 16))
+                        s = s[6:]
+                    elif c == "U":
+                        nc = chr(int(s[2:10], 16))
+                        s = s[10:]
                     else:
                         nc = {
                             "a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r",
