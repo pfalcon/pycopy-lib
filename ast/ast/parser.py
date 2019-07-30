@@ -39,8 +39,10 @@ BP_LVALUE = 160 - 1
 
 
 def literal_eval(s):
-    if s.startswith('"') or s.startswith("'"):
-        s = s[1:-1]
+    if s.endswith('"') or s.endswith("'"):
+        sep = s[-1]
+        prefix, s = s.split(sep, 1)
+        s = s[:-1]
         res = ""
         while s:
             if s[0] == "\\":
@@ -50,7 +52,10 @@ def literal_eval(s):
             else:
                 res += s[0]
                 s = s[1:]
-        return res
+        if "b" in prefix:
+            return bytes(res, "utf-8")
+        else:
+            return res
 
     raise NotImplementedError
 
@@ -416,7 +421,10 @@ class TokString(TokBase):
     @classmethod
     def nud(cls, p, t):
         v = literal_eval(t.string)
-        return ast.Str(s=v)
+        if isinstance(v, bytes):
+            return ast.Bytes(s=v)
+        else:
+            return ast.Str(s=v)
 
 class TokName(TokBase):
     @classmethod
