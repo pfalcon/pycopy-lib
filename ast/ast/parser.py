@@ -211,7 +211,7 @@ class TokIs(TokInfix):
         if p.match("not"):
             op = ast.IsNot
         right = p.expr(cls.lbp)
-        node = ast.Compare(ops=[op()], left=left, comparators=[right])
+        node = cls.bin_op(op, left, right)
         return node
 
 class TokIn(TokInfix):
