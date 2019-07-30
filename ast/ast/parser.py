@@ -687,7 +687,10 @@ class Parser:
 
         if self.match("raise"):
             expr = self.match_expr()
-            return ast.Raise(exc=expr)
+            cause = None
+            if self.match("from"):
+                cause = self.match_expr()
+            return ast.Raise(exc=expr, cause=cause)
 
         if self.match("assert"):
             expr = self.match_expr(rbp=BP_UNTIL_COMMA)
