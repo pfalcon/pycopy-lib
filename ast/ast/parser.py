@@ -46,15 +46,18 @@ def literal_eval(s):
             sep = s[-1]
         prefix, s = s.split(sep, 1)
         s = s[:-len(sep)]
-        res = ""
-        while s:
-            if s[0] == "\\":
-                nc = {"n": "\n", "\\": "\\", "'": "'", '"': '"'}[s[1]]
-                res += nc
-                s = s[2:]
-            else:
-                res += s[0]
-                s = s[1:]
+        if "r" in prefix:
+            res = s
+        else:
+            res = ""
+            while s:
+                if s[0] == "\\":
+                    nc = {"n": "\n", "\\": "\\", "'": "'", '"': '"'}[s[1]]
+                    res += nc
+                    s = s[2:]
+                else:
+                    res += s[0]
+                    s = s[1:]
         if "b" in prefix:
             return bytes(res, "utf-8")
         else:
