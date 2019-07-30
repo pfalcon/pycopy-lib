@@ -37,6 +37,24 @@ log = ulogging.Logger(__name__)
 BP_UNTIL_COMMA = 10
 BP_LVALUE = 160 - 1
 
+
+def literal_eval(s):
+    if s.startswith('"') or s.startswith("'"):
+        s = s[1:-1]
+        res = ""
+        while s:
+            if s[0] == "\\":
+                nc = {"n": "\n", "\\": "\\"}[s[1]]
+                res += nc
+                s = s[2:]
+            else:
+                res += s[0]
+                s = s[1:]
+        return res
+
+    raise NotImplementedError
+
+
 # Pratt parser token root base class
 class TokBase:
     # Left denotation and null denotation binding powers, effectively,
@@ -397,9 +415,7 @@ class TokNumber(TokBase):
 class TokString(TokBase):
     @classmethod
     def nud(cls, p, t):
-        v = t.string
-        # TODO: properly unquote
-        v = v[1:-1]
+        v = literal_eval(t.string)
         return ast.Str(s=v)
 
 class TokName(TokBase):
