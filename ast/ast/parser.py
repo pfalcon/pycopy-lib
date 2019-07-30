@@ -325,14 +325,22 @@ class TokOpenBrace(TokBase):
     def nud(cls, p, t):
         keys = []
         vals = []
+        # dict or set
+        is_dict = None
         while not p.match("}"):
             k = p.expr(BP_UNTIL_COMMA)
             keys.append(k)
-            p.expect(":")
-            v = p.expr(BP_UNTIL_COMMA)
-            vals.append(v)
+            if is_dict is None:
+                is_dict = bool(p.check(":"))
+            if is_dict:
+                p.expect(":")
+                v = p.expr(BP_UNTIL_COMMA)
+                vals.append(v)
             p.match(",")
-        node = ast.Dict(keys=keys, values=vals)
+        if is_dict or is_dict is None:
+            node = ast.Dict(keys=keys, values=vals)
+        else:
+            node = ast.Set(elts=keys)
         return node
 
 class TokOpenParens(TokBase):
