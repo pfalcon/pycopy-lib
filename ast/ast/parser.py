@@ -885,8 +885,8 @@ class Parser:
             expr = self.require_expr(rbp=BP_UNTIL_COMMA)
             asname = None
             if self.match("as"):
-                asname = self.expect(NAME)
-                asname = self.make_name(asname, ast.Store)
+                asname = self.match_expr(rbp=BP_UNTIL_COMMA)
+                self.set_ctx(asname, ast.Store())
             items.append(ast.withitem(context_expr=expr, optional_vars=asname))
             if not self.match(","):
                 break
