@@ -53,16 +53,25 @@ def literal_eval(s):
             while s:
                 if s[0] == "\\":
                     c = s[1]
-                    if c in ("o", "x"):
-                        raise NotImplementedError
-                    nc = {
-                        "a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r",
-                        "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"',
-                    }.get(c)
-                    if nc is None:
-                        nc = s[0:2]
+                    if c >= "0" and c <= "7":
+                        s = s[1:]
+                        ns = ""
+                        while s and s[0] >= "0" and s[0] <= "7" and len(ns) < 3:
+                            ns += s[0]
+                            s = s[1:]
+                        nc = chr(int(ns, 8))
+                    elif c == "x":
+                        nc = chr(int(s[2:4], 16))
+                        s = s[4:]
+                    else:
+                        nc = {
+                            "a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r",
+                            "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"',
+                        }.get(c)
+                        if nc is None:
+                            nc = s[0:2]
+                        s = s[2:]
                     res += nc
-                    s = s[2:]
                 else:
                     res += s[0]
                     s = s[1:]
