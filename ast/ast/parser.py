@@ -125,9 +125,12 @@ class TokFor(TokBase):
     lbp = 7
     @classmethod
     def led(cls, p, left):
-        target, expr = p.match_for_in()
+        target, expr = p.match_for_in(20)
+        ifs = []
+        if p.match("if"):
+            ifs = [p.expr()]
         return ast.GeneratorExp(
-            elt=left, generators=[ast.comprehension(target=target, iter=expr, ifs=[])]
+            elt=left, generators=[ast.comprehension(target=target, iter=expr, ifs=ifs)]
         )
 
 class TokLambda(TokBase):
@@ -772,14 +775,14 @@ class Parser:
         if self.match("if"):
             return handle_if()
 
-    def match_for_in(self):
+    def match_for_in(self, rbp=0):
         target = self.match_expr(ctx=ast.Store, rbp=BP_LVALUE)
         if self.check(","):
             target = ast.Tuple(elts=[target], ctx=ast.Store())
             while self.match(","):
                 target.elts.append(self.match_expr(ctx=ast.Store, rbp=BP_LVALUE))
         self.expect("in")
-        expr = self.require_expr()
+        expr = self.require_expr(rbp=rbp)
         return target, expr
 
     def match_for_stmt(self):
