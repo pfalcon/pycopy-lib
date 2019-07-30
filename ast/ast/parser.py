@@ -46,10 +46,16 @@ def literal_eval(s):
             sep = s[-1]
         prefix, s = s.split(sep, 1)
         s = s[:-len(sep)]
+        is_bytes = "b" in prefix
         if "r" in prefix:
             res = s
+            if is_bytes:
+                res = bytes(res, "utf-8")
         else:
-            res = ""
+            if is_bytes:
+                res = b""
+            else:
+                res = ""
             while s:
                 if s[0] == "\\":
                     c = s[1]
@@ -59,9 +65,15 @@ def literal_eval(s):
                         while s and s[0] >= "0" and s[0] <= "7" and len(ns) < 3:
                             ns += s[0]
                             s = s[1:]
-                        nc = chr(int(ns, 8))
+                        if is_bytes:
+                            nc = bytes([int(ns, 8)])
+                        else:
+                            nc = chr(int(ns, 8))
                     elif c == "x":
-                        nc = chr(int(s[2:4], 16))
+                        if is_bytes:
+                            nc = bytes([int(s[2:4], 16)])
+                        else:
+                            nc = chr(int(s[2:4], 16))
                         s = s[4:]
                     else:
                         nc = {
@@ -75,10 +87,7 @@ def literal_eval(s):
                 else:
                     res += s[0]
                     s = s[1:]
-        if "b" in prefix:
-            return bytes(res, "utf-8")
-        else:
-            return res
+        return res
 
     raise NotImplementedError
 
