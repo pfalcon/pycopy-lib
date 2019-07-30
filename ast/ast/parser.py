@@ -809,6 +809,8 @@ class Parser:
                     names.append(ast.alias(name=name, asname=asname))
                     if not self.match(","):
                         break
+                    if self.check(")"):
+                        break
                 if is_paren:
                     self.match(")")
             return ast.ImportFrom(module=module, names=names, level=level)
