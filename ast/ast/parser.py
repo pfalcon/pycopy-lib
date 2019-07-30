@@ -52,7 +52,15 @@ def literal_eval(s):
             res = ""
             while s:
                 if s[0] == "\\":
-                    nc = {"n": "\n", "\\": "\\", "'": "'", '"': '"'}[s[1]]
+                    c = s[1]
+                    if c in ("o", "x"):
+                        raise NotImplementedError
+                    nc = {
+                        "a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r",
+                        "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"',
+                    }.get(c)
+                    if nc is None:
+                        nc = s[0:2]
                     res += nc
                     s = s[2:]
                 else:
