@@ -365,8 +365,9 @@ class TokOpenSquare(TokBase):
     @classmethod
     def led(cls, p, left, t):
         dims = []
+        rbp = 0
         while True:
-            idx = p.match_expr()
+            idx = p.match_expr(rbp=rbp)
             if p.match(":"):
                 upper = p.match_expr(rbp=BP_UNTIL_COMMA)
                 step = None
@@ -378,6 +379,7 @@ class TokOpenSquare(TokBase):
             dims.append(slc)
             if not p.match(","):
                 break
+            rbp = BP_UNTIL_COMMA
         p.expect("]")
         if len(dims) == 1:
             node = ast.Subscript(value=left, slice=slc, ctx=ast.Load())
