@@ -1025,11 +1025,17 @@ class Parser:
     def require_typedargslist(self):
         args = []
         defaults = []
+        kwonlyargs = []
+        kw_defaults = []
         vararg = None
         kwarg = None
+        kwonly = False
         # TODO: This is somewhat adhoc, relies on terminating token for funcdef vs lambda
         while not self.check(")") and not self.check(":"):
             if self.match("*"):
+                if self.match(","):
+                    kwonly = True
+                    continue
                 if vararg:
                     self.error(">1 vararg")
                 vararg = True
@@ -1047,13 +1053,25 @@ class Parser:
                 kwarg = arg
                 self.match(",")
                 continue
-            args.append(arg)
+            if kwonly:
+                kwonlyargs.append(arg)
+            else:
+                args.append(arg)
             if self.match("="):
                 dflt = self.require_expr(rbp=BP_UNTIL_COMMA)
-                defaults.append(dflt)
+                if kwonly:
+                    kw_defaults.append(dflt)
+                else:
+                    defaults.append(dflt)
+            elif kwonly:
+                kw_defaults.append(None)
             self.match(",")
 
-        arg_spec = ast.arguments(args=args, vararg=vararg, kwonlyargs=[], kw_defaults=[], kwarg=kwarg, defaults=defaults)
+        arg_spec = ast.arguments(
+            args=args, vararg=vararg,
+            kwonlyargs=kwonlyargs, kw_defaults=kw_defaults,
+            kwarg=kwarg, defaults=defaults
+        )
         return arg_spec
 
     def match_dotted_name(self):
