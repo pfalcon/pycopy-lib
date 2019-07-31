@@ -132,7 +132,7 @@ class TokInfix(TokBase):
     @classmethod
     def led(cls, p, left, t):
         right = p.expr(cls.lbp)
-        if cls.ast_bin_op in (ast.And, ast.Or) and isinstance(left, ast.BoolOp) and isinstance(left.op, cls.ast_bin_op):
+        if cls.ast_bin_op in (ast.And, ast.Or) and isinstance(left, ast.BoolOp) and isinstance(left.op, cls.ast_bin_op) and not getattr(left, "parenform", False):
             left.values.append(right)
             return left
         node = cls.bin_op(cls.ast_bin_op, left, right)
