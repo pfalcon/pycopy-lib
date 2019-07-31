@@ -1102,7 +1102,8 @@ class Parser:
                         if starred == "*":
                             arg = ast.Starred(value=arg, ctx=ast.Load())
                         args.append(arg)
-                if not self.match(","):
+                self.match(",")
+                if self.check(")"):
                     break
         self.expect(")")
         return args, keywords
