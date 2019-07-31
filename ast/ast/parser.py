@@ -993,6 +993,8 @@ class Parser:
         # Adhoc, consider making suitable TokDelim.nud() return None
         if self.is_delim():
             return None
+        if rbp >= BP_UNTIL_COMMA and self.check(","):
+            return None
 
         n = self.expr(rbp)
         if ctx:
