@@ -1033,8 +1033,8 @@ class Parser:
         # TODO: This is somewhat adhoc, relies on terminating token for funcdef vs lambda
         while not self.check(")") and not self.check(":"):
             if self.match("*"):
+                kwonly = True
                 if self.match(","):
-                    kwonly = True
                     continue
                 if vararg:
                     self.error(">1 vararg")
