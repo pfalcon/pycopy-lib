@@ -143,7 +143,7 @@ class TokInfix(TokBase):
         if op in (ast.And, ast.Or):
             return ast.BoolOp(op=op(), values=[left, right])
         elif issubclass(op, ast.cmpop):
-            if isinstance(left, ast.Compare):
+            if isinstance(left, ast.Compare) and not getattr(left, "parenform", False):
                 left.ops.append(op())
                 left.comparators.append(right)
                 return left
@@ -458,6 +458,7 @@ class TokOpenParens(TokBase):
             return ast.Tuple(elts=[], ctx=ast.Load())
         e = p.expr()
         p.expect(")")
+        e.parenform = True
         return e
 
 class TokNumber(TokBase):
