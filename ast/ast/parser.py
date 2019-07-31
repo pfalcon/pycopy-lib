@@ -179,7 +179,7 @@ class TokComma(TokBase):
     @classmethod
     def led(cls, p, left, t):
         elts = [left]
-        while not p.is_end_of_stmt() and not p.check(")"):
+        while not p.is_delim():
             e = p.expr(5)
             elts.append(e)
             if not p.match(","):
