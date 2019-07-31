@@ -665,14 +665,7 @@ class Parser:
         bases = []
         keywords = []
         if self.match("("):
-            while not self.match(")"):
-                base = self.expect(NAME)
-                if self.match("="):
-                    val = self.match_expr(rbp=BP_UNTIL_COMMA)
-                    keywords.append(ast.keyword(arg=base, value=val))
-                else:
-                    bases.append(self.make_name(base, ast.Load))
-                self.match(",")
+            bases, keywords = self.match_call_args()
         self.expect(":")
         decorator_list = self.decorators
         self.decorators = []
