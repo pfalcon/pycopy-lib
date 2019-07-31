@@ -364,17 +364,25 @@ class TokOpenSquare(TokBase):
     lbp = 160
     @classmethod
     def led(cls, p, left, t):
-        idx = p.match_expr()
-        if p.match(":"):
-            upper = p.match_expr()
-            step = None
+        dims = []
+        while True:
+            idx = p.match_expr()
             if p.match(":"):
-                step = p.match_expr()
-            slc = ast.Slice(lower=idx, upper=upper, step=step)
-        else:
-            slc = ast.Index(value=idx)
+                upper = p.match_expr(rbp=BP_UNTIL_COMMA)
+                step = None
+                if p.match(":"):
+                    step = p.match_expr(rbp=BP_UNTIL_COMMA)
+                slc = ast.Slice(lower=idx, upper=upper, step=step)
+            else:
+                slc = ast.Index(value=idx)
+            dims.append(slc)
+            if not p.match(","):
+                break
         p.expect("]")
-        node = ast.Subscript(value=left, slice=slc, ctx=ast.Load())
+        if len(dims) == 1:
+            node = ast.Subscript(value=left, slice=slc, ctx=ast.Load())
+        else:
+            node = ast.Subscript(value=left, slice=ast.ExtSlice(dims=dims), ctx=ast.Load())
         return node
 
     @classmethod
