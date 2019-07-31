@@ -90,3 +90,7 @@ def change_cwd(path, quiet=False):
         yield os.getcwd()
     finally:
         os.chdir(saved_dir)
+
+
+def findfile(f):
+    return f
