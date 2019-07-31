@@ -38,6 +38,10 @@ BP_UNTIL_COMMA = 10
 BP_LVALUE = 160 - 1
 
 
+class GenComp(ast.expr):
+    _fields = ('elt', 'generators')
+
+
 def literal_eval(s):
     if s.endswith('"') or s.endswith("'"):
         if s.endswith('"""') or s.endswith("'''"):
@@ -195,7 +199,7 @@ class TokFor(TokBase):
         ifs = []
         if p.match("if"):
             ifs = [p.expr()]
-        return ast.GeneratorExp(
+        return GenComp(
             elt=left, generators=[ast.comprehension(target=target, iter=expr, ifs=ifs)]
         )
 
@@ -391,7 +395,14 @@ class TokOpenSquare(TokBase):
     def nud(cls, p, t):
         elts = []
         while not p.match("]"):
-            elts.append(p.expr(BP_UNTIL_COMMA))
+            val = p.expr(BP_UNTIL_COMMA)
+            if isinstance(val, GenComp):
+                p.expect("]")
+                return ast.ListComp(
+                    elt=val.elt, generators=val.generators
+                )
+
+            elts.append(val)
             p.match(",")
         node = ast.List(elts=elts, ctx=ast.Load())
         return node
@@ -433,6 +444,8 @@ class TokOpenParens(TokBase):
                 elif p.match("**"):
                     starred = "**"
                 arg = p.expr(BP_UNTIL_COMMA)
+                if isinstance(arg, GenComp):
+                    arg = ast.GeneratorExp(elt=arg.elt, generators=arg.generators)
                 if p.match("="):
                     assert isinstance(arg, ast.Name)
                     val = p.expr(BP_UNTIL_COMMA)
@@ -459,6 +472,8 @@ class TokOpenParens(TokBase):
         e = p.expr()
         p.expect(")")
         e.parenform = True
+        if isinstance(e, GenComp):
+            return ast.GeneratorExp(elt=e.elt, generators=e.generators)
         return e
 
 class TokNumber(TokBase):
