@@ -644,17 +644,7 @@ class Parser:
             node.ctx = ctx()
         return node
 
-    def match_async(self):
-        if not self.match("async"):
-            return
-        res = self.match_funcdef()
-        if not res:
-            return None
-        return ast.AsyncFunctionDef(
-            name=res.name, args=res.args, body=res.body, decorator_list=res.decorator_list
-        )
-
-    def match_funcdef(self):
+    def match_funcdef(self, is_async=False):
         lineno = self.tok.start
         if not self.match("def"):
             return
@@ -666,7 +656,11 @@ class Parser:
         decorator_list = self.decorators
         self.decorators = []
         body = self.match_suite()
-        node = ast.FunctionDef(
+        if is_async:
+            asttype = ast.AsyncFunctionDef
+        else:
+            asttype = ast.FunctionDef
+        node = asttype(
             name=name, args=arg_spec, body=body,
             decorator_list=decorator_list, lineno=lineno
         )
@@ -801,11 +795,21 @@ class Parser:
             self.decorators.append(decor)
             return True
 
-        res = self.match_funcdef()
+        is_async = False
+        if self.match("async"):
+            is_async = True
+
+        res = self.match_funcdef(is_async)
         if res: return res
+        res = self.match_for_stmt(is_async)
+        if res: return res
+        res = self.match_with_stmt(is_async)
+        if res: return res
+
+        if is_async:
+            self.error("Unexpected async keyword")
+
         res = self.match_classdef()
-        if res: return res
-        res = self.match_async()
         if res: return res
 
         if self.decorators:
@@ -813,11 +817,7 @@ class Parser:
 
         res = self.match_if_stmt()
         if res: return res
-        res = self.match_for_stmt()
-        if res: return res
         res = self.match_while_stmt()
-        if res: return res
-        res = self.match_with_stmt()
         if res: return res
         res = self.match_try_stmt()
         if res: return res
@@ -903,7 +903,7 @@ class Parser:
         expr = self.require_expr(rbp=rbp)
         return target, expr
 
-    def match_for_stmt(self):
+    def match_for_stmt(self, is_async=False):
         if not self.match("for"):
             return None
         target, expr = self.match_for_in()
@@ -913,7 +913,11 @@ class Parser:
         if self.match("else"):
             self.expect(":")
             orelse = self.match_suite()
-        return ast.For(target=target, iter=expr, body=body, orelse=orelse)
+        if is_async:
+            asttype = ast.AsyncFor
+        else:
+            asttype = ast.For
+        return asttype(target=target, iter=expr, body=body, orelse=orelse)
 
     def match_while_stmt(self):
         if not self.match("while"):
@@ -927,7 +931,7 @@ class Parser:
             orelse = self.match_suite()
         return ast.While(test=expr, body=body, orelse=orelse)
 
-    def match_with_stmt(self):
+    def match_with_stmt(self, is_async=False):
         if not self.match("with"):
             return None
         items = []
@@ -942,7 +946,11 @@ class Parser:
                 break
         self.expect(":")
         body = self.match_suite()
-        return ast.With(items=items, body=body)
+        if is_async:
+            asttype = ast.AsyncWith
+        else:
+            asttype = ast.With
+        return asttype(items=items, body=body)
 
     def match_try_stmt(self):
         if not self.match("try"):
