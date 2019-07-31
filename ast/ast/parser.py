@@ -217,9 +217,9 @@ class TokIf(TokBase):
     lbp = 20
     @classmethod
     def led(cls, p, left, t):
-        cond = p.expr()
+        cond = p.expr(20)
         p.expect("else")
-        orelse = p.expr()
+        orelse = p.expr(20)
         node = ast.IfExp(test=cond, body=left, orelse=orelse)
         return node
 
