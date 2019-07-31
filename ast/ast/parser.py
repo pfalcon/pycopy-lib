@@ -434,32 +434,7 @@ class TokOpenParens(TokBase):
     lbp = 160
     @classmethod
     def led(cls, p, left, t):
-        args = []
-        keywords = []
-        if not p.check(")"):
-            while True:
-                starred = None
-                if p.match("*"):
-                    starred = "*"
-                elif p.match("**"):
-                    starred = "**"
-                arg = p.expr(BP_UNTIL_COMMA)
-                if isinstance(arg, GenComp):
-                    arg = ast.GeneratorExp(elt=arg.elt, generators=arg.generators)
-                if p.match("="):
-                    assert isinstance(arg, ast.Name)
-                    val = p.expr(BP_UNTIL_COMMA)
-                    keywords.append(ast.keyword(arg=arg.id, value=val))
-                else:
-                    if starred == "**":
-                        keywords.append(ast.keyword(arg=None, value=arg))
-                    else:
-                        if starred == "*":
-                            arg = ast.Starred(value=arg, ctx=ast.Load())
-                        args.append(arg)
-                if not p.match(","):
-                    break
-        p.expect(")")
+        args, keywords = p.match_call_args()
         node = ast.Call(func=left, args=args, keywords=keywords)
         return node
 
@@ -1109,6 +1084,35 @@ class Parser:
             kwarg=kwarg, defaults=defaults
         )
         return arg_spec
+
+    def match_call_args(self):
+        args = []
+        keywords = []
+        if not self.check(")"):
+            while True:
+                starred = None
+                if self.match("*"):
+                    starred = "*"
+                elif self.match("**"):
+                    starred = "**"
+                arg = self.expr(BP_UNTIL_COMMA)
+                if isinstance(arg, GenComp):
+                    arg = ast.GeneratorExp(elt=arg.elt, generators=arg.generators)
+                if self.match("="):
+                    assert isinstance(arg, ast.Name)
+                    val = self.expr(BP_UNTIL_COMMA)
+                    keywords.append(ast.keyword(arg=arg.id, value=val))
+                else:
+                    if starred == "**":
+                        keywords.append(ast.keyword(arg=None, value=arg))
+                    else:
+                        if starred == "*":
+                            arg = ast.Starred(value=arg, ctx=ast.Load())
+                        args.append(arg)
+                if not self.match(","):
+                    break
+        self.expect(")")
+        return args, keywords
 
     def match_dotted_name(self):
         name = self.match(NAME)
