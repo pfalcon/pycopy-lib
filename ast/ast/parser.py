@@ -416,6 +416,12 @@ class TokOpenBrace(TokBase):
         is_dict = None
         while not p.match("}"):
             k = p.expr(BP_UNTIL_COMMA)
+            if isinstance(k, GenComp):
+                p.expect("}")
+                return ast.SetComp(
+                    elt=k.elt, generators=k.generators
+                )
+
             keys.append(k)
             if is_dict is None:
                 is_dict = bool(p.check(":"))
