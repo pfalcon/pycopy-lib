@@ -34,7 +34,7 @@ from . import types as ast
 log = ulogging.Logger(__name__)
 
 
-BP_UNTIL_COMMA = 10
+BP_UNTIL_COMMA = 6
 BP_LVALUE = 160 - 1
 
 
