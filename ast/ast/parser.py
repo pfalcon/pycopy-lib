@@ -428,6 +428,12 @@ class TokOpenBrace(TokBase):
             if is_dict:
                 p.expect(":")
                 v = p.expr(BP_UNTIL_COMMA)
+                if isinstance(v, GenComp):
+                    p.expect("}")
+                    return ast.DictComp(
+                        key=k, value=v.elt, generators=v.generators
+                    )
+
                 vals.append(v)
             p.match(",")
         if is_dict or is_dict is None:
