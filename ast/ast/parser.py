@@ -197,8 +197,8 @@ class TokFor(TokBase):
     def led(cls, p, left, t):
         target, expr = p.match_for_in(20)
         ifs = []
-        if p.match("if"):
-            ifs = [p.expr(20)]
+        while p.match("if"):
+            ifs.append(p.expr(20))
         comp = ast.comprehension(target=target, iter=expr, ifs=ifs)
         if isinstance(left, GenComp):
             left.generators.append(comp)
