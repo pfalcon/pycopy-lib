@@ -198,9 +198,13 @@ class TokFor(TokBase):
         target, expr = p.match_for_in(20)
         ifs = []
         if p.match("if"):
-            ifs = [p.expr()]
+            ifs = [p.expr(20)]
+        comp = ast.comprehension(target=target, iter=expr, ifs=ifs)
+        if isinstance(left, GenComp):
+            left.generators.append(comp)
+            return left
         return GenComp(
-            elt=left, generators=[ast.comprehension(target=target, iter=expr, ifs=ifs)]
+            elt=left, generators=[comp]
         )
 
 class TokLambda(TokBase):
