@@ -419,6 +419,14 @@ class TokOpenBrace(TokBase):
         # dict or set
         is_dict = None
         while not p.match("}"):
+            if p.match("**"):
+                is_dict = True
+                v = p.expr(BP_UNTIL_COMMA)
+                keys.append(None)
+                vals.append(v)
+                p.match(",")
+                continue
+
             k = p.expr(BP_UNTIL_COMMA)
             if isinstance(k, GenComp):
                 p.expect("}")
