@@ -667,6 +667,11 @@ class Parser:
         self.expect("(")
         arg_spec = self.require_typedargslist()
         self.expect(")")
+
+        returns = None
+        if self.match("->"):
+            returns = self.require_expr()
+
         self.expect(":")
         decorator_list = self.decorators
         self.decorators = []
@@ -677,7 +682,7 @@ class Parser:
             asttype = ast.FunctionDef
         node = asttype(
             name=name, args=arg_spec, body=body,
-            decorator_list=decorator_list, lineno=lineno
+            decorator_list=decorator_list, returns=returns, lineno=lineno
         )
         return node
 
