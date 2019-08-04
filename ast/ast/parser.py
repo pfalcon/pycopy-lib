@@ -211,7 +211,7 @@ class TokLambda(TokBase):
     #nbp = 10
     @classmethod
     def nud(cls, p, t):
-        arg_spec = p.require_typedargslist()
+        arg_spec = p.require_typedargslist(True)
         p.expect(":")
         body = p.expr(10)
         node = ast.Lambda(args=arg_spec, body=body)
@@ -1053,7 +1053,7 @@ class Parser:
                 break
         return res
 
-    def require_typedargslist(self):
+    def require_typedargslist(self, is_lambda=False):
         args = []
         defaults = []
         kwonlyargs = []
@@ -1076,6 +1076,9 @@ class Parser:
                 kwarg = True
             arg = self.expect(NAME)
             arg = ast.arg(arg=arg, annotation=None)
+            if not is_lambda and self.match(":"):
+                arg.annotation = self.require_expr(rbp=BP_UNTIL_COMMA)
+
             if vararg is True:
                 vararg = arg
                 self.match(",")
