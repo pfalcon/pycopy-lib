@@ -1027,10 +1027,13 @@ class Parser:
     def match_exprlist(self, ctx=None):
         res = []
         while True:
-            expr = self.require_expr(ctx, rbp=BP_UNTIL_COMMA)
+            expr = self.match_expr(ctx, rbp=BP_UNTIL_COMMA)
+            if not expr:
+                break
             res.append(expr)
             if not self.match(","):
                 break
+        assert res
         return res
 
     def match_namelist(self):
