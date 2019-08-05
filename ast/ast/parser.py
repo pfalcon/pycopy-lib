@@ -479,7 +479,7 @@ class TokNumber(TokBase):
     @classmethod
     def nud(cls, p, t):
         try:
-            v = int(t.string)
+            v = int(t.string, 0)
         except ValueError:
             if t.string.endswith("j"):
                 v = complex(t.string)
