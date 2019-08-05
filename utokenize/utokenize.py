@@ -106,6 +106,7 @@ def generate_tokens(readline):
 
         while l:
             if l[0].isdigit() or (l.startswith(".") and len(l) > 1 and l[1].isdigit()):
+                seen_dot = False
                 t = ""
                 if l.startswith("0x") or l.startswith("0X"):
                     t = "0x"
@@ -117,6 +118,10 @@ def generate_tokens(readline):
                     t = "0b"
                     l = l[2:]
                 while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
+                    if l[0] == ".":
+                        if seen_dot:
+                            break
+                        seen_dot = True
                     t += l[0]
                     l = l[1:]
                 if l.startswith("e") or l.startswith("E"):
