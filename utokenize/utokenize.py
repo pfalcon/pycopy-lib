@@ -89,6 +89,9 @@ def generate_tokens(readline):
         if l == "\n":
             yield TokenInfo(NL, l, lineno, 0, org_l)
             continue
+        elif l == "\x0c\n":
+            yield TokenInfo(NL, "\n", lineno, 0, org_l)
+            continue
 
         if l.startswith("#"):
             yield TokenInfo(COMMENT, l.rstrip("\n"), lineno, 0, org_l)
