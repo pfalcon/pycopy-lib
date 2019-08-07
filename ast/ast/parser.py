@@ -94,9 +94,14 @@ def literal_eval(s):
                         if nc is None:
                             nc = s[0:2]
                         s = s[2:]
+                    if is_bytes and not isinstance(nc, bytes):
+                        nc = nc.encode()
                     res += nc
                 else:
-                    res += s[0]
+                    if is_bytes:
+                        res += s[0].encode()
+                    else:
+                        res += s[0]
                     s = s[1:]
         return res
 
