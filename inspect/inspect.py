@@ -33,6 +33,15 @@ def isclass(obj):
 def ismodule(obj):
     return isinstance(obj, type(sys))
 
+def iscode(obj):
+    return False
+
+def isframe(obj):
+    return False
+
+def istraceback(obj):
+    return False
+
 
 def getargspec(func):
     raise NotImplementedError("This is over-dynamic function, not supported by MicroPython")
