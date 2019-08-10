@@ -67,3 +67,7 @@ def currentframe():
 
 def getframeinfo(frame, context=1):
     return ("<unknown>", -1, "<unknown>", [""], 0)
+
+
+def unwrap(func, *, stop=None):
+    return func
