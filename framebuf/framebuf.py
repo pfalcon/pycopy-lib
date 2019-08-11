@@ -11,7 +11,7 @@ class FrameBuffer:
         if stride is None:
             stride = width
         self.win = SDL_CreateWindow(
-            "MicroPython FrameBuffer",
+            "Pycopy FrameBuffer",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             width, height, 0)
         self.renderer = SDL_CreateRenderer(self.win, -1, 0)
