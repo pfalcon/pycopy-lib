@@ -3,8 +3,8 @@ uasyncio
 
 uasyncio is a minimalist asynchronous scheduling library, roughly
 modeled after CPython's asyncio. uasyncio is intended to be used with
-`Pycopy <https://github.com/pfalcon/micropython>`_, an advanced fork
-of MicroPython.
+`Pycopy <https://github.com/pfalcon/pycopy>`_, a lightweight and
+minimalist Python implementation.
 
 uasyncio doesn't use naive always-iterating scheduling algorithm,
 but performs a real time-based scheduling, which allows it (and
@@ -19,7 +19,7 @@ Major conceptual differences to asyncio:
   coroutines (and callbacks).
 * Methods provided are more consistently coroutines.
 * uasyncio uses wrap-around millisecond timebase (as native to all
-  MicroPython ports.)
+  Pycopy ports.)
 * Instead of single large package, number of subpackages are provided
   (each installable separately).
 
@@ -43,12 +43,6 @@ Specific differences:
   unlimited amount of data), uasyncio offers coroutine StreamWriter.awrite()
   instead. Also, both StreamReader and StreamWriter have .aclose()
   coroutine method.
-
-Requirements
-------------
-
-At the time of writing, uasyncio requires `Pycopy <https://github.com/pfalcon/micropython>`_
-project to run.
 
 Advanced topics
 ---------------
