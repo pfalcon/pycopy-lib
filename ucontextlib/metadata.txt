@@ -1,5 +1,5 @@
 srctype = micropython-lib
 type = module
-version = 0.1.1
+version = 0.1.2
 license = Python
-long_desc = Minimal subset of contextlib for MicroPython low-memory ports
+long_desc = Minimal subset of contextlib for Pycopy (https://github.com/pfalcon/pycopy) low-memory ports.
