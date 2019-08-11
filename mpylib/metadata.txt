@@ -1,6 +1,6 @@
 srctype = micropython-lib
 type = package
-version = 0.3
-desc = Module to deal with MicroPython compiled bytecode files (.mpy)
-long_desc = Module to deal with MicroPython compiled bytecode files (.mpy)
+version = 0.3.1
+desc = Module to deal with Pycopy compiled bytecode files (.mpy)
+long_desc = Module to deal with Pycopy (https://github.com/pfalcon/pycopy) compiled bytecode files (.mpy)
 depends = opcode
