@@ -1,7 +1,7 @@
 #
-# upip - Package manager for MicroPython
+# upip - Package manager for Pycopy https://github.com/pfalcon/pycopy
 #
-# Copyright (c) 2015-2018 Paul Sokolovsky
+# Copyright (c) 2015-2019 Paul Sokolovsky
 #
 # Licensed under the MIT license.
 #
@@ -19,6 +19,7 @@ debug = False
 install_path = None
 cleanup_files = []
 gzdict_sz = 16 + 15
+gzdict_buf = None
 
 file_buf = bytearray(512)
 
@@ -182,7 +183,7 @@ def install_pkg(pkg_spec, install_path):
     package_fname = op_basename(package_url)
     f1 = url_open(package_url)
     try:
-        f2 = uzlib.DecompIO(f1, gzdict_sz)
+        f2 = uzlib.DecompIO(f1, gzdict_sz, gzdict_buf)
         f3 = tarfile.TarFile(fileobj=f2)
         meta = install_tar(f3, install_path)
     finally:
@@ -193,12 +194,6 @@ def install_pkg(pkg_spec, install_path):
     return meta
 
 def install(to_install, install_path=None):
-    # Calculate gzip dictionary size to use
-    global gzdict_sz
-    sz = gc.mem_free() + gc.mem_alloc()
-    if sz <= 65536:
-        gzdict_sz = 16 + 12
-
     if install_path is None:
         install_path = get_install_path()
     if install_path[-1] != "/":
@@ -271,6 +266,15 @@ def main():
 
     if sys.argv[1] != "install":
         fatal("Only 'install' command supported")
+
+    # Calculate gzip dictionary size to use
+    global gzdict_sz, gzdict_buf
+    sz = gc.mem_free() + gc.mem_alloc()
+    if sz <= 65536:
+        gzdict_sz = 16 + 12
+        gzdict_buf = bytearray(4096)
+    else:
+        gzdict_buf = bytearray(32768)
 
     to_install = []
 
