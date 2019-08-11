@@ -135,7 +135,6 @@ def url_open(url):
                 print("Warning: %s SSL certificate is not validated" % host)
                 warn_ussl = False
 
-        # MicroPython rawsocket module supports file interface directly
         s.write("GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n" % (urlpath, host))
         l = s.readline()
         protover, status, msg = l.split(None, 2)
@@ -241,8 +240,8 @@ def cleanup():
 
 def help():
     print("""\
-upip - Simple PyPI package manager for MicroPython
-Usage: micropython -m upip install [-p <path>] <package>... | -r <requirements.txt>
+upip - Simple PyPI package manager for Pycopy
+Usage: pycopy -m upip install [-p <path>] <package>... | -r <requirements.txt>
 import upip; upip.install(package_or_list, [<path>])
 
 If <path> is not given, packages will be installed into sys.path[1]
@@ -251,7 +250,7 @@ supports that).""")
     print("Current value of sys.path[1]:", sys.path[1])
     print("""\
 
-Note: only MicroPython packages (usually, named micropython-*) are supported
+Note: only Pycopy packages (usually, named pycopy-*) are supported
 for installation, upip does not support arbitrary code in setup.py.
 """)
 
