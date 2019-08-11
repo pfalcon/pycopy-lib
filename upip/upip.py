@@ -9,7 +9,8 @@ import sys
 import gc
 import uos as os
 import uerrno as errno
-import ujson as json
+import ure
+#import ujson as json
 import uzlib
 import upip_utarfile as tarfile
 gc.collect()
@@ -22,6 +23,9 @@ gzdict_sz = 16 + 15
 gzdict_buf = None
 
 file_buf = bytearray(512)
+
+simple_lst_re = ure.compile('<a href="(.+?)#')
+
 
 class NotFoundError(Exception):
     pass
@@ -162,6 +166,31 @@ def get_pkg_metadata(name):
     finally:
         f.close()
 
+def get_latest_url_json(name):
+    data = get_pkg_metadata(name)
+    latest_ver = data["info"]["version"]
+    packages = data["releases"][latest_ver]
+    del data
+    gc.collect()
+    assert len(packages) == 1
+    return packages[0]["url"]
+
+def get_latest_url_simple(name):
+    # Stupid PEP 503 normalization
+    name = name.replace("_", "-").replace(".", "-").lower()
+    f = url_open("https://pypi.org/simple/%s/" % name)
+    try:
+        last_url = None
+        while 1:
+            l = f.readline().decode()
+            if not l: break
+            m = simple_lst_re.search(l)
+            if m:
+                last_url = m.group(1)
+        return last_url
+    finally:
+        f.close()
+
 
 def fatal(msg, exc=None):
     print("Error:", msg)
@@ -170,15 +199,10 @@ def fatal(msg, exc=None):
     sys.exit(1)
 
 def install_pkg(pkg_spec, install_path):
-    data = get_pkg_metadata(pkg_spec)
+    #package_url = get_latest_url_json(pkg_spec)
+    package_url = get_latest_url_simple(pkg_spec)
 
-    latest_ver = data["info"]["version"]
-    packages = data["releases"][latest_ver]
-    del data
-    gc.collect()
-    assert len(packages) == 1
-    package_url = packages[0]["url"]
-    print("Installing %s %s from %s" % (pkg_spec, latest_ver, package_url))
+    print("Installing %s from %s" % (pkg_spec, package_url))
     package_fname = op_basename(package_url)
     f1 = url_open(package_url)
     try:
