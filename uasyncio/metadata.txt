@@ -1,7 +1,7 @@
 srctype = micropython-lib
 type = package
-version = 3.1.1
+version = 3.1.2
 author = Paul Sokolovsky
-desc = Lightweight asyncio-like library for MicroPython, built around native Python coroutines.
+desc = Lightweight asyncio-like library for Pycopy, built around native Python coroutines.
 long_desc = README.rst
 depends = uasyncio.core
