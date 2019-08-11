@@ -1,6 +1,7 @@
 srctype = micropython-lib
 type = module
-version = 0.1
+version = 0.1.1
 author = Paul Sokolovsky
-desc = Implementation of "framebuf" module (using SDL2) for the "unix" port of MicroPython. (Experimental)
+desc = Implementation of "framebuf" module (using SDL2) for the "unix" port of Pycopy.
+desc = Implementation of "framebuf" module (using SDL2) for the "unix" port of Pycopy (https://github.com/pfalcon/pycopy). (Experimental)
 depends = usdl2
