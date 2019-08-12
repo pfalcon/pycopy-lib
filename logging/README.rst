@@ -1,7 +1,7 @@
 logging
 =======
 
-logging is MicroPython's implementation of a subset of CPythons logging module. This
+logging is Pycopy's implementation of a subset of CPythons logging module. This
 module defines functions and classes which implement a flexible event logging system for
 applications and libraries.
 
@@ -15,5 +15,5 @@ Major differences to CPython logging:
 Requirements
 ------------
 
-At the time of writing, logging requires the `os <https://pypi.org/project/micropython-os/>`_
+At the time of writing, logging requires the `os <https://pypi.org/project/pycopy-os/>`_
 package (installed automatically by the ``upip`` tool).
