@@ -1,7 +1,7 @@
-HTTP clients in micropython-lib
-===============================
+HTTP clients in pycopy-lib
+==========================
 
-micropython-lib currently offers 4 HTTP client modules:
+pycopy-lib currently offers 4 HTTP client modules:
 
 * ``urllib.urequest``
 * ``urequests``
