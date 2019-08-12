@@ -17,6 +17,11 @@ def _norm_fmt(fmt):
         fmt = f + fmt[1:]
 
     fmt = fmt.replace("?", "B")
+    # TODO: should check for count
+    fmt = fmt.replace("c", "1s")
+    # Assume that size_t matches long
+    fmt = fmt.replace('n', 'l')
+    fmt = fmt.replace('N', 'L')
 
     return fmt
 
