@@ -1,6 +1,6 @@
 srctype = micropython-lib
 type = package
-version = 1.3.4
+version = 1.3.5
 author = Paul Sokolovsky
-desc = Lightweight MQTT client for MicroPython.
+desc = Lightweight MQTT client for Pycopy
 long_desc = README.rst
