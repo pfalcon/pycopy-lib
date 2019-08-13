@@ -1,4 +1,4 @@
-# Helper module to load compiled bytecode files, for both MicroPython and
+# Helper module to load compiled bytecode files, for both Pycopy and
 # CPython
 import sys
 
