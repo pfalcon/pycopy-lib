@@ -1,7 +1,7 @@
 import sys
 import loadbc
 
-# For non-MicroPython, skip current dir when loading dis, i.e. load
+# For non-Pycopy, skip current dir when loading dis, i.e. load
 # system version.
 if sys.implementation.name != "micropython":
     sys.path.pop(0)
