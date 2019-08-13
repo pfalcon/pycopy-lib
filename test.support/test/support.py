@@ -94,3 +94,7 @@ def change_cwd(path, quiet=False):
 
 def findfile(f):
     return f
+
+
+def cpython_only(f):
+    return f
