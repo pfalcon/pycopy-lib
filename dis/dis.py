@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# "dis" module for MicroPython
+# "dis" module for Pycopy
 #
 # The MIT License (MIT)
 #
