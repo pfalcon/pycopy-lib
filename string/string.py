@@ -26,7 +26,7 @@ def translate(s, map):
     return sb.getvalue()
 
 
-# str object methods not available as builtins in MicroPython
+# str object methods not available as builtins in Pycopy
 
 def isidentifier(s):
     if s[0] not in ascii_letters and s[0] != "_":
