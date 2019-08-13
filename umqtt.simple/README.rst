@@ -1,8 +1,7 @@
 umqtt.simple
 ============
 
-umqtt is a simple MQTT client for MicroPython. (Note that it uses some
-MicroPython shortcuts and doesn't work with CPython).
+umqtt is a simple MQTT client for Pycopy (https://github.com/pfalcon/pycopy).
 
 Design requirements
 -------------------
