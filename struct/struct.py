@@ -34,8 +34,16 @@ def pack(fmt, *vals):
     return ustruct.pack(_norm_fmt(fmt), *vals)
 
 
+def pack_into(fmt, buf, offset, *vals):
+    return ustruct.pack_into(_norm_fmt(fmt), buf, offset, *vals)
+
+
 def unpack(fmt, buf):
     return ustruct.unpack(_norm_fmt(fmt), buf)
+
+
+def unpack_from(fmt, buf, offset=0):
+    return ustruct.unpack_from(_norm_fmt(fmt), buf, offset)
 
 
 class Struct:
