@@ -52,6 +52,19 @@ def dprint(*args):
         print(*args)
 
 
+class AttrDict:
+
+    def __init__(self, d):
+        self.d = d
+
+    def __getattr__(self, k):
+        return self.d[k]
+
+
+def get_opcode_ns():
+    return AttrDict(opmap)
+
+
 class CodeType:
 
     def __repr__(self):
