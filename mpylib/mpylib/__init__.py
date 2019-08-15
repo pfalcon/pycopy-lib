@@ -60,7 +60,7 @@ class CodeType:
 
 class Bytecode:
 
-    def init_bc(self):
+    def __init__(self):
         self.buf = uio.BytesIO()
         self.co_names = []
         self.co_consts = []
