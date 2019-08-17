@@ -2,32 +2,40 @@
 from .types import *
 
 
-def dump(t):
+def dump_to_stream(t, file):
     if isinstance(t, AST):
-        res = type(t).__name__
-        res += "("
+        file.write(type(t).__name__)
+        file.write("(")
         comma = False
         for k in t._fields:
             if k.startswith("_"):
                 continue
+            res = ""
             if comma:
                 res += ", "
-            res += k + "=" + dump(getattr(t, k, None))
+            res += k + "="
+            file.write(res)
+            dump_to_stream(getattr(t, k, None), file)
             comma = True
-        res += ")"
-        return res
+        file.write(")")
     elif isinstance(t, list):
-        res = "["
+        file.write("[")
         comma = False
         for v in t:
             if comma:
-                res += ", "
-            res += dump(v)
+                file.write(", ")
+            dump_to_stream(v, file)
             comma = True
-        res += "]"
-        return res
+        file.write("]")
     else:
-        return repr(t)
+        file.write(repr(t))
+
+
+def dump(t):
+    import io
+    buf = io.StringIO()
+    dump_to_stream(t, buf)
+    return buf.getvalue()
 
 
 def iter_fields(t):
