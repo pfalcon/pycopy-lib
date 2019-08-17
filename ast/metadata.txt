@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = package
 author = Paul Sokolovsky
-version = 2.2
+version = 2.2.1
 depends = utokenize
