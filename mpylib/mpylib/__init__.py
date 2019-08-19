@@ -95,6 +95,12 @@ class Bytecode:
             MPYOutput.write_uint(None, len(self.co_consts), self.buf)
             self.co_consts.append(arg)
 
+    def load_int(self, val):
+        if -15 <= val <= 47:
+            self.add(0x80 + val)
+        else:
+            self.add(opmap["LOAD_CONST_SMALL_INT"], val)
+
     def get_bc(self):
         return self.buf.getvalue()
 
