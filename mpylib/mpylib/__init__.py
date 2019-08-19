@@ -45,6 +45,8 @@ MP_CODE_NATIVE_PY = 3
 MP_CODE_NATIVE_VIPER = 4
 MP_CODE_NATIVE_ASM = 5
 
+DEFAULT_QSTR_WINSZ = 32
+
 _DEBUG = 0
 
 def dprint(*args):
@@ -342,9 +344,10 @@ class MPYOutput:
     def __init__(self, f):
         self.f = f
 
-    def write_header(self, mpy_ver, feature_flags, smallint_bits):
+    def write_header(self, mpy_ver, feature_flags, smallint_bits, qstr_winsz=DEFAULT_QSTR_WINSZ):
         self.f.write(b"M")
         self.f.write(bytes([mpy_ver, feature_flags, smallint_bits]))
+        self.write_uint(qstr_winsz)
 
     def write_uint(self, val, f=None):
         if f is None:
