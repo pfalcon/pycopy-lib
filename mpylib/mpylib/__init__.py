@@ -24,6 +24,7 @@
 # THE SOFTWARE.
 
 import uio
+import ulogging
 
 from opcode import upyopcodes
 from opcode import opmap
@@ -47,11 +48,8 @@ MP_CODE_NATIVE_ASM = 5
 
 DEFAULT_QSTR_WINSZ = 32
 
-_DEBUG = 0
 
-def dprint(*args):
-    if _DEBUG:
-        print(*args)
+log = ulogging.getLogger(__name__)
 
 
 class AttrDict:
@@ -113,11 +111,11 @@ class QStrWindow:
         self.size = size
 
     def push(self, val):
-        dprint("push:", val)
+        log.debug("QStrWindow.push: %s", val)
         self.window = [val] + self.window[:self.size - 1]
 
     def access(self, idx):
-        dprint("access:", idx)
+        log.debug("QStrWindow.access: %d", idx)
         val = self.window[idx]
         self.window = [val] + self.window[:idx] + self.window[idx + 1:]
         return val
@@ -143,6 +141,8 @@ class MPYInput:
         self.small_int_bits = header[3]
         self.qstr_winsz = self.read_uint()
         self.qstr_win = QStrWindow(self.qstr_winsz)
+        log.info("read_header: feature_flags: 0x%x, smallint_bits: %d, qstr_winsz: %d",
+            self.feature_flags, self.small_int_bits, self.qstr_winsz)
 
     def has_flag(self, flag):
         return self.feature_flags & flag
@@ -168,7 +168,7 @@ class MPYInput:
         if ln == 0:
             # static qstr
             static_qstr = self.read_byte()
-            dprint("static qstr:", static_qstr)
+            log.debug("static qstr: %d", static_qstr)
             return static_qstr_list[static_qstr - 1]
         if ln & 1:
             # qstr in table
@@ -207,7 +207,7 @@ class MPYInput:
         while len(bc_buf) < bc_len:
             opcode = self.read_byte(bc_buf)
             typ, extra = upyopcodes.mp_opcode_type(opcode)
-            dprint("%02d-%02d: opcode: %02x type: %d, extra: %d" % (self.cnt, len(bc_buf), opcode, typ, extra))
+            log.debug("%02d-%02d: opcode: %02x type: %d, extra: %d" % (self.cnt, len(bc_buf), opcode, typ, extra))
             if typ == upyopcodes.MP_OPCODE_QSTR:
                 qstrs.append(self.read_qstr())
                 # Patch in CodeType-local qstr id, kinda similar to CPython
@@ -235,26 +235,28 @@ class MPYInput:
         kind_len = self.read_uint()
         kind = (kind_len & 3) + MP_CODE_BYTECODE
         bc_len = kind_len >> 2
-        dprint("bc_len:", bc_len)
+        log.info("code obj: kind: %d, len: %d", kind, bc_len)
 
         assert kind == MP_CODE_BYTECODE
 
         self.cnt = 0
         name_idx, prelude = self.read_prelude(co)
         prelude_len = self.cnt
+        log.debug("len of prelude: %d", prelude_len)
         co.co_code, co.co_names = self.read_bytecode(bc_len - prelude_len)
+        log.debug("co_code: %s, co_names=%s", co.co_code, co.co_names)
 
         co.co_name = self.read_qstr()
         co.co_filename = self.read_qstr()
 
         n_obj = self.read_uint()
         n_raw_code = self.read_uint()
-        dprint("n_obj=%d n_raw_code=%d" % (n_obj, n_raw_code))
-        dprint("arg qstrs: %d " % (prelude[3] + prelude[4]))
+        log.info("n_obj=%d n_raw_code=%d", n_obj, n_raw_code)
+        log.info("arg qstrs: %d", prelude[3] + prelude[4])
 
         co.mpy_argnames = tuple([self.read_qstr() for _ in range(prelude[3] + prelude[4])])
         co.mpy_consts = tuple([self.read_obj() for _ in range(n_obj)])
-        dprint("---")
+        log.info("Recursively reading %d code object(s)", n_raw_code)
         co.mpy_codeobjs = tuple([self.read_raw_code() for _ in range(n_raw_code)])
         co.co_consts = co.mpy_argnames + co.mpy_consts + co.mpy_codeobjs
         co.co_varnames = co.mpy_argnames
@@ -265,7 +267,7 @@ class MPYInput:
     def read_bytecode_qstrs(self, bytecode, ip):
         cnt = 0
         qstrs = []
-        dprint("before:", bytecode)
+        log.debug("before: %s", bytecode)
         while ip < len(bytecode):
             typ, sz = upyopcodes.mp_opcode_format(bytecode, ip)
             if typ == 1:
@@ -275,7 +277,7 @@ class MPYInput:
                 bytecode[ip + 2] = cnt >> 8
                 cnt += 1
             ip += sz
-        dprint("after:", bytecode)
+        log.debug("after: %s", bytecode)
         return qstrs
 
     @classmethod
@@ -314,7 +316,9 @@ class MPYInput:
         code_info_size_sz = self.cnt
         code_info_size = self.read_uint()
         code_info_size_sz = self.cnt - code_info_size_sz
-        dprint("size of code_info_size:", code_info_size_sz)
+        log.debug("n_state=%d, n_exc_stack=%d, scope_flags=0x%x, n_pos=%d, n_kwonly=%d n_def_pos=%d code_info_size=%d",
+            n_state, n_exc_stack, scope_flags, n_pos_args, n_kwonly_args, n_def_pos_args, code_info_size)
+        log.debug("size of varlen-encoded code_info_size field: %d", code_info_size_sz)
 
         for _ in range(code_info_size - code_info_size_sz):
             self.read_byte()
@@ -325,6 +329,8 @@ class MPYInput:
             if idx == 255:
                 break
             cells.append(idx)
+
+        log.debug("cells: %s", cells)
 
         co.mpy_stacksize = n_state
         co.mpy_excstacksize = n_exc_stack
