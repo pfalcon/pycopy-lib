@@ -434,7 +434,8 @@ class MPYOutput:
         buf = self.pack_code(code)
 
         bc = buf.getvalue()
-        self.write_uint(len(bc))
+        # len << 2 | kind
+        self.write_uint(len(bc) << 2)
         self.f.write(bc)
 
         self.write_qstr(code.co_name)
