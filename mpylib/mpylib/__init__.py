@@ -396,10 +396,12 @@ class MPYOutput:
 
         f.write(arr[i:])
 
-    def write_qstr(self, s):
+    def write_qstr(self, s, buf=None):
+        if buf is None:
+            buf = self.f
         s = s.encode()
-        self.write_uint(len(s))
-        self.f.write(s)
+        self.write_uint(len(s) << 1, buf)
+        buf.write(s)
 
     def write_obj(self, o):
         if o is ...:
@@ -412,7 +414,7 @@ class MPYOutput:
         else:
             assert 0
 
-    def pack_code(self, code):
+    def pack_prelude(self, code):
         buf = uio.BytesIO()
         self.write_uint(code.mpy_stacksize, buf)
         self.write_uint(code.mpy_excstacksize, buf)
@@ -432,22 +434,64 @@ class MPYOutput:
         buf.write(bytes(code.co_cellvars))
         buf.write(bytes([0xff]))
 
-        buf.write(code.co_code)
-
         return buf
 
+    def pack_code(self, code):
+        buf = self.pack_prelude(code)
+        buf.write(code.co_code)
+        return buf
+
+    def pack_bytecode(self, code, buf):
+        bc = code.co_code
+        log.debug("pack_bytecode: in: bc: %s, buf: %s", bc, buf.getvalue())
+        i = 0
+        qstr_i = 0
+        while i < len(bc):
+            opcode = bc[i]
+            buf.writebin("B", opcode)
+            i += 1
+            typ, extra = upyopcodes.mp_opcode_type(opcode)
+            log.debug("%02d: opcode: %02x type: %d, extra: %d" % (i, opcode, typ, extra))
+            if typ == upyopcodes.MP_OPCODE_QSTR:
+                self.write_qstr(code.co_names[qstr_i], buf)
+                qstr_i += 1
+                i += 2
+            elif typ == upyopcodes.MP_OPCODE_VAR_UINT:
+                while True:
+                    b = bc[i]
+                    buf.writebin("B", b)
+                    i += 1
+                    if b & 0x80 == 0:
+                        break
+            elif typ == upyopcodes.MP_OPCODE_OFFSET:
+                buf.writebin("B", bc[i])
+                buf.writebin("B", bc[i + 1])
+                i += 2
+            elif typ == upyopcodes.MP_OPCODE_BYTE:
+                pass
+            else:
+                assert 0
+
+            for _ in range(extra):
+                buf.writebin("B", bc[i])
+                i += 1
+
+        log.debug("pack_bytecode: out: buf: %s", buf.getvalue())
+
+
     def write_code(self, code):
-        buf = self.pack_code(code)
+        buf = self.pack_prelude(code)
+        # Header stores original in-memory bytecode len, not packed len
+        bc_len = len(buf.getvalue()) + len(code.co_code)
+        self.pack_bytecode(code, buf)
 
         bc = buf.getvalue()
         # len << 2 | kind
-        self.write_uint(len(bc) << 2)
+        self.write_uint(bc_len << 2)
         self.f.write(bc)
 
         self.write_qstr(code.co_name)
         self.write_qstr(code.co_filename)
-        for n in code.co_names:
-            self.write_qstr(n)
 
         assert code.mpy_codeobjs == ()
 
