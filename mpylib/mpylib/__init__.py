@@ -79,13 +79,13 @@ class Bytecode:
         self.co_consts = []
 
     def add(self, opcode, *args):
-        self.buf.write(bytes([opcode]))
+        self.buf.writebin("B", opcode)
         if args != ():
             arg = args[0]
         if opcode == opmap["LOAD_NAME"]:
-            self.buf.write(bytes([0, 0]))
+            self.buf.writebin("<H", 0)
             # cache
-            self.buf.write(bytes([0]))
+            self.buf.writebin("B", 0)
             self.co_names.append(arg)
         elif opcode == opmap["CALL_FUNCTION"]:
             MPYOutput.write_uint(None, args[0] + (args[1] << 8), self.buf)
@@ -425,14 +425,14 @@ class MPYOutput:
         self.write_uint(1 + 4 + len(code.co_lnotab), buf)
 
         # co_name qstr, will be filled in on load
-        buf.write(bytes([0, 0]))
+        buf.writebin("<H", 0)
         # co_filename qstr, will be filled in on load
-        buf.write(bytes([0, 0]))
+        buf.writebin("<H", 0)
 
         buf.write(code.co_lnotab)
 
         buf.write(bytes(code.co_cellvars))
-        buf.write(bytes([0xff]))
+        buf.writebin("B", 0xff)
 
         return buf
 
