@@ -1,3 +1,4 @@
-srctype=dummy
-type=module
-version = 0.0.2
+srctype = cpython
+type = module
+version = 3.5.7-1
+depends = collections, heapq, re-pcre, string
