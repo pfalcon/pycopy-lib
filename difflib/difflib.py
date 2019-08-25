@@ -30,6 +30,7 @@ __all__ = ['get_close_matches', 'ndiff', 'restore', 'SequenceMatcher',
            'Differ','IS_CHARACTER_JUNK', 'IS_LINE_JUNK', 'context_diff',
            'unified_diff', 'diff_bytes', 'HtmlDiff', 'Match']
 
+import string
 from heapq import nlargest as _nlargest
 from collections import namedtuple as _namedtuple
 
@@ -662,7 +663,7 @@ class SequenceMatcher:
         # avail[x] is the number of times x appears in 'b' less the
         # number of times we've seen it in 'a' so far ... kinda
         avail = {}
-        availhas, matches = avail.__contains__, 0
+        availhas, matches = lambda x: x in avail, 0
         for elt in self.a:
             if availhas(elt):
                 numb = avail[elt]
@@ -1514,7 +1515,7 @@ def _mdiff(fromlines, tolines, context=None, linejunk=None,
                 num_blanks_pending -= 1
                 yield _make_line(lines,'-',0), None, True
                 continue
-            elif s.startswith(('--?+', '--+', '- ')):
+            elif s.startswith('--?+') or s.startswith('--+') or s.startswith('- '):
                 # in delete block and see an intraline change or unchanged line
                 # coming: yield the delete line and then blanks
                 from_line,to_line = _make_line(lines,'-',0), None
@@ -1538,7 +1539,7 @@ def _mdiff(fromlines, tolines, context=None, linejunk=None,
                 num_blanks_pending += 1
                 yield None, _make_line(lines,'+',1), True
                 continue
-            elif s.startswith(('+ ', '+-')):
+            elif s.startswith('+ ') or s.startswith('+-'):
                 # will be leaving an add block: yield blanks then add line
                 from_line, to_line = None, _make_line(lines,'+',1)
                 num_blanks_to_yield,num_blanks_pending = num_blanks_pending+1,0
@@ -1780,7 +1781,7 @@ class HtmlDiff(object):
             # hide real spaces
             line = line.replace(' ','\0')
             # expand tabs into spaces
-            line = line.expandtabs(self._tabsize)
+            line = string.expandtabs(line, self._tabsize)
             # replace spaces from expanded tabs back into tab characters
             # (we'll replace them with markup after we do differencing)
             line = line.replace(' ','\t')
