@@ -1,13 +1,21 @@
 import mpylib
 import opcode
+import ulogging
 
 
+ulogging.basicConfig(level=ulogging.DEBUG)
+
+opcode.config.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE = 1
 op = mpylib.get_opcode_ns()
 
 
 with open("testout.mpy", "wb") as f:
     mpy = mpylib.MPYOutput(f)
-    mpy.write_header(3, mpylib.MICROPY_PY_BUILTINS_STR_UNICODE | mpylib.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE, 31)
+    mpy.write_header(
+        mpylib.MPY_VERSION,
+        mpylib.MICROPY_PY_BUILTINS_STR_UNICODE | mpylib.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE,
+        31
+    )
 
     co = mpylib.CodeType()
     co.mpy_stacksize = 2
@@ -20,11 +28,9 @@ with open("testout.mpy", "wb") as f:
     co.co_lnotab = b'\x00\x00'
     co.co_cellvars = ()
 
-#    co.co_code = b'\x1b\xc9\x00\x00\x81d\x012\x11['
-
     bc = mpylib.Bytecode()
     bc.add(op.LOAD_NAME, "print")
-    bc.add(op.LOAD_CONST_SMALL_INT, -65)
+    bc.load_int(-65)
     bc.add(op.LOAD_CONST_OBJ, "string")
     bc.add(op.CALL_FUNCTION, 2, 0)
     bc.add(op.POP_TOP)
