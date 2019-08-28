@@ -1,8 +1,8 @@
 srctype = cpython-backport
 type = module
-version = 1.3.1
+version = 1.3.3
 author = Paul Sokolovsky
 extra_modules = upip_utarfile
 desc = Simple package manager for Pycopy project
 long_desc = Simple self-hosted package manager for Pycopy (https://github.com/pfalcon/pycopy), CPython port. Compatible only with Pycopy packages.
-depends = cpython-uerrno, cpython-ujson, cpython-uos, cpython-usocket, cpython-ussl, cpython-uzlib
+depends = cpython-uerrno, cpython-ujson, cpython-uos, cpython-ure, cpython-usocket, cpython-ussl, cpython-uzlib
