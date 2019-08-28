@@ -176,7 +176,7 @@ def main():
             data["author"] = PYCOPY_DEVELS
             data["author_email"] = PYCOPY_DEVELS_EMAIL
             data["maintainer"] = PYCOPY_DEVELS
-            data["license"] = "Python"
+            data["license"] = "MIT"
             data["desc"] = "Pycopy module %s ported to CPython" % module
             data["long_desc"] = BACKPORT_DESC
         else:
