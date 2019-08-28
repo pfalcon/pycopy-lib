@@ -10,6 +10,9 @@ class deque:
         self.flags = flags
         self.d = collections.deque(iterable, maxlen)
 
+    def __len__(self):
+        return len(self.d)
+
     def append(self, x):
         if self.flags & 1:
             if len(self.d) == self.maxlen:
