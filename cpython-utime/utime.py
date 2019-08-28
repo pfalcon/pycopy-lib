@@ -23,4 +23,10 @@ def ticks_us():
 
 ticks_cpu = ticks_us
 
+def ticks_add(t, delta):
+    return (t + delta) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)
+
+def ticks_diff(a, b):
+    return ((a - b + MICROPY_PY_UTIME_TICKS_PERIOD // 2) & (MICROPY_PY_UTIME_TICKS_PERIOD - 1)) - MICROPY_PY_UTIME_TICKS_PERIOD // 2
+
 del f
