@@ -200,8 +200,9 @@ def main():
 
         if "depends" in data:
             prefix = "pycopy-"
-            if data["srctype"] == "cpython-backport":
-                prefix = "pycopy-cpython-"
+            # Current convention is to use explicit "cpython-" prefix on dependency
+            #if data["srctype"] == "cpython-backport":
+            #    prefix = "pycopy-cpython-"
             deps = [prefix + x.strip() for x in data["depends"].split(",")]
             if any(" " in d for d in deps):
                 raise ValueError("depends should be comma separated")
