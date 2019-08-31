@@ -65,3 +65,23 @@ def parse_stream(stream, filename="<unknown>", mode="exec"):
 def parse(source, filename="<unknown>", mode="exec"):
     import io
     return parse_stream(io.StringIO(source), filename, mode)
+
+
+class NodeVisitor:
+
+    def visit(self, node):
+        n = node.__class__.__name__
+        m = getattr(self, "visit_" + n, None)
+        if m:
+            m(node)
+        else:
+            self.generic_visit(node)
+
+    def generic_visit(self, node):
+        for f in node._fields:
+            val = getattr(node, f)
+            if isinstance(val, list):
+                for v in val:
+                    self.visit(v)
+            elif isinstance(val, AST):
+                self.visit(val)
