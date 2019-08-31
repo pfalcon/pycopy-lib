@@ -1,6 +1,6 @@
 import ffilib
 import uctypes
-import array
+import uarray
 import uos
 import os
 import utime
@@ -51,7 +51,7 @@ def timer_create(sig_id):
     #print(sev)
     sev.sigev_notify = SIGEV_SIGNAL
     sev.sigev_signo = SIGRTMIN + sig_id
-    timerid = array.array('P', [0])
+    timerid = uarray.array('P', [0])
     r = timer_create_(CLOCK_MONOTONIC, sev, timerid)
     os.check_error(r)
     #print("timerid", hex(timerid[0]))
