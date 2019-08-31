@@ -4,7 +4,6 @@ import ustruct
 import uctypes
 import ffi
 import ffilib
-import array
 
 libc = ffilib.libc()
 
