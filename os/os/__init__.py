@@ -1,4 +1,4 @@
-import array
+import uarray as array
 import ustruct as struct
 import errno as errno_
 import stat as stat_
