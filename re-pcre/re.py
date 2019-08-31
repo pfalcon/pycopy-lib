@@ -1,6 +1,6 @@
 import sys
 import ffilib
-import array
+import uarray as array
 
 
 pcre = ffilib.open("libpcre")
