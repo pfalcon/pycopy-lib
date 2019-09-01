@@ -73,9 +73,9 @@ class NodeVisitor:
         n = node.__class__.__name__
         m = getattr(self, "visit_" + n, None)
         if m:
-            m(node)
+            return m(node)
         else:
-            self.generic_visit(node)
+            return self.generic_visit(node)
 
     def generic_visit(self, node):
         for f in node._fields:
