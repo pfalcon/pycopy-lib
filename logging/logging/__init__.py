@@ -17,6 +17,8 @@ _level_dict = {
     DEBUG: "DEBUG",
 }
 
+def addLevelName(level, name):
+    _level_dict[level] = name
 
 class Logger:
 
@@ -101,6 +103,15 @@ def info(msg, *args):
 
 def debug(msg, *args):
     getLogger(None).debug(msg, *args)
+
+def warning(msg, *args):
+    getLogger(None).warning(msg, *args)
+
+def error(msg, *args):
+    getLogger(None).error(msg, *args)
+
+def critical(msg, *args):
+    getLogger(None).critical(msg, *args)
 
 def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
     global _level
