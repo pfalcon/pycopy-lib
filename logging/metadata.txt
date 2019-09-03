@@ -1,6 +1,6 @@
 srctype = micropython-lib
 type = package
-version = 0.5.3
+version = 0.6
 author = Stefan Lehmann
 long_desc = README.rst
 depends = os
