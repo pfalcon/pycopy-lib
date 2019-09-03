@@ -1,6 +1,6 @@
-micropython-lib consists of multiple modules from different sources and
+pycopy-lib consists of multiple modules from different sources and
 authors. Each module comes under its own licensing terms. Short name of
-a license and exact authorship information can be found in the "setup.py"
+a license and exact authorship information can be found in the "metadata.txt"
 file within a module directory, and in git history for a module directory.
 Complete text of each license used is provided below. Files not belonging
 to a particular module a provided under MIT license, unless explicitly
@@ -10,8 +10,8 @@ stated otherwise.
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2019 micropython-lib contributors
 Copyright (c) 2014-2019 Paul Sokolovsky
+Copyright (c) 2014-2019 pycopy-lib contributors
 Copyright (c) <year> <individual author(s)>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
