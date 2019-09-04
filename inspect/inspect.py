@@ -44,7 +44,7 @@ def istraceback(obj):
 
 
 def getargspec(func):
-    raise NotImplementedError("This is over-dynamic function, not supported by MicroPython")
+    raise NotImplementedError("This is over-dynamic function, not supported by Pycopy")
 
 def getmodule(obj, _filename=None):
     return None  # Not known
