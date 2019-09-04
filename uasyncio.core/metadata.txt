@@ -1,4 +1,4 @@
-srctype = micropython-lib
+srctype = pycopy-lib
 type = package
 version = 2.3.1
 author = Paul Sokolovsky

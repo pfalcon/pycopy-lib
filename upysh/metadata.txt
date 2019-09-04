@@ -1,4 +1,4 @@
-srctype = micropython-lib
+srctype = pycopy-lib
 type = module
 version = 0.6.1
 desc = Minimalistic file shell using native Python syntax.
