@@ -288,7 +288,7 @@ class TestPEP380Operation(unittest.TestCase):
             g.close()
         except ValueError as e:
             self.assertEqual(e.args[0], "nybbles have exploded with delight")
-# MicroPython doesn't support nested exceptions
+# Pycopy doesn't support nested exceptions
 #            self.assertIsInstance(e.__context__, GeneratorExit)
         else:
             self.fail("subgenerator failed to raise ValueError")
@@ -353,7 +353,7 @@ class TestPEP380Operation(unittest.TestCase):
         pex(e)
         e = StopIteration("spam")
         pex(e)
-# MicroPython doesn't support assignment to .value
+# Pycopy doesn't support assignment to .value
 #        e.value = "eggs"
 #        pex(e)
         self.assertEqual(trace,[
@@ -556,7 +556,7 @@ class TestPEP380Operation(unittest.TestCase):
             self.assertEqual(next(gi), 1)
             gi.throw(AttributeError)
 
-# In MicroPython, exceptions is .close() are not ignored/printed to sys.stderr,
+# In Pycopy, exceptions is .close() are not ignored/printed to sys.stderr,
 # but propagated as usual.
 #        with captured_stderr() as output:
 #            gi = g()
@@ -583,7 +583,7 @@ class TestPEP380Operation(unittest.TestCase):
             "g1 about to yield from g2"
         ])
 
-    @unittest.skip("MicroPython doesn't check for already active generator when resuming it")
+    @unittest.skip("Pycopy doesn't check for already active generator when resuming it")
     def test_attempted_yield_from_loop(self):
         """
         Test attempted yield-from loop
@@ -852,7 +852,7 @@ class TestPEP380Operation(unittest.TestCase):
             yield from ()
         self.assertRaises(StopIteration, next, g())
 
-    @unittest.skip("MicroPython doesn't check for already active generator when resuming it")
+    @unittest.skip("Pycopy doesn't check for already active generator when resuming it")
     def test_delegating_generators_claim_to_be_running(self):
         # Check with basic iteration
         def one():
@@ -925,7 +925,7 @@ class TestPEP380Operation(unittest.TestCase):
         next(g1)
         g1.close()
 
-    @unittest.skip("MicroPython doesn't support inspect.stack()")
+    @unittest.skip("Pycopy doesn't support inspect.stack()")
     def test_delegator_is_visible_to_debugger(self):
         def call_stack():
             return [f[3] for f in inspect.stack()]
