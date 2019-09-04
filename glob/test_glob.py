@@ -124,7 +124,7 @@ class GlobTests(unittest.TestCase):
                       {self.norm('aaa') + os.sep, self.norm('aab') + os.sep},
                       ])
 
-    @unittest.skip("unsupported on MicroPython")
+    @unittest.skip("unsupported on Pycopy")
     def test_glob_bytes_directory_with_trailing_slash(self):
         # Same as test_glob_directory_with_trailing_slash, but with a
         # bytes argument.
@@ -178,7 +178,7 @@ class GlobTests(unittest.TestCase):
         self.assertEqual(glob.escape(arg), expected)
         self.assertEqual(glob.escape(os.fsencode(arg)), os.fsencode(expected))
 
-    @unittest.skip("unsupported on MicroPython")
+    @unittest.skip("unsupported on Pycopy")
     def test_escape(self):
         check = self.check_escape
         check('abc', 'abc')
