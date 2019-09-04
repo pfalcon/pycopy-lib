@@ -5,7 +5,7 @@ To test uasyncio correctness and performance, HTTP server samples can be
 used. The simplest test is with test_http_server.py and Apache Benchmark
 (ab). In one window, run:
 
-micropython -O test_http_server.py
+pycopy -O test_http_server.py
 
 (-O is needed to short-circuit debug logging calls.)
 
@@ -33,7 +33,7 @@ from default 10 to at least 30.
 
 Start:
 
-micropython -X heapsize=300000000 -O test_http_server_heavy.py
+pycopy -X heapsize=300000000 -O test_http_server_heavy.py
 
 (Yes, that's 300Mb of heap - we'll be serving 4+Mb of content with 30
 concurrent connections).
