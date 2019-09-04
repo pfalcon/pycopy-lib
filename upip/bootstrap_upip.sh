@@ -8,12 +8,12 @@ else
 fi
 
 # Remove any stale old version
-rm -rf micropython-upip-*
-wget -nd -rH -l1 -D files.pythonhosted.org https://pypi.org/project/micropython-upip/ --reject=html
+rm -rf pycopy-upip-*
+wget -nd -rH -l1 -D files.pythonhosted.org https://pypi.org/project/pycopy-upip/ --reject=html
 
-tar xfz micropython-upip-*.tar.gz
+tar xfz pycopy-upip-*.tar.gz
 mkdir -p ~/.micropython/lib/
-cp micropython-upip-*/upip*.py ~/.micropython/lib/
+cp pycopy-upip-*/upip*.py ~/.micropython/lib/
 
 echo "upip is installed. To use:"
-echo "micropython -m upip --help"
+echo "pycopy -m upip --help"
