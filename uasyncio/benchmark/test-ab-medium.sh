@@ -5,10 +5,10 @@
 #
 
 #python3.4.2 test_http_server_light.py &
-#micropython -O test_http_server_light.py &
+#pycopy -O test_http_server_light.py &
 
 #python3.4.2 test_http_server_medium.py &
-micropython -O -X heapsize=200wK test_http_server_medium.py &
+pycopy -O -X heapsize=200wK test_http_server_medium.py &
 
 sleep 1
 
