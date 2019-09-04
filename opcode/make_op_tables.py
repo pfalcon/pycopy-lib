@@ -5,7 +5,7 @@ opname = [None] * 256
 op_implicit_arg = [None] * 256
 
 
-with open("../../micropython/py/bc0.h") as f:
+with open("../../pycopy/py/bc0.h") as f:
     for l in f:
         m = ure.match(r"#define +MP_BC_([A-Z_]+) +\((.+?)\)", l)
         if not m:
@@ -19,7 +19,7 @@ with open("../../micropython/py/bc0.h") as f:
 
 UNARY_OP_MULTI = opmap["UNARY_OP_MULTI"]
 BINARY_OP_MULTI = opmap["BINARY_OP_MULTI"]
-with open("../../micropython/py/runtime0.h") as f:
+with open("../../pycopy/py/runtime0.h") as f:
     want_unary = True
     want_binary = True
     cnt = 0
