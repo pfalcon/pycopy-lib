@@ -1,3 +1,3 @@
-If you submit a pull request, please adhere to Contributor Guidelines:
+If you submit a pull request, please follow Contributor Guidelines:
 
-https://github.com/pfalcon/micropython-lib/wiki/ContributorGuidelines
+https://github.com/pfalcon/pycopy-lib/wiki/ContributorGuidelines
