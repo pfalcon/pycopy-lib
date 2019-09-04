@@ -1,3 +1,3 @@
-srctype=micropython-lib
-type=module
+srctype = pycopy-lib
+type = module
 version = 0.1.1
