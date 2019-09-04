@@ -110,7 +110,7 @@ class TestTZInfo(unittest.TestCase):
             self.assertEqual(fo.tzname(dt), "Three")
             self.assertEqual(fo.dst(dt), timedelta(minutes=42))
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling_base(self):
         # There's no point to pickling tzinfo objects on their own (they
         # carry no data), but they need to be picklable anyway else
@@ -122,7 +122,7 @@ class TestTZInfo(unittest.TestCase):
             derived = unpickler.loads(green)
             self.assertTrue(type(derived) is tzinfo)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling_subclass(self):
         # Make sure we can pickle/unpickle an instance of a subclass.
         offset = timedelta(minutes=-300)
@@ -162,7 +162,7 @@ class TestTimeZone(unittest.TestCase):
                    timezone.min, timezone.max]:
             # test round-trip
             tzrep = repr(tz)
-# MicroPython doesn't use locals() in eval()
+# Pycopy doesn't use locals() in eval()
             tzrep = tzrep.replace("datetime.", "")
             self.assertEqual(tz, eval(tzrep))
 
@@ -469,7 +469,7 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
         self.assertEqual(len(d), 1)
         self.assertEqual(d[t1], 2)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling(self):
         args = 12, 34, 56
         orig = timedelta(*args)
@@ -978,7 +978,7 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
         self.assertEqual(d.month, month)
         self.assertEqual(d.day, day)
 
-    @unittest.skip("Skip for MicroPython")
+    @unittest.skip("Skip for Pycopy")
     def test_insane_fromtimestamp(self):
         # It's possible that some platform maps time_t to double,
         # and that this test will fail there.  This test should
@@ -1357,7 +1357,7 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
         self.assertEqual(dt1.toordinal(), dt2.toordinal())
         self.assertEqual(dt2.newmeth(-7), dt1.year + dt1.month - 7)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling_subclass_date(self):
 
         args = 6, 7, 23
@@ -1680,7 +1680,7 @@ class TestDateTime(TestDate):
         self.assertEqual(b.month, 2)
         self.assertEqual(b.day, 7)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling_subclass_datetime(self):
         args = 6, 7, 23, 20, 59, 1, 64**2
         orig = SubclassDatetime(*args)
@@ -1816,7 +1816,7 @@ class TestDateTime(TestDate):
             self.assertEqual(t.second, 0)
             self.assertEqual(t.microsecond, 999999)
 
-    @unittest.skip("Skip for MicroPython")
+    @unittest.skip("Skip for Pycopy")
     def test_insane_fromtimestamp(self):
         # It's possible that some platform maps time_t to double,
         # and that this test will fail there.  This test should
@@ -1826,7 +1826,7 @@ class TestDateTime(TestDate):
             self.assertRaises(OverflowError, self.theclass.fromtimestamp,
                               insane)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_insane_utcfromtimestamp(self):
         # It's possible that some platform maps time_t to double,
         # and that this test will fail there.  This test should
@@ -2268,7 +2268,7 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
             derived = unpickler.loads(green)
             self.assertEqual(orig, derived)
 
-    @unittest.skip("Skip pickling for MicroPython")
+    @unittest.skip("Skip pickling for Pycopy")
     def test_pickling_subclass_time(self):
         args = 20, 59, 16, 64**2
         orig = SubclassTime(*args)
@@ -3742,7 +3742,7 @@ class TestTimezoneConversions(unittest.TestCase):
 
 class Oddballs(unittest.TestCase):
 
-    @unittest.skip("MicroPython doesn't implement special subclass handling from https://docs.python.org/3/reference/datamodel.html#object.__ror")
+    @unittest.skip("Pycopy doesn't implement special subclass handling from https://docs.python.org/3/reference/datamodel.html#object.__ror")
     def test_bug_1028306(self):
         # Trying to compare a date to a datetime should act like a mixed-
         # type comparison, despite that datetime is a subclass of date.
