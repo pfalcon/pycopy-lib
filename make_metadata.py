@@ -156,7 +156,7 @@ def main():
             data["license"] = "MIT"
             data["desc"] = "PyPy %s module ported to Pycopy" % module
             data["long_desc"] = PYPY_DESC
-        elif data["srctype"] in ("micropython-lib", "pycopy-lib"):
+        elif data["srctype"] == "pycopy-lib":
             if "author" not in data:
                 data["author"] = PYCOPY_DEVELS
             if "author_email" not in data:
