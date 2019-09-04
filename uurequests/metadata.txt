@@ -1,4 +1,4 @@
-srctype = micropython-lib
+srctype = pycopy-lib
 type = module
 version = 0.8.2
 author = Paul Sokolovsky
