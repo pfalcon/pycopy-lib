@@ -20,7 +20,7 @@ else
 fi
 
 
-micropython -X heapsize=300000000 -O test_http_server_heavy.py &
+pycopy -X heapsize=300000000 -O test_http_server_heavy.py &
 sleep 1
 
 PYTHONPATH=. boom -n1000 -c30 http://localhost:8081 --post-hook=boom_uasyncio.validate
