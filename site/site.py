@@ -7,7 +7,7 @@ def help(*sym):
 
     if len(sym) == 0:
         print("""\
-Welcome to MicroPython!
+Welcome to Pycopy https://github.com/pfalcon/pycopy !
 
 For online docs please visit http://pycopy.readthedocs.io/
 
