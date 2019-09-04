@@ -8,7 +8,7 @@ def viper(x):
     return x
 
 
-# Override standard CPython modules/builtins with MicroPython semantics
+# Override standard CPython modules/builtins with Pycopy semantics
 
 import builtins
 
