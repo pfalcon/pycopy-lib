@@ -25,7 +25,7 @@ def set_names(n):
     names = n
 
 # Find out bitness of the platform, even if long ints are not supported
-# TODO: All bitness differences should be removed from micropython-lib, and
+# TODO: All bitness differences should be removed from pycopy-lib, and
 # this snippet too.
 bitness = 1
 v = sys.maxsize
