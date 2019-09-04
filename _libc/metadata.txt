@@ -1,5 +1,5 @@
 dist_name = libc
-srctype = micropython-lib
+srctype = pycopy-lib
 type = module
 version = 0.3.2
 author = Paul Sokolovsky

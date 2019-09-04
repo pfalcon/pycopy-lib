@@ -1,4 +1,4 @@
-srctype = micropython-lib
+srctype = pycopy-lib
 type = module
 version = 0.3
 long_desc = Minimal version of 'logging' module for low-memory systems.
