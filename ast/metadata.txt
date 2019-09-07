@@ -1,5 +1,7 @@
 srctype = pycopy-lib
 type = package
 author = Paul Sokolovsky
-version = 2.3.1
+desc = Pure-Python implementation of the "ast" module
+long_desc = README.rst
+version = 2.3.2
 depends = utokenize
