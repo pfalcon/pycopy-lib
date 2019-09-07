@@ -2,6 +2,7 @@
 # This module is part of the Pycopy project, https://github.com/pfalcon/pycopy
 from token import *
 from ucollections import namedtuple
+import uio
 
 
 COMMENT = N_TOKENS + 0
@@ -48,25 +49,25 @@ def get_str(l, readline):
         s += l[:i + 3]
         return s, l[i + 3:], lineno
 
-    s = sep = l[0]
-    l = l[1:]
-    quoted = False
-    while l:
-        c = l[0]
-        l = l[1:]
-        s += c
-        if quoted:
-            quoted = False
-        elif c == "\\":
-            if l == "\n":
-                s += "\n"
-                l = readline()
+    lbuf = uio.StringIO(l)
+    sep = lbuf.read(1)
+    sbuf = uio.StringIO()
+    sbuf.write(sep)
+    while True:
+        c = lbuf.read(1)
+        if not c:
+            break
+        sbuf.write(c)
+        if c == "\\":
+            c = lbuf.read(1)
+            sbuf.write(c)
+            if c == "\n":
+                lbuf = uio.StringIO(readline())
                 lineno += 1
                 continue
-            quoted = True
         elif c == sep:
             break
-    return s, l, lineno
+    return sbuf.getvalue(), lbuf.read(), lineno
 
 
 def tokenize(readline):
