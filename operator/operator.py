@@ -5,6 +5,12 @@ def attrgetter(attr):
     return _attrgetter
 
 
+def methodcaller(name, *args, **kwargs):
+    def _methodcaller(obj):
+        return getattr(obj, name)(*args, **kwargs)
+    return _methodcaller
+
+
 def lt(a, b):
     return a < b
 
