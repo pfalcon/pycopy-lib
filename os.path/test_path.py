@@ -26,3 +26,6 @@ assert not exists(dir + "/test_path.py--")
 assert isdir(dir + "/os")
 assert not isdir(dir + "/os--")
 assert not isdir(dir + "/test_path.py")
+
+assert isfile(__file__)
+assert not isfile(dir)
