@@ -55,6 +55,14 @@ def exists(path):
 # TODO
 lexists = exists
 
+def isfile(path):
+    import stat
+    try:
+        mode = os.stat(path)[0]
+        return stat.S_ISREG(mode)
+    except OSError:
+        return False
+
 def isdir(path):
     import stat
     try:
