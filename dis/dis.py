@@ -51,7 +51,10 @@ def disassemble(code):
             optarg = "%d (%s)" % (optarg, code.co_names[optarg])
 
         elif typ == upyopcodes.MP_OPCODE_VAR_UINT:
-            next_i, optarg = upyopcodes.decode_uint(bc, i + 1)
+            signed = False
+            if opcode_str == "LOAD_CONST_SMALL_INT":
+                signed = True
+            next_i, optarg = upyopcodes.decode_varint(bc, i + 1, signed=signed)
             if opcode_str.startswith("CALL_FUNCTION"):
                 optarg = "n=%d nkw=%d" % (optarg & 0xff, optarg >> 8)
             elif opcode_str in ("LOAD_CONST_OBJ", "MAKE_FUNCTION", "MAKE_CLOSURE"):
