@@ -26,9 +26,20 @@
 
 from opcode import opname, op_implicit_arg
 from opcode import upyopcodes
+import ustruct
 
 
-def disassemble(code):
+def qstr_by_id(id):
+    mp_obj = (id << 2) | 2
+    buf = ustruct.pack("P", mp_obj)
+    qstr = ustruct.unpack("O", buf)[0]
+    return qstr
+
+
+# If real_qstrs == False, assume that qstr-containing bytecode encode
+# indexes into .co_names array. Otherwise, assume that real qstr id's
+# are stored there, and use them (and don't use .co_names).
+def disassemble(code, real_qstrs=False):
     i = 0
     bc = code.co_code
     while i < len(bc):
@@ -48,7 +59,10 @@ def disassemble(code):
 
         elif typ == upyopcodes.MP_OPCODE_QSTR:
             optarg = bc[i + 1] + (bc[i + 2] << 8)
-            optarg = "%d (%s)" % (optarg, code.co_names[optarg])
+            if real_qstrs:
+                optarg = "%d (%s)" % (optarg, qstr_by_id(optarg))
+            else:
+                optarg = "%d (%s)" % (optarg, code.co_names[optarg])
 
         elif typ == upyopcodes.MP_OPCODE_VAR_UINT:
             signed = False
