@@ -166,8 +166,11 @@ def mp_opcode_format(bytecode, ip, opcode_format=make_opcode_format()):
 
 # Decode var_uint from byte buffer at position i. Return next position
 # and decoded number.
-def decode_uint(bytecode, i):
+def decode_varint(bytecode, i, signed=False):
     unum = 0
+    if signed:
+        if bytecode[i] & 0x40:
+            unum = -1
     while True:
         val = bytecode[i]
         i += 1
