@@ -283,13 +283,13 @@ class MPYInput:
     @classmethod
     def extract_prelude(cls, bytecode, co):
         ip = 0
-        ip, n_state = upyopcodes.decode_uint(bytecode, ip)
-        ip, n_exc_stack = upyopcodes.decode_uint(bytecode, ip)
+        ip, n_state = upyopcodes.decode_varint(bytecode, ip)
+        ip, n_exc_stack = upyopcodes.decode_varint(bytecode, ip)
         scope_flags = bytecode[ip]; ip += 1
         n_pos_args = bytecode[ip]; ip += 1
         n_kwonly_args = bytecode[ip]; ip += 1
         n_def_pos_args = bytecode[ip]; ip += 1
-        ip2, code_info_size = upyopcodes.decode_uint(bytecode, ip)
+        ip2, code_info_size = upyopcodes.decode_varint(bytecode, ip)
         ip += code_info_size
         while bytecode[ip] != 0xff:
             ip += 1
