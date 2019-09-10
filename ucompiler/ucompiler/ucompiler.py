@@ -109,19 +109,22 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(unop_map[type(node.op)])
 
     def visit_Name(self, node):
-        scope = self.symtab.get_scope(node.id)
-        if isinstance(node.ctx, ast.Load):
+        self._visit_var(node.id, node.ctx)
+
+    def _visit_var(self, var, ctx):
+        scope = self.symtab.get_scope(var)
+        if isinstance(ctx, ast.Load):
             op = [opc.LOAD_NAME, opc.LOAD_GLOBAL, opc.LOAD_FAST_N, opc.LOAD_DEREF][scope]
-        elif isinstance(node.ctx, ast.Store):
+        elif isinstance(ctx, ast.Store):
             op = [opc.STORE_NAME, opc.STORE_GLOBAL, opc.STORE_FAST_N, opc.STORE_DEREF][scope]
         else:
             assert 0
 
         if scope in (usymtable.SCOPE_FAST, usymtable.SCOPE_DEREF):
-            id = self.symtab.get_fast_local(node.id)
+            id = self.symtab.get_fast_local(var)
             self.bc.add(op, id)
         else:
-            self.bc.add(op, node.id)
+            self.bc.add(op, var)
 
     def visit_Num(self, node):
         assert isinstance(node.n, int)
