@@ -101,4 +101,5 @@ def dis(code, real_qstrs=False):
     for c in code.co_consts:
         if hasattr(c, "co_code"):
             print()
+            print("Disassembly of %r:" % c)
             dis(c)
