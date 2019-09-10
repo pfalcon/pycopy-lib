@@ -68,6 +68,17 @@ def get_opcode_ns():
 
 class CodeType:
 
+    def __init__(self):
+        self.co_name = "??"
+        self.co_filename = "??"
+        self.co_lnotab = b'\x00\x00'
+        self.co_cellvars = ()
+        self.co_flags = 0
+        self.co_argcount = 0
+        self.co_kwonlyargcount = 0
+        self.mpy_def_pos_args = 0
+        self.mpy_excstacksize = 0
+
     def __repr__(self):
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
 
