@@ -35,6 +35,7 @@ with open("../../pycopy/py/runtime0.h") as f:
                     continue
 #                print(op)
                 opname[UNARY_OP_MULTI + cnt] = "UNARY_" + op
+                opmap["UNARY_" + op] = UNARY_OP_MULTI + cnt
                 cnt += 1
         if want_binary:
             m = ure.match(r" +MP_BINARY_OP_([A-Z_]+)", l)
@@ -48,6 +49,7 @@ with open("../../pycopy/py/runtime0.h") as f:
                 if not op.startswith("INPLACE"):
                     op = "BINARY_" + op
                 opname[BINARY_OP_MULTI + cnt] = op
+                opmap[op] = BINARY_OP_MULTI + cnt
                 cnt += 1
 
 
