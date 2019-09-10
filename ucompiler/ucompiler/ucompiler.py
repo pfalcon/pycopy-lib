@@ -74,6 +74,18 @@ class Compiler(ast.NodeVisitor):
     def visit_BinOp(self, node):
         binop_map = {
             ast.Add: opc.BINARY_ADD,
+            ast.Sub: opc.BINARY_SUBTRACT,
+            ast.Mult: opc.BINARY_MULTIPLY,
+            ast.MatMult: opc.BINARY_MAT_MULTIPLY,
+            ast.Div: opc.BINARY_TRUE_DIVIDE,
+            ast.FloorDiv: opc.BINARY_FLOOR_DIVIDE,
+            ast.Mod: opc.BINARY_MODULO,
+            ast.Pow: opc.BINARY_POWER,
+            ast.LShift: opc.BINARY_LSHIFT,
+            ast.RShift: opc.BINARY_RSHIFT,
+            ast.BitAnd: opc.BINARY_AND,
+            ast.BitOr: opc.BINARY_OR,
+            ast.BitXor: opc.BINARY_XOR,
         }
         self.visit(node.left)
         self.visit(node.right)
