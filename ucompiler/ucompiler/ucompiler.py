@@ -60,6 +60,13 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.RETURN_VALUE)
 
+    def visit_Assign(self, node):
+        self.visit(node.value)
+        for t in node.targets[:-1]:
+            self.bc.add(opc.DUP_TOP)
+            self.visit(t)
+        self.visit(node.targets[-1])
+
     def visit_Expr(self, node):
         self.visit(node.value)
         self.bc.add(opc.POP_TOP)
