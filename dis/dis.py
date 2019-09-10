@@ -96,8 +96,8 @@ def disassemble(code, real_qstrs=False):
         i += sz
 
 
-def dis(code):
-    disassemble(code)
+def dis(code, real_qstrs=False):
+    disassemble(code, real_qstrs)
     for c in code.co_consts:
         if hasattr(c, "co_code"):
             print()
