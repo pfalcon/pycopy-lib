@@ -12,7 +12,7 @@ with open("../../pycopy/py/bc0.h") as f:
             continue
 #        print(m.group(1), m.group(2))
         name, val = m.group(1), m.group(2)
-        val = int(val)
+        val = int(val, 0)
 #        print(name, val)
         opmap[name] = val
         opname[val] = name
