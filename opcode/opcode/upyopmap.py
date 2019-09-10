@@ -247,3 +247,70 @@ None, None, None, None, None, None, None, None,
 # 0xf8
 None, None, None, None, None, None, None, None, 
 ]
+
+op_stack_effect = [
+# 0x00
+None, None, None, None, None, None, None, None, 
+# 0x08
+None, None, None, None, None, None, None, None, 
+# 0x10
+1, 1, 1, None, 1, None, 1, 1, 
+# 0x18
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x20
+1, 1, -1, -1, -1, -1, -1, -1, 
+# 0x28
+None, None, None, None, None, None, None, None, 
+# 0x30
+None, None, None, None, None, None, None, None, 
+# 0x38
+None, None, None, None, None, None, None, None, 
+# 0x40
+None, None, None, None, None, None, None, None, 
+# 0x48
+None, None, None, None, None, None, None, None, 
+# 0x50
+None, None, None, None, -1, None, None, -1, 
+# 0x58
+None, None, None, None, None, None, None, None, 
+# 0x60
+None, None, None, None, None, None, None, None, 
+# 0x68
+None, None, None, None, None, None, None, None, 
+# 0x70
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x78
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x80
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x88
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x90
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0x98
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0xa0
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0xa8
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0xb0
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0xb8
+1, 1, 1, 1, 1, 1, 1, 1, 
+# 0xc0
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xc8
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xd0
+0, 0, 0, 0, None, None, None, -1, 
+# 0xd8
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xe0
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xe8
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xf0
+-1, -1, -1, -1, -1, -1, -1, -1, 
+# 0xf8
+None, None, None, None, None, None, None, None, 
+]
