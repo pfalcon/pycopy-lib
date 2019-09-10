@@ -104,6 +104,19 @@ class Compiler(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         self._visit_function(node)
 
+    def visit_Import(self, node):
+        for n in node.names:
+            self.bc.load_int(0)
+            self.bc.add(opc.LOAD_CONST_NONE)
+            self.bc.add(opc.IMPORT_NAME, n.name)
+            if n.asname:
+                comps = n.name.split(".")
+                for c in comps[1:]:
+                    self.bc.add(opc.LOAD_ATTR, c)
+                self._visit_var(n.asname, ast.Store())
+            else:
+                self._visit_var(n.name.split(".", 1)[0], ast.Store())
+
     def visit_Return(self, node):
         if node.value is None:
             self.bc.add(opc.LOAD_CONST_NONE)
