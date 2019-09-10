@@ -60,6 +60,19 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.RETURN_VALUE)
 
+    def visit_Import(self, node):
+        for n in node.names:
+            self.bc.load_int(0)
+            self.bc.add(opc.LOAD_CONST_NONE)
+            self.bc.add(opc.IMPORT_NAME, n.name)
+            if n.asname:
+                comps = n.name.split(".")
+                for c in comps[1:]:
+                    self.bc.add(opc.LOAD_ATTR, c)
+                self._visit_var(n.asname, ast.Store())
+            else:
+                self._visit_var(n.name.split(".", 1)[0], ast.Store())
+
     def visit_Assign(self, node):
         self.visit(node.value)
         for t in node.targets[:-1]:
