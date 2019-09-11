@@ -309,6 +309,9 @@ class SymbolTable:
         self.all_locals_how = (upvals, params, rest, cells)
         self.params = [sym.var for sym in self.var_arr if sym.is_param]
 
+    def get_fast_local(self, var):
+        return self.all_locals.index(var)
+
 
 class SymbolTableBuilder(ast.NodeVisitor):
 
