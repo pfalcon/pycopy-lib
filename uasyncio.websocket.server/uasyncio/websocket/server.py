@@ -7,8 +7,7 @@ def make_respkey(webkey):
     d = uhashlib.sha1(webkey)
     d.update(b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
     respkey = d.digest()
-    respkey = ubinascii.b2a_base64(respkey) #[:-1]
-    # Return with trailing "\n".
+    respkey = ubinascii.b2a_base64(respkey)[:-1]
     return respkey
 
 
@@ -50,10 +49,7 @@ Upgrade: websocket\r
 Connection: Upgrade\r
 Sec-WebSocket-Accept: """)
         await writer.awrite(respkey)
-        # This will lead to "<key>\n\r\n" being written. Not exactly
-        # "\r\n\r\n", but browsers seem to eat it.
-        await writer.awrite("\r\n")
-        #await writer.awrite("\r\n\r\n")
+        await writer.awrite("\r\n\r\n")
 
         print("Finished webrepl handshake")
 
