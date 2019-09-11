@@ -24,6 +24,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import sys
 import ast
 import usymtable
 from ubytecode import Bytecode, get_opcode_ns
@@ -76,6 +77,10 @@ class Compiler(ast.NodeVisitor):
         self.symtab = self.symtab_map[node]
         self.symtab.finalize()
         self.bc = Bytecode()
+
+        # Store arg names in const table, to support calling by keyword
+        for a in args.args:
+            self.bc.add_const(sys.intern(a.arg))
 
         last_stmt = self._visit_suite(node.body)
         if not isinstance(last_stmt, ast.Return):
