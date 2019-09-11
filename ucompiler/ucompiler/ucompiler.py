@@ -108,6 +108,13 @@ class Compiler(ast.NodeVisitor):
             else:
                 self._visit_var(n.name.split(".", 1)[0], ast.Store())
 
+    def visit_Return(self, node):
+        if node.value is None:
+            self.bc.add(opc.LOAD_CONST_NONE)
+        else:
+            self.visit(node.value)
+        self.bc.add(opc.RETURN_VALUE)
+
     def visit_Assign(self, node):
         self.visit(node.value)
         for t in node.targets[:-1]:
