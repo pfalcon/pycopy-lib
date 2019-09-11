@@ -102,4 +102,4 @@ def dis(code, real_qstrs=False):
         if hasattr(c, "co_code"):
             print()
             print("Disassembly of %r:" % c)
-            dis(c)
+            dis(c, real_qstrs)
