@@ -1,6 +1,6 @@
 import uasyncio
 import uhashlib, ubinascii
-import websocket
+import uwebsocket as websocket
 
 
 def make_respkey(webkey):
