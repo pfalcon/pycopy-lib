@@ -61,6 +61,41 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.RETURN_VALUE)
 
+    def _visit_function(self, node):
+        args = node.args
+        assert args.vararg is None
+        assert not args.kwonlyargs
+        assert not args.kw_defaults
+        assert args.kwarg is None
+        assert not args.defaults
+
+        prev_symtab = self.symtab
+        prev_bc = self.bc
+        self.symtab = self.symtab_map[node]
+        self.symtab.finalize()
+        self.bc = Bytecode()
+
+        self._visit_suite(node.body)
+        self.bc.add(opc.LOAD_CONST_NONE)
+        self.bc.add(opc.RETURN_VALUE)
+
+        co = self.bc.get_codeobj()
+        co.co_name = node.name
+        co.co_filename = self.filename
+        co.co_argcount = len(args.args)
+        # Here mpy_stacksize corresponds to VM stack size, we also need there
+        # space for locals.
+        co.mpy_stacksize += len(self.symtab.all_locals)
+
+        self.bc = prev_bc
+        self.symtab = prev_symtab
+
+        self.bc.add(opc.MAKE_FUNCTION, co)
+        self._visit_var(node.name, ast.Store())
+
+    def visit_FunctionDef(self, node):
+        self._visit_function(node)
+
     def visit_Assign(self, node):
         self.visit(node.value)
         for t in node.targets[:-1]:
