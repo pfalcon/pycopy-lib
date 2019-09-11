@@ -77,12 +77,16 @@ class Bytecode:
         self.buf = uio.BytesIO()
         self.co_names = []
         self.co_consts = []
+        self.labels = []
 
     def add(self, opcode, *args):
         self.buf.writebin("B", opcode)
         if args != ():
             arg = args[0]
-        if opcode == opmap["LOAD_NAME"]:
+        fl, extra = upyopcodes.mp_opcode_type(opcode)
+        if fl == upyopcodes.MP_OPCODE_OFFSET:
+            self.buf.writebin("<H", arg)
+        elif opcode == opmap["LOAD_NAME"]:
             self.buf.writebin("<H", 0)
             # cache
             self.buf.writebin("B", 0)
@@ -95,6 +99,19 @@ class Bytecode:
             MPYOutput.write_uint(None, len(self.co_consts), self.buf)
             self.co_consts.append(arg)
 
+    def get_label(self):
+        label = len(self.labels)
+        self.labels.append([None])
+        return label
+
+    # Put given label at the current position in instruction stream
+    def put_label(self, label):
+        self.labels[label][0] = self.buf.seek(0, 1)
+
+    def jump(self, opcode, label):
+        self.add(opcode, 0)
+        self.labels[label].append(self.buf.seek(0, 1))
+
     def load_int(self, val):
         if -15 <= val <= 47:
             self.add(0x80 + val)
@@ -102,6 +119,17 @@ class Bytecode:
             self.add(opmap["LOAD_CONST_SMALL_INT"], val)
 
     def get_bc(self):
+        lab_id = 0
+        for labl in self.labels:
+            lab_pos = labl[0]
+            assert lab_pos is not None, "Label #%d was not added to code" % lab_id
+            for ref in labl[1:]:
+                self.buf.seek(ref - 2)
+                rel = lab_pos - ref + 0x8000
+                assert 0 <= rel <= 0xffff
+                self.buf.writebin("<H", rel)
+            lab_id += 1
+
         return self.buf.getvalue()
 
 
