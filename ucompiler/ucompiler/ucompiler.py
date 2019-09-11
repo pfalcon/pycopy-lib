@@ -47,12 +47,14 @@ class Compiler(ast.NodeVisitor):
 
     # Visit list of statements.
     def _visit_suite(self, lst):
+        s = None
         for s in lst:
             log.debug("%s", ast.dump(s))
             org_stk_ptr = self.bc.stk_ptr
             self.visit(s)
             # Each complete statement should have zero cumulative stack effect.
             assert self.bc.stk_ptr == org_stk_ptr, "%d vs %d after: %s" % (self.bc.stk_ptr, org_stk_ptr, ast.dump(s))
+        return s
 
     def visit_Module(self, node):
         self.symtab = self.symtab_map[node]
@@ -75,9 +77,10 @@ class Compiler(ast.NodeVisitor):
         self.symtab.finalize()
         self.bc = Bytecode()
 
-        self._visit_suite(node.body)
-        self.bc.add(opc.LOAD_CONST_NONE)
-        self.bc.add(opc.RETURN_VALUE)
+        last_stmt = self._visit_suite(node.body)
+        if not isinstance(last_stmt, ast.Return):
+            self.bc.add(opc.LOAD_CONST_NONE)
+            self.bc.add(opc.RETURN_VALUE)
 
         co = self.bc.get_codeobj()
         co.co_name = node.name
