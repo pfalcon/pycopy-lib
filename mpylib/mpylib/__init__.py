@@ -88,13 +88,14 @@ class Bytecode:
         fl, extra = upyopcodes.mp_opcode_type(opcode)
         if fl == upyopcodes.MP_OPCODE_OFFSET:
             self.buf.writebin("<H", arg)
-        elif opcode == opmap["LOAD_NAME"]:
+        elif fl == upyopcodes.MP_OPCODE_QSTR:
             if self.only_for_mpy:
                 self.buf.writebin("<H", 0)
             else:
                 self.buf.writebin("<H", id(sys.intern(arg)) >> 2)
             # cache
-            self.buf.writebin("B", 0)
+            if opcode in upyopcodes.hascache:
+                self.buf.writebin("B", 0)
             self.co_names.append(arg)
         elif opcode == opmap["CALL_FUNCTION"]:
             MPYOutput.write_uint(None, args[0] + (args[1] << 8), self.buf)
