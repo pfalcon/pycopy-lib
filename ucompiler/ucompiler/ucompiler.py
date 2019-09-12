@@ -44,6 +44,8 @@ class Compiler(ast.NodeVisitor):
         self.symtab_map = symtab_map
         # Symtab for current scope
         self.symtab = None
+        # Stack for (continue_label, break_label)
+        self.loop_stack = []
         self.bc = None
 
     def _visit_with_load_ctx(self, node):
@@ -113,6 +115,29 @@ class Compiler(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         self._visit_function(node)
+
+    def visit_While(self, node):
+        test_l = self.bc.get_label()
+        body_l = self.bc.get_label()
+        end_l = self.bc.get_label()
+        self.bc.jump(opc.JUMP, test_l)
+        self.bc.put_label(body_l)
+        self.loop_stack.append((test_l, end_l))
+        self._visit_suite(node.body)
+        self.loop_stack.pop(-1)
+        self.bc.put_label(test_l)
+        self.visit(node.test)
+        self.bc.jump(opc.POP_JUMP_IF_TRUE, body_l)
+        self._visit_suite(node.orelse)
+        self.bc.put_label(end_l)
+
+    def visit_Continue(self, node):
+        assert self.loop_stack
+        self.bc.jump(opc.JUMP, self.loop_stack[-1][0])
+
+    def visit_Break(self, node):
+        assert self.loop_stack
+        self.bc.jump(opc.JUMP, self.loop_stack[-1][1])
 
     def visit_If(self, node):
         self.visit(node.test)
