@@ -171,6 +171,20 @@ class Compiler(ast.NodeVisitor):
             self.visit(arg)
         self.bc.add(opc.CALL_FUNCTION, len(node.args), 0)
 
+    def visit_Compare(self, node):
+        assert len(node.ops) == 1
+        cmpop_map = {
+            ast.Eq: opc.BINARY_EQUAL,
+            ast.NotEq: opc.BINARY_NOT_EQUAL,
+            ast.Lt: opc.BINARY_LESS,
+            ast.LtE: opc.BINARY_LESS_EQUAL,
+            ast.Gt: opc.BINARY_MORE,
+            ast.GtE: opc.BINARY_MORE_EQUAL,
+        }
+        self.visit(node.left)
+        self.visit(node.comparators[0])
+        self.bc.add(cmpop_map[type(node.ops[0])])
+
     def visit_BinOp(self, node):
         binop_map = {
             ast.Add: opc.BINARY_ADD,
