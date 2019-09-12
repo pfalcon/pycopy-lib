@@ -23,6 +23,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import sys
 import uio
 import ulogging
 
@@ -78,6 +79,7 @@ class Bytecode:
         self.co_names = []
         self.co_consts = []
         self.labels = []
+        self.only_for_mpy = False
 
     def add(self, opcode, *args):
         self.buf.writebin("B", opcode)
@@ -87,7 +89,10 @@ class Bytecode:
         if fl == upyopcodes.MP_OPCODE_OFFSET:
             self.buf.writebin("<H", arg)
         elif opcode == opmap["LOAD_NAME"]:
-            self.buf.writebin("<H", 0)
+            if self.only_for_mpy:
+                self.buf.writebin("<H", 0)
+            else:
+                self.buf.writebin("<H", id(sys.intern(arg)) >> 2)
             # cache
             self.buf.writebin("B", 0)
             self.co_names.append(arg)
