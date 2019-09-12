@@ -46,6 +46,16 @@ class Compiler(ast.NodeVisitor):
         self.symtab = None
         self.bc = None
 
+    def _visit_with_load_ctx(self, node):
+        # Not functional style :-/. Alternatives would be to make a copy
+        # of node (and modify it), patch NodeVisitor to accept/pass
+        # additional params, or handle possible AST types explicitly
+        # (a lot of code duplication).
+        ctx = node.ctx
+        node.ctx = ast.Load()
+        self.visit(node)
+        node.ctx = ctx
+
     # Visit list of statements.
     def _visit_suite(self, lst):
         s = None
@@ -152,6 +162,27 @@ class Compiler(ast.NodeVisitor):
         else:
             self.visit(node.value)
         self.bc.add(opc.RETURN_VALUE)
+
+    def visit_AugAssign(self, node):
+        inplaceop_map = {
+            ast.Add: opc.INPLACE_ADD,
+            ast.Sub: opc.INPLACE_SUBTRACT,
+            ast.Mult: opc.INPLACE_MULTIPLY,
+            ast.MatMult: opc.INPLACE_MAT_MULTIPLY,
+            ast.Div: opc.INPLACE_TRUE_DIVIDE,
+            ast.FloorDiv: opc.INPLACE_FLOOR_DIVIDE,
+            ast.Mod: opc.INPLACE_MODULO,
+            ast.Pow: opc.INPLACE_POWER,
+            ast.LShift: opc.INPLACE_LSHIFT,
+            ast.RShift: opc.INPLACE_RSHIFT,
+            ast.BitAnd: opc.INPLACE_AND,
+            ast.BitOr: opc.INPLACE_OR,
+            ast.BitXor: opc.INPLACE_XOR,
+        }
+        self._visit_with_load_ctx(node.target)
+        self.visit(node.value)
+        self.bc.add(inplaceop_map[type(node.op)])
+        self.visit(node.target)
 
     def visit_Assign(self, node):
         self.visit(node.value)
