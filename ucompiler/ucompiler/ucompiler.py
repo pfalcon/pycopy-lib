@@ -327,6 +327,28 @@ class Compiler(ast.NodeVisitor):
         else:
             self.bc.add(op, var)
 
+    def visit_Tuple(self, node):
+        for v in node.elts:
+            self.visit(v)
+        self.bc.add(opc.BUILD_TUPLE, len(node.elts))
+
+    def visit_List(self, node):
+        for v in node.elts:
+            self.visit(v)
+        self.bc.add(opc.BUILD_LIST, len(node.elts))
+
+    def visit_Set(self, node):
+        for v in node.elts:
+            self.visit(v)
+        self.bc.add(opc.BUILD_SET, len(node.elts))
+
+    def visit_Dict(self, node):
+        self.bc.add(opc.BUILD_MAP, len(node.keys))
+        for k, v in zip(node.keys, node.values):
+            self.visit(v)
+            self.visit(k)
+            self.bc.add(opc.STORE_MAP)
+
     def visit_Num(self, node):
         assert isinstance(node.n, int)
         assert -2**30 < node.n < 2**30 - 1
