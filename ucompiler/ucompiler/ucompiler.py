@@ -44,7 +44,7 @@ class Compiler(ast.NodeVisitor):
         self.symtab_map = symtab_map
         # Symtab for current scope
         self.symtab = None
-        # Stack for (continue_label, break_label)
+        # Stack for (continue_label, break_label, loop_type)
         self.loop_stack = []
         self.bc = None
 
@@ -116,13 +116,29 @@ class Compiler(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         self._visit_function(node)
 
+    def visit_For(self, node):
+        test_l = self.bc.get_label()
+        end_l = self.bc.get_label()
+        self.visit(node.iter)
+        self.bc.add(opc.GET_ITER_STACK)
+        self.bc.put_label(test_l)
+        self.bc.jump(opc.FOR_ITER, end_l)
+        self.visit(node.target)
+        self.loop_stack.append((test_l, end_l, "for"))
+        self._visit_suite(node.body)
+        self.loop_stack.pop()
+        self.bc.jump(opc.JUMP, test_l)
+        self.bc.put_label(end_l)
+        self.bc.stk_ptr -= 4
+        self._visit_suite(node.orelse)
+
     def visit_While(self, node):
         test_l = self.bc.get_label()
         body_l = self.bc.get_label()
         end_l = self.bc.get_label()
         self.bc.jump(opc.JUMP, test_l)
         self.bc.put_label(body_l)
-        self.loop_stack.append((test_l, end_l))
+        self.loop_stack.append((test_l, end_l, "while"))
         self._visit_suite(node.body)
         self.loop_stack.pop(-1)
         self.bc.put_label(test_l)
@@ -137,6 +153,11 @@ class Compiler(ast.NodeVisitor):
 
     def visit_Break(self, node):
         assert self.loop_stack
+        if self.loop_stack[-1][2] == "for":
+            s = self.bc.stk_ptr
+            for _ in range(4):
+                self.bc.add(opc.POP_TOP)
+            self.bc.stk_ptr = s
         self.bc.jump(opc.JUMP, self.loop_stack[-1][1])
 
     def visit_If(self, node):
