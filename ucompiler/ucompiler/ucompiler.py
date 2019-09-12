@@ -185,6 +185,18 @@ class Compiler(ast.NodeVisitor):
         self.visit(node.comparators[0])
         self.bc.add(cmpop_map[type(node.ops[0])])
 
+    def visit_BoolOp(self, node):
+        if isinstance(node.op, ast.And):
+            op = opc.JUMP_IF_FALSE_OR_POP
+        else:
+            op = opc.JUMP_IF_TRUE_OR_POP
+        join_l = self.bc.get_label()
+        for v in node.values[:-1]:
+            self.visit(v)
+            self.bc.jump(op, join_l)
+        self.visit(node.values[-1])
+        self.bc.put_label(join_l)
+
     def visit_BinOp(self, node):
         binop_map = {
             ast.Add: opc.BINARY_ADD,
