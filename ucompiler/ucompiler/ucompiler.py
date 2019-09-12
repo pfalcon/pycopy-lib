@@ -104,6 +104,21 @@ class Compiler(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         self._visit_function(node)
 
+    def visit_If(self, node):
+        self.visit(node.test)
+        join_l = self.bc.get_label()
+        if node.orelse:
+            else_l = self.bc.get_label()
+            self.bc.jump(opc.POP_JUMP_IF_FALSE, else_l)
+            self._visit_suite(node.body)
+            self.bc.jump(opc.JUMP, join_l)
+            self.bc.put_label(else_l)
+            self._visit_suite(node.orelse)
+        else:
+            self.bc.jump(opc.POP_JUMP_IF_FALSE, join_l)
+            self._visit_suite(node.body)
+        self.bc.put_label(join_l)
+
     def visit_ImportFrom(self, node):
         self.bc.load_int(node.level)
         for n in node.names:
