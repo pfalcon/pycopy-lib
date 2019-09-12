@@ -91,6 +91,16 @@ class Compiler(ast.NodeVisitor):
         self.visit(node.right)
         self.bc.add(binop_map[type(node.op)])
 
+    def visit_UnaryOp(self, node):
+        unop_map = {
+            ast.UAdd: opc.UNARY_POSITIVE,
+            ast.USub: opc.UNARY_NEGATIVE,
+            ast.Invert: opc.UNARY_INVERT,
+            ast.Not: opc.UNARY_NOT,
+        }
+        self.visit(node.operand)
+        self.bc.add(unop_map[type(node.op)])
+
     def visit_Name(self, node):
         scope = self.symtab.get_scope(node.id)
         if isinstance(node.ctx, ast.Load):
