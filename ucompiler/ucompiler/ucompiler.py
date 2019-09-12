@@ -241,6 +241,9 @@ class Compiler(ast.NodeVisitor):
         self.visit(node.value)
         self.bc.add(opc.POP_TOP)
 
+    def visit_Pass(self, node):
+        pass
+
     def visit_Call(self, node):
         assert not node.keywords
         self.visit(node.func)
