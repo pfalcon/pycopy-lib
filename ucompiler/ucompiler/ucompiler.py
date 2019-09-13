@@ -84,6 +84,8 @@ class Compiler(ast.NodeVisitor):
         assert args.kwarg is None
         assert not args.defaults
 
+        is_lambda = isinstance(node, ast.Lambda)
+
         prev_symtab = self.symtab
         prev_bc = self.bc
         self.symtab = self.symtab_map[node]
@@ -94,13 +96,20 @@ class Compiler(ast.NodeVisitor):
         for a in args.args:
             self.bc.add_const(sys.intern(a.arg))
 
-        last_stmt = self._visit_suite(node.body)
-        if not isinstance(last_stmt, ast.Return):
-            self.bc.add(opc.LOAD_CONST_NONE)
+        if isinstance(node.body, list):
+            last_stmt = self._visit_suite(node.body)
+            if not isinstance(last_stmt, ast.Return):
+                self.bc.add(opc.LOAD_CONST_NONE)
+                self.bc.add(opc.RETURN_VALUE)
+        else:
+            self.visit(node.body)
             self.bc.add(opc.RETURN_VALUE)
 
         co = self.bc.get_codeobj()
-        co.co_name = node.name
+        if is_lambda:
+            co.co_name = "<lambda>"
+        else:
+            co.co_name = node.name
         co.co_filename = self.filename
         co.co_argcount = len(args.args)
         # Here mpy_stacksize corresponds to VM stack size, we also need there
@@ -111,9 +120,13 @@ class Compiler(ast.NodeVisitor):
         self.symtab = prev_symtab
 
         self.bc.add(opc.MAKE_FUNCTION, co)
-        self._visit_var(node.name, ast.StoreConst())
+        if not is_lambda:
+            self._visit_var(node.name, ast.StoreConst())
 
     def visit_FunctionDef(self, node):
+        self._visit_function(node)
+
+    def visit_Lambda(self, node):
         self._visit_function(node)
 
     def visit_For(self, node):
