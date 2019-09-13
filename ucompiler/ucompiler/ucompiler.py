@@ -260,10 +260,17 @@ class Compiler(ast.NodeVisitor):
             ast.LtE: opc.BINARY_LESS_EQUAL,
             ast.Gt: opc.BINARY_MORE,
             ast.GtE: opc.BINARY_MORE_EQUAL,
+            ast.Is: opc.BINARY_IS,
+            ast.IsNot: opc.BINARY_IS,
+            ast.In: opc.BINARY_IN,
+            ast.NotIn: opc.BINARY_IN,
         }
         self.visit(node.left)
         self.visit(node.comparators[0])
-        self.bc.add(cmpop_map[type(node.ops[0])])
+        op_t = type(node.ops[0])
+        self.bc.add(cmpop_map[op_t])
+        if op_t in (ast.IsNot, ast.NotIn):
+            self.bc.add(opc.UNARY_NOT)
 
     def visit_BoolOp(self, node):
         if isinstance(node.op, ast.And):
