@@ -237,6 +237,11 @@ class Compiler(ast.NodeVisitor):
             self.visit(t)
         self.visit(node.targets[-1])
 
+    def visit_Delete(self, node):
+        for t in node.targets:
+            # Operation is handled by node.ctx
+            self.visit(t)
+
     def visit_Expr(self, node):
         self.visit(node.value)
         self.bc.add(opc.POP_TOP)
