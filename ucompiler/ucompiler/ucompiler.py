@@ -269,6 +269,19 @@ class Compiler(ast.NodeVisitor):
             self.visit(arg)
         self.bc.add(opc.CALL_FUNCTION, len(node.args), 0)
 
+    def visit_IfExp(self, node):
+        self.visit(node.test)
+        join_l = self.bc.get_label()
+        else_l = self.bc.get_label()
+        self.bc.jump(opc.POP_JUMP_IF_FALSE, else_l)
+        self.visit(node.body)
+        self.bc.jump(opc.JUMP, join_l)
+        self.bc.put_label(else_l)
+        # Undo stack effect of the "if" branch.
+        self.bc.stk_ptr -= 1
+        self.visit(node.orelse)
+        self.bc.put_label(join_l)
+
     def visit_Compare(self, node):
         assert len(node.ops) == 1
         cmpop_map = {
