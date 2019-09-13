@@ -319,6 +319,17 @@ class Compiler(ast.NodeVisitor):
         self.visit(node.operand)
         self.bc.add(unop_map[type(node.op)])
 
+    def visit_Attribute(self, node):
+        self.visit(node.value)
+        if isinstance(node.ctx, ast.Load):
+            self.bc.add(opc.LOAD_ATTR, node.attr)
+        elif isinstance(node.ctx, ast.Store):
+            self.bc.add(opc.STORE_ATTR, node.attr)
+        elif isinstance(node.ctx, ast.Del):
+            self.bc.add(opc.LOAD_NULL)
+            self.bc.add(opc.ROT_TWO)
+            self.bc.add(opc.STORE_ATTR, node.attr)
+
     def visit_Name(self, node):
         self._visit_var(node.id, node.ctx)
 
