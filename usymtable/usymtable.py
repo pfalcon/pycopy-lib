@@ -142,7 +142,7 @@ class SymbolTable:
         if self.type == "module":
             r = "top"
         else:
-            r = self.defining_node.name
+            r = getattr(self.defining_node, "name", "<lambda>")
         return r
 
     def get_type(self):
@@ -396,8 +396,9 @@ class SymbolTableBuilder(ast.NodeVisitor):
         self._visit_suite(node.body)
         self.pop_scope()
 
-    def visit_FunctionDef(self, node):
-        self.symtab.add_assign(node.name)
+    def _visit_function(self, node):
+        if not isinstance(node, ast.Lambda):
+            self.symtab.add_assign(node.name)
 
         args = node.args
 
@@ -418,8 +419,20 @@ class SymbolTableBuilder(ast.NodeVisitor):
         if args.kwarg:
             self.symtab.add_param(args.kwarg.arg)
 
-        self._visit_suite(node.body)
+        if isinstance(node.body, list):
+            self._visit_suite(node.body)
+        else:
+            self.visit(node.body)
         self.pop_scope()
+
+    def visit_FunctionDef(self, node):
+        self._visit_function(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._visit_function(node)
+
+    def visit_Lambda(self, node):
+        self._visit_function(node)
 
     def visit_ClassDef(self, node):
         self.symtab.add_assign(node.name)
