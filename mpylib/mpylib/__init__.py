@@ -86,7 +86,15 @@ class Bytecode:
         if args != ():
             arg = args[0]
         fl, extra = upyopcodes.mp_opcode_type(opcode)
-        if fl == upyopcodes.MP_OPCODE_OFFSET:
+
+        if opcode == opmap["CALL_FUNCTION"]:
+            MPYOutput.write_uint(None, args[0] + (args[1] << 8), self.buf)
+        elif opcode == opmap["LOAD_CONST_SMALL_INT"]:
+            MPYOutput.write_int(None, arg, self.buf)
+        elif opcode == opmap["LOAD_CONST_OBJ"]:
+            MPYOutput.write_uint(None, len(self.co_consts), self.buf)
+            self.co_consts.append(arg)
+        elif fl == upyopcodes.MP_OPCODE_OFFSET:
             self.buf.writebin("<H", arg)
         elif fl == upyopcodes.MP_OPCODE_QSTR:
             if self.only_for_mpy:
@@ -97,13 +105,6 @@ class Bytecode:
             if opcode in upyopcodes.hascache:
                 self.buf.writebin("B", 0)
             self.co_names.append(arg)
-        elif opcode == opmap["CALL_FUNCTION"]:
-            MPYOutput.write_uint(None, args[0] + (args[1] << 8), self.buf)
-        elif opcode == opmap["LOAD_CONST_SMALL_INT"]:
-            MPYOutput.write_int(None, arg, self.buf)
-        elif opcode == opmap["LOAD_CONST_OBJ"]:
-            MPYOutput.write_uint(None, len(self.co_consts), self.buf)
-            self.co_consts.append(arg)
 
     def get_label(self):
         label = len(self.labels)
