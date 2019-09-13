@@ -105,6 +105,8 @@ class Bytecode:
             if opcode in upyopcodes.hascache:
                 self.buf.writebin("B", 0)
             self.co_names.append(arg)
+        elif fl == upyopcodes.MP_OPCODE_VAR_UINT:
+            MPYOutput.write_uint(None, arg, self.buf)
 
     def get_label(self):
         label = len(self.labels)
