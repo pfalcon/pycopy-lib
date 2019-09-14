@@ -22,6 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from .upyopmap import opmap
+
 MP_OPCODE_BYTE = 0
 MP_OPCODE_QSTR = 1
 MP_OPCODE_VAR_UINT = 2
@@ -181,3 +183,8 @@ def decode_varint(bytecode, i, signed=False):
 
 
 hascache = (MP_BC_LOAD_NAME, MP_BC_LOAD_GLOBAL, MP_BC_LOAD_ATTR, MP_BC_STORE_ATTR)
+
+has_forward_offset = (
+    opmap["FOR_ITER"], opmap["POP_EXCEPT_JUMP"],
+    opmap["SETUP_WITH"], opmap["SETUP_EXCEPT"], opmap["SETUP_FINALLY"],
+)
