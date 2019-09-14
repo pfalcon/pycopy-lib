@@ -1,7 +1,12 @@
-#!/usr/bin/env python3
+# This file is part of the standard library of Pycopy project, minimalist
+# and resource-efficient Python3 implementation.
+#
+# https://github.com/pfalcon/pycopy
+# https://github.com/pfalcon/pycopy-lib
 #
 # The MIT License (MIT)
 #
+# Copyright (c) 2018-2019 Paul Sokolovsky
 # Copyright (c) 2016 Damien P. George
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
