@@ -1,3 +1,10 @@
+# This file is part of the standard library of Pycopy project, minimalist and
+# resource-efficient Python3 implementation.
+# https://github.com/pfalcon/pycopy
+# https://github.com/pfalcon/pycopy-lib
+#
+# MIT License
+
 from .upyopcodes import *
 from .upyopmap import *
 
