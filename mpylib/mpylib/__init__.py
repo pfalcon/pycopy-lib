@@ -375,7 +375,6 @@ class MPYInput:
         co.co_argcount = n_pos_args
         co.co_kwonlyargcount = n_kwonly_args
         co.co_flags = scope_flags
-        co.mpy_scope_flags = scope_flags
         co.mpy_def_pos_args = n_def_pos_args
         co.mpy_cellvars = tuple(cells)
 
