@@ -263,11 +263,13 @@ class Compiler(ast.NodeVisitor):
         pass
 
     def visit_Call(self, node):
-        assert not node.keywords
         self.visit(node.func)
         for arg in node.args:
             self.visit(arg)
-        self.bc.add(opc.CALL_FUNCTION, len(node.args), 0)
+        for kwarg in node.keywords:
+            self.bc.add(opc.LOAD_CONST_STRING, kwarg.arg)
+            self.visit(kwarg.value)
+        self.bc.add(opc.CALL_FUNCTION, len(node.args), len(node.keywords))
 
     def visit_IfExp(self, node):
         self.visit(node.test)
