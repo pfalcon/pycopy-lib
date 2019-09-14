@@ -76,6 +76,36 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.RETURN_VALUE)
 
+    def visit_ClassDef(self, node):
+        prev_symtab = self.symtab
+        prev_bc = self.bc
+        self.symtab = self.symtab_map[node]
+        self.bc = Bytecode()
+
+        name_interned = sys.intern(node.name)
+
+        self.bc.add(opc.LOAD_NAME, "__name__")
+        self._visit_var("__module__", ast.Store())
+        self.bc.add(opc.LOAD_CONST_STRING, name_interned)
+        self._visit_var("__qualname__", ast.Store())
+        self._visit_suite(node.body)
+        self.bc.add(opc.LOAD_CONST_NONE)
+        self.bc.add(opc.RETURN_VALUE)
+        co = self.bc.get_codeobj()
+        co.co_name = node.name
+        co.co_filename = self.filename
+
+        self.bc = prev_bc
+        self.symtab = prev_symtab
+
+        self.bc.add(opc.LOAD_BUILD_CLASS)
+        self.bc.add(opc.MAKE_FUNCTION, co)
+        self.bc.add(opc.LOAD_CONST_STRING, name_interned)
+        for b in node.bases:
+            self.visit(b)
+        self.bc.add(opc.CALL_FUNCTION, 2 + len(node.bases), 0)
+        self._visit_var(node.name, ast.Store())
+
     def _visit_function(self, node):
         args = node.args
         assert not args.kwonlyargs
