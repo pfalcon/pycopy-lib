@@ -264,12 +264,40 @@ class Compiler(ast.NodeVisitor):
 
     def visit_Call(self, node):
         self.visit(node.func)
+        opcode = opc.CALL_FUNCTION
+        stararg = None
+        dstararg = None
+
+        pos_args = 0
         for arg in node.args:
-            self.visit(arg)
+            if isinstance(arg, ast.Starred):
+                opcode = opc.CALL_FUNCTION_VAR_KW
+                stararg = arg.value
+            else:
+                self.visit(arg)
+                pos_args += 1
+
+        kw_args = 0
         for kwarg in node.keywords:
-            self.bc.add(opc.LOAD_CONST_STRING, kwarg.arg)
-            self.visit(kwarg.value)
-        self.bc.add(opc.CALL_FUNCTION, len(node.args), len(node.keywords))
+            if kwarg.arg is None:
+                opcode = opc.CALL_FUNCTION_VAR_KW
+                dstararg = kwarg.value
+            else:
+                self.bc.add(opc.LOAD_CONST_STRING, kwarg.arg)
+                self.visit(kwarg.value)
+                kw_args += 1
+
+        if opcode == opc.CALL_FUNCTION_VAR_KW:
+            if stararg is None:
+                self.bc.add(opc.LOAD_NULL)
+            else:
+                self.visit(stararg)
+            if dstararg is None:
+                self.bc.add(opc.LOAD_NULL)
+            else:
+                self.visit(dstararg)
+
+        self.bc.add(opcode, pos_args, kw_args)
 
     def visit_IfExp(self, node):
         self.visit(node.test)
