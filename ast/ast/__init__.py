@@ -85,3 +85,26 @@ class NodeVisitor:
                     self.visit(v)
             elif isinstance(val, AST):
                 self.visit(val)
+
+
+class NodeTransformer(NodeVisitor):
+
+    def generic_visit(self, node):
+        for f in node._fields:
+            val = getattr(node, f)
+            if isinstance(val, list):
+                newl = []
+                for v in val:
+                    newv = self.visit(v)
+                    if newv is None:
+                        pass
+                    elif isinstance(newv, list):
+                        newl.extend(newv)
+                    else:
+                        newl.append(newv)
+                setattr(node, f, newl)
+            elif isinstance(val, AST):
+                newv = self.visit(val)
+                setattr(node, f, newv)
+
+        return node
