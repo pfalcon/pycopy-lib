@@ -5,6 +5,7 @@ assert translate("foobar", {ord("o"): "foo", ord("b"): 32, ord("r"): None}) == "
 assert isidentifier("_foo13_1")
 assert not isidentifier("_foo13_1-")
 assert not isidentifier("1_foo13_1")
+assert not isidentifier("")
 
 # expandtabs
 assert expandtabs("\t") == '        '
