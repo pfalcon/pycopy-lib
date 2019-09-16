@@ -12,3 +12,7 @@ assert expandtabs("\t") == '        '
 assert expandtabs("123\t") == '123     '
 assert expandtabs("12345678\t") == '12345678        '
 assert expandtabs("123\n\t") == '123\n        '
+
+assert ljust("foo", 5) == "foo  "
+assert ljust("foo", 2) == "foo"
+assert ljust("foo", 5, "-") == "foo--"
