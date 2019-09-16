@@ -29,6 +29,8 @@ def translate(s, map):
 # str object methods not available as builtins in Pycopy
 
 def isidentifier(s):
+    if not s:
+        return False
     if s[0] not in ascii_letters and s[0] != "_":
         return False
     for c in s[1:]:
