@@ -51,3 +51,9 @@ def expandtabs(s, tabsize=8):
         if c == "\n" or c == "\r":
             col = 0
     return res
+
+
+def ljust(s, w, fill=" "):
+    if len(s) >= w:
+        return s
+    return s + fill * (w - len(s))
