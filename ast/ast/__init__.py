@@ -45,6 +45,10 @@ def iter_fields(t):
         yield (k, getattr(t, k, None))
 
 
+def copy_location(new_node, old_node):
+    return new_node
+
+
 def parse_stream(stream, filename="<unknown>", mode="exec"):
     import utokenize as tokenize
     from . import parser
