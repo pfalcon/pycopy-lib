@@ -103,3 +103,29 @@ def epoll(sizehint=4):
     fd = epoll_create(sizehint)
     os.check_error(fd)
     return Epoll(fd)
+
+
+def select(rlist, wlist, xlist, timeout=None):
+    p = poll()
+    for s in rlist:
+        p.register(s, POLLIN)
+    for s in wlist:
+        p.register(s, POLLOUT)
+    for s in xlist:
+        p.register(s, POLLPRI)
+
+    res = p.poll(timeout if timeout is None else int(timeout * 1000))
+
+    rout = []
+    wout = []
+    xout = []
+    for s, ev in res:
+        if ev & POLLIN:
+            rout.append(s)
+        if ev & POLLOUT:
+            wout.append(s)
+        # Any other bits set
+        if ev & ~(POLLIN | POLLOUT):
+            xout.append(s)
+
+    return rout, wout, xout
