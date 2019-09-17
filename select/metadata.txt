@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = module
-version = 0.3
+version = 0.4
 author = Paul Sokolovsky
 depends = os, ffilib
