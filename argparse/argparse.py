@@ -20,15 +20,19 @@ class _Arg:
         self.default = default
         self.help = help
 
-    def parse(self, optname, args):
+    def parse(self, optname, eq_arg, args):
         # parse args for this arg
         if self.action == "store":
             if self.nargs is None:
+                if eq_arg is not None:
+                    return eq_arg
                 if args:
                     return args.pop(0)
                 else:
                     raise _ArgError("expecting value for %s" % optname)
             elif self.nargs == "?":
+                if eq_arg is not None:
+                    return eq_arg
                 if args:
                     return args.pop(0)
                 else:
@@ -185,10 +189,15 @@ class ArgumentParser:
                 if a in ("-h", "--help"):
                     self.usage(True)
                     sys.exit(0)
+
+                eq_arg = None
+                if a.startswith("--") and "=" in a:
+                    a, eq_arg = a.split("=", 1)
+
                 found = False
                 for i, opt in enumerate(self.opt):
                     if a in opt.names:
-                        arg_vals[i] = opt.parse(a, args)
+                        arg_vals[i] = opt.parse(a, eq_arg, args)
                         found = True
                         break
                 if not found:
@@ -207,7 +216,7 @@ class ArgumentParser:
                         raise _ArgError("extra args: %s" % " ".join(args))
                 for pos in self.pos:
                     arg_dest.append(pos.dest)
-                    arg_vals.append(pos.parse(pos.names[0], args))
+                    arg_vals.append(pos.parse(pos.names[0], None, args))
                 parsed_pos = True
                 if return_unknown:
                     consume_unknown()
