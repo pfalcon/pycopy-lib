@@ -25,3 +25,8 @@ def shuffle(seq):
     for i in range(l):
         j = randrange(l)
         seq[i], seq[j] = seq[j], seq[i]
+
+def choice(seq):
+    if not seq:
+        raise IndexError
+    return seq[randrange(len(seq))]
