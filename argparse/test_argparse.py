@@ -29,6 +29,10 @@ args = parser.parse_args(["--b-opt", "456"])
 assert args.a_opt is False and args.b_opt == "456" and args.c_opt == "test"
 args = parser.parse_args(["--c-opt", "override"])
 assert args.a_opt is False and args.b_opt == 123 and args.c_opt == "override"
+args = parser.parse_args(["--c-opt=override"])
+assert args.a_opt is False and args.b_opt == 123 and args.c_opt == "override"
+args = parser.parse_args(["--c-opt=override", "--b-opt", "456"])
+assert args.a_opt is False and args.b_opt == "456" and args.c_opt == "override"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("files", nargs="+")
