@@ -113,6 +113,9 @@ def error(msg, *args):
 def critical(msg, *args):
     getLogger(None).critical(msg, *args)
 
+def exception(msg, *args):
+    getLogger(None).exception(msg, *args)
+
 def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
     global _level
     _level = level
