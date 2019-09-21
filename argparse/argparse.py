@@ -11,13 +11,14 @@ class _ArgError(BaseException):
 
 
 class _Arg:
-    def __init__(self, names, dest, action, nargs, const, default, help):
+    def __init__(self, names, dest, action, nargs, const, default, type, help):
         self.names = names
         self.dest = dest
         self.action = action
         self.nargs = nargs
         self.const = const
         self.default = default
+        self.type = type
         self.help = help
 
     def parse(self, optname, eq_arg, args):
@@ -25,18 +26,20 @@ class _Arg:
         if self.action == "store":
             if self.nargs is None:
                 if eq_arg is not None:
-                    return eq_arg
-                if args:
-                    return args.pop(0)
+                    ret = eq_arg
+                elif args:
+                    ret = args.pop(0)
                 else:
                     raise _ArgError("expecting value for %s" % optname)
+                return self.type(ret)
             elif self.nargs == "?":
                 if eq_arg is not None:
-                    return eq_arg
-                if args:
-                    return args.pop(0)
+                    ret = eq_arg
+                elif args:
+                    ret = args.pop(0)
                 else:
                     return self.default
+                return self.type(ret)
             else:
                 if self.nargs == "*":
                     n = -1
@@ -110,7 +113,7 @@ class ArgumentParser:
                 args = [dest]
         list.append(
             _Arg(args, dest, action, kwargs.get("nargs", None),
-                 const, default, kwargs.get("help", "")))
+                 const, default, kwargs.get("type", str), kwargs.get("help", "")))
 
     def usage(self, full):
         # print short usage
