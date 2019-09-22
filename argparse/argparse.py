@@ -23,7 +23,7 @@ class _Arg:
 
     def parse(self, optname, eq_arg, args):
         # parse args for this arg
-        if self.action == "store":
+        if self.action == "store" or self.action == "append":
             if self.nargs is None:
                 if eq_arg is not None:
                     ret = eq_arg
@@ -96,6 +96,9 @@ class ArgumentParser:
             action = "store_const"
             const = False
             default = kwargs.get("default", True)
+        elif action == "append":
+            const = None
+            default = kwargs.get("default", [])
         else:
             const = kwargs.get("const", None)
             default = kwargs.get("default", None)
@@ -200,7 +203,11 @@ class ArgumentParser:
                 found = False
                 for i, opt in enumerate(self.opt):
                     if a in opt.names:
-                        arg_vals[i] = opt.parse(a, eq_arg, args)
+                        val = opt.parse(a, eq_arg, args)
+                        if opt.action == "append":
+                            arg_vals[i].append(val)
+                        else:
+                            arg_vals[i] = val
                         found = True
                         break
                 if not found:
