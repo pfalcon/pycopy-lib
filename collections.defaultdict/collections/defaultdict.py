@@ -34,3 +34,12 @@ class defaultdict:
         if self.default_factory is None:
             raise KeyError(key)
         return self.default_factory()
+
+    def keys(self):
+        return self.d.keys()
+
+    def values(self):
+        return self.d.values()
+
+    def items(self):
+        return self.d.items()
