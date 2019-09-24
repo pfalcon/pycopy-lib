@@ -3,7 +3,10 @@ Minimal and functional version of CPython's argparse module.
 """
 
 import sys
-from ucollections import namedtuple
+
+
+class Namespace:
+    pass
 
 
 class _ArgError(BaseException):
@@ -173,12 +176,10 @@ class ArgumentParser:
             sys.exit(2)
 
     def _parse_args(self, args, return_unknown):
+        argholder = Namespace()
         # add optional args with defaults
-        arg_dest = []
-        arg_vals = []
         for opt in self.opt:
-            arg_dest.append(opt.dest)
-            arg_vals.append(opt.default)
+            setattr(argholder, opt.dest, opt.default)
 
         # deal with unknown arguments, if needed
         unknown = []
@@ -205,9 +206,9 @@ class ArgumentParser:
                     if a in opt.names:
                         val = opt.parse(a, eq_arg, args)
                         if opt.action == "append":
-                            arg_vals[i].append(val)
+                            getattr(argholder, opt.dest).append(val)
                         else:
-                            arg_vals[i] = val
+                            setattr(argholder, opt.dest, val)
                         found = True
                         break
                 if not found:
@@ -225,12 +226,9 @@ class ArgumentParser:
                     else:
                         raise _ArgError("extra args: %s" % " ".join(args))
                 for pos in self.pos:
-                    arg_dest.append(pos.dest)
-                    arg_vals.append(pos.parse(pos.names[0], None, args))
+                    setattr(argholder, pos.dest, pos.parse(pos.names[0], None, args))
                 parsed_pos = True
                 if return_unknown:
                     consume_unknown()
 
-        # build and return named tuple with arg values
-        values = namedtuple("args", arg_dest)(*arg_vals)
-        return (values, unknown) if return_unknown else values
+        return (argholder, unknown) if return_unknown else argholder
