@@ -1,4 +1,4 @@
 srctype = pycopy-lib
 type = module
-version = 0.4.4
-author = Damien George
+version = 0.5
+author = Damien George, Paul Sokolovsky
