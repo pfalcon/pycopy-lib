@@ -59,6 +59,8 @@ class Logger:
     def warning(self, msg, *args):
         self.log(WARNING, msg, *args)
 
+    warn = warning
+
     def error(self, msg, *args):
         self.log(ERROR, msg, *args)
 
@@ -106,6 +108,8 @@ def debug(msg, *args):
 
 def warning(msg, *args):
     getLogger(None).warning(msg, *args)
+
+warn = warning
 
 def error(msg, *args):
     getLogger(None).error(msg, *args)
