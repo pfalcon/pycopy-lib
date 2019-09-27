@@ -37,3 +37,6 @@ def truediv(a, b):
 
 def floordiv(a, b):
     return a // b
+
+def getitem(a, b):
+    return a[b]
