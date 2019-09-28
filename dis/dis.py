@@ -44,8 +44,11 @@ def disassemble(code, real_qstrs=False, qstr_ids=True):
     bc = code.co_code
     while i < len(bc):
         typ, sz = upyopcodes.mp_opcode_format(bc, i)
-        if bc[i] in upyopcodes.hascache:
-            sz += 1
+        # Handled by mp_opcode_format() above, but
+        # config.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE
+        # must be set correctly!
+        #if bc[i] in upyopcodes.hascache:
+        #    sz += 1
         print("% 15d " % i, end="")
 
         optarg = None
