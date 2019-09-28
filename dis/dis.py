@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 #
-# "dis" module for Pycopy
+# "dis" module for Pycopy, https://github.com/pfalcon/pycopy
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2018 Paul Sokolovsky
+# Copyright (c) 2018-2019 Paul Sokolovsky
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
