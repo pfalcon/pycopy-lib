@@ -17,3 +17,9 @@ assert fm(a) == ((), {})
 
 fm = operator.methodcaller("method", 1, 2, 3, kw1="foo", kw2=10)
 assert fm(a) == ((1, 2, 3), {"kw1": "foo", "kw2": 10})
+
+im = operator.itemgetter(1)
+assert im([1, 2, 3]) == 2
+
+im = operator.itemgetter(0, 2)
+assert im([1, 2, 3]) == (1, 3)
