@@ -1,3 +1,13 @@
+def itemgetter(*args):
+    def _itemgetter(obj):
+        return obj[args[0]]
+    def _itemsgetter(obj):
+        return tuple([obj[i] for i in args])
+    if len(args) == 1:
+        return _itemgetter
+    return _itemsgetter
+
+
 def attrgetter(attr):
     assert "." not in attr
     def _attrgetter(obj):
