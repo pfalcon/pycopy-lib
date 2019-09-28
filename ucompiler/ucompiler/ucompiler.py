@@ -27,6 +27,7 @@
 import sys
 import ast
 import usymtable
+import ucodetype
 from ubytecode import Bytecode, get_opcode_ns
 import mpylib
 import ulogging
@@ -254,6 +255,14 @@ class Compiler(ast.NodeVisitor):
                 self._visit_var(n.asname, ast.StoreConst())
             else:
                 self._visit_var(n.name.split(".", 1)[0], ast.StoreConst())
+
+    def visit_Yield(self, node):
+        self.bc.set_flag(ucodetype.FLAG_GENERATOR)
+        if node.value is None:
+            self.bc.add(opc.LOAD_CONST_NONE)
+        else:
+            self.visit(node.value)
+        self.bc.add(opc.YIELD_VALUE)
 
     def visit_Return(self, node):
         if node.value is None:
