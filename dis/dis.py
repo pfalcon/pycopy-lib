@@ -39,7 +39,7 @@ def qstr_by_id(id):
 # If real_qstrs == False, assume that qstr-containing bytecode encode
 # indexes into .co_names array. Otherwise, assume that real qstr id's
 # are stored there, and use them (and don't use .co_names).
-def disassemble(code, real_qstrs=False):
+def disassemble(code, real_qstrs=False, qstr_ids=True):
     i = 0
     bc = code.co_code
     while i < len(bc):
@@ -60,9 +60,13 @@ def disassemble(code, real_qstrs=False):
         elif typ == upyopcodes.MP_OPCODE_QSTR:
             optarg = bc[i + 1] + (bc[i + 2] << 8)
             if real_qstrs:
-                optarg = "%d (%s)" % (optarg, qstr_by_id(optarg))
+                s = qstr_by_id(optarg)
             else:
-                optarg = "%d (%s)" % (optarg, code.co_names[optarg])
+                s = code.co_names[optarg]
+            if qstr_ids:
+                optarg = "%d (%s)" % (optarg, s)
+            else:
+                optarg = s
 
         elif typ == upyopcodes.MP_OPCODE_VAR_UINT:
             signed = False
