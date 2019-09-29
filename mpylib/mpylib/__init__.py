@@ -150,7 +150,8 @@ class Bytecode:
                 self.buf.writebin("<H", rel)
             lab_id += 1
 
-        return self.buf.getvalue()
+        self.co_code = self.buf.getvalue()
+        return self.co_code
 
 
 class QStrWindow:
