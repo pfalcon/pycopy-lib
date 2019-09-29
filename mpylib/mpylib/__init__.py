@@ -351,6 +351,12 @@ class MPYInput:
 
         co.mpy_stacksize = n_state
         co.mpy_excstacksize = n_exc_stack
+        # Despite CPython docs saying "co_stacksize is the required stack
+        # size (including local variables)", it's actually doesn't include
+        # local variables (which function arguments being such too). This
+        # was reported as https://bugs.python.org/issue38316 .
+        # We don't readily have a number of local vars here, so at least
+        # subtract number of arguments.
         co.co_stacksize = n_state - (n_pos_args + n_kwonly_args)
         co.co_argcount = n_pos_args
         co.co_kwonlyargcount = n_kwonly_args
@@ -386,6 +392,12 @@ class MPYInput:
 
         co.mpy_stacksize = n_state
         co.mpy_excstacksize = n_exc_stack
+        # Despite CPython docs saying "co_stacksize is the required stack
+        # size (including local variables)", it's actually doesn't include
+        # local variables (which function arguments being such too). This
+        # was reported as https://bugs.python.org/issue38316 .
+        # We don't readily have a number of local vars here, so at least
+        # subtract number of arguments.
         co.co_stacksize = n_state - (n_pos_args + n_kwonly_args)
         co.co_argcount = n_pos_args
         co.co_kwonlyargcount = n_kwonly_args
