@@ -119,6 +119,9 @@ class Bytecode:
         elif fl == upyopcodes.MP_OPCODE_VAR_UINT:
             MPYOutput.write_uint(None, arg, self.buf)
 
+    def add_const(self, c):
+        self.co_consts.append(c)
+
     def get_label(self):
         label = len(self.labels)
         self.labels.append([None])
