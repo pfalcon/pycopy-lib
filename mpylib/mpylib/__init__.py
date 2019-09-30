@@ -25,6 +25,7 @@
 
 import sys
 import uio
+import uarray
 import ulogging
 
 from opcode import upyopcodes
@@ -91,6 +92,10 @@ class CodeType:
         fake_out = MPYOutput(None)
         code = fake_out.pack_code(self).getvalue()
         return code
+
+    def get_const_table(self):
+        consts_arr = uarray.array("O", self.mpy_consts)
+        return consts_arr
 
 
 class Bytecode:
