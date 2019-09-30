@@ -68,7 +68,7 @@ def get_opcode_ns():
 
 class CodeType:
 
-    def __init__(self):
+    def __init__(self, bc=None):
         self.co_name = "??"
         self.co_filename = "??"
         self.co_lnotab = b'\x00\x00'
@@ -78,9 +78,19 @@ class CodeType:
         self.co_kwonlyargcount = 0
         self.mpy_def_pos_args = 0
         self.mpy_excstacksize = 0
+        if bc is not None:
+            self.co_code = bc.get_bc()
+            self.co_names = bc.co_names
+            self.co_consts = bc.co_consts
+            self.mpy_consts = bc.co_consts
 
     def __repr__(self):
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
+
+    def get_code(self):
+        fake_out = MPYOutput(None)
+        code = fake_out.pack_code(self).getvalue()
+        return code
 
 
 class Bytecode:
