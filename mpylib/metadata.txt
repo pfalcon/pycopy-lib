@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = package
-version = 0.6.2
+version = 0.6.3
 desc = Module to deal with Pycopy compiled bytecode files (.mpy)
 long_desc = Module to deal with Pycopy (https://github.com/pfalcon/pycopy) compiled bytecode files (.mpy)
 depends = opcode, ulogging
