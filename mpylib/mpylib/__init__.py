@@ -26,6 +26,8 @@
 import sys
 import uio
 import uarray
+from ucollections import OrderedDict
+import uctypes
 import ulogging
 
 from opcode import upyopcodes
@@ -67,6 +69,16 @@ def get_opcode_ns():
     return AttrDict(opmap)
 
 
+mp_raw_code_t_layout = OrderedDict({
+    "kind": uctypes.BFUINT32 | 0 << uctypes.BF_POS | 3 << uctypes.BF_LEN,
+    "scope_flags": uctypes.BFUINT32 | 3 << uctypes.BF_POS | 7 << uctypes.BF_LEN | uctypes.PREV_OFFSET,
+    "n_pos_args": uctypes.BFUINT32 | 10 << uctypes.BF_POS | 11 << uctypes.BF_LEN | uctypes.PREV_OFFSET,
+    "fun_data": (uctypes.PTR, uctypes.VOID),
+    "const_table": (uctypes.PTR, uctypes.VOID),
+})
+uctypes.calc_offsets(mp_raw_code_t_layout)
+
+
 class CodeType:
 
     def __init__(self, bc=None):
@@ -94,8 +106,23 @@ class CodeType:
         return code
 
     def get_const_table(self):
-        consts_arr = uarray.array("O", self.mpy_consts)
+        consts_arr = uarray.array("P", [0] * len(self.mpy_consts))
+        for i in range(len(self.mpy_consts)):
+            if isinstance(self.mpy_consts[i], CodeType):
+                raw_code = self.codeobj2rawcode(self.mpy_consts[i])
+                consts_arr[i] = uctypes.addressof(raw_code)
+            else:
+                consts_arr[i] = id(self.mpy_consts[i])
         return consts_arr
+
+    @staticmethod
+    def codeobj2rawcode(codeobj):
+        buf = bytearray(uctypes.sizeof(mp_raw_code_t_layout))
+        rc = uctypes.struct(uctypes.addressof(buf), mp_raw_code_t_layout)
+        rc.kind = 2  # MP_CODE_BYTECODE
+        rc.fun_data = uctypes.addressof(codeobj.get_code())
+        rc.const_table = uctypes.addressof(codeobj.get_const_table())
+        return rc
 
 
 class Bytecode:
@@ -118,6 +145,9 @@ class Bytecode:
         elif opcode == opmap["LOAD_CONST_SMALL_INT"]:
             MPYOutput.write_int(None, arg, self.buf)
         elif opcode == opmap["LOAD_CONST_OBJ"]:
+            MPYOutput.write_uint(None, len(self.co_consts), self.buf)
+            self.co_consts.append(arg)
+        elif opcode == opmap["MAKE_FUNCTION"]:
             MPYOutput.write_uint(None, len(self.co_consts), self.buf)
             self.co_consts.append(arg)
         elif fl == upyopcodes.MP_OPCODE_OFFSET:
