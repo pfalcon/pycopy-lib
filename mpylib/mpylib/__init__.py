@@ -32,6 +32,7 @@ import ulogging
 
 from opcode import upyopcodes
 from opcode import opmap
+from opcode import stack_effect
 from .qstrs import static_qstr_list
 
 # Current supported .mpy version
@@ -96,6 +97,7 @@ class CodeType:
             self.co_names = bc.co_names
             self.co_consts = bc.co_consts
             self.mpy_consts = bc.co_consts
+            self.co_stacksize = self.mpy_stacksize = bc.stk_use
 
     def __repr__(self):
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
@@ -132,9 +134,17 @@ class Bytecode:
         self.co_names = []
         self.co_consts = []
         self.labels = []
+        self.stk_ptr = 0
+        self.stk_use = 0
         self.only_for_mpy = False
 
     def add(self, opcode, *args):
+        delta = stack_effect(opcode, *args)
+        self.stk_ptr += delta
+        assert self.stk_ptr >= 0, self.stk_ptr
+        if self.stk_ptr > self.stk_use:
+            self.stk_use = self.stk_ptr
+
         self.buf.writebin("B", opcode)
         if args != ():
             arg = args[0]
