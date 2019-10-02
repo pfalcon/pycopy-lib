@@ -98,6 +98,7 @@ class CodeType:
             self.co_consts = bc.co_consts
             self.mpy_consts = bc.co_consts
             self.co_stacksize = self.mpy_stacksize = bc.stk_use
+            self.mpy_excstacksize = bc.exc_stk_use
 
     def __repr__(self):
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
@@ -136,6 +137,8 @@ class Bytecode:
         self.labels = []
         self.stk_ptr = 0
         self.stk_use = 0
+        self.exc_stk_ptr = 0
+        self.exc_stk_use = 0
         self.only_for_mpy = False
 
     def add(self, opcode, *args):
@@ -173,6 +176,13 @@ class Bytecode:
             self.co_names.append(arg)
         elif fl == upyopcodes.MP_OPCODE_VAR_UINT:
             MPYOutput.write_uint(None, arg, self.buf)
+
+        if opcode in (opmap["SETUP_EXCEPT"], opmap["SETUP_FINALLY"]):
+            self.exc_stk_ptr += 1
+            if self.exc_stk_ptr > self.exc_stk_use:
+                self.exc_stk_use = self.exc_stk_ptr
+        elif opcode == opmap["END_FINALLY"]:
+            self.exc_stk_ptr -= 1
 
     def add_const(self, c):
         self.co_consts.append(c)
