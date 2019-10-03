@@ -264,6 +264,13 @@ class Compiler(ast.NodeVisitor):
             self.visit(node.value)
         self.bc.add(opc.YIELD_VALUE)
 
+    def visit_YieldFrom(self, node):
+        self.bc.set_flag(ucodetype.FLAG_GENERATOR)
+        self.visit(node.value)
+        self.bc.add(opc.GET_ITER)
+        self.bc.add(opc.LOAD_CONST_NONE)
+        self.bc.add(opc.YIELD_FROM)
+
     def visit_Return(self, node):
         if node.value is None:
             self.bc.add(opc.LOAD_CONST_NONE)
