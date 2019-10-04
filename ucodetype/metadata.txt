@@ -1,0 +1,5 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
+desc = Module to deal with Pycopy code objects
+long_desc = Module to deal with Pycopy (https://github.com/pfalcon/pycopy) code objects.
