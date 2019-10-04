@@ -29,14 +29,12 @@
 
 import sys
 import uio
-import uarray
-from ucollections import OrderedDict
-import uctypes
 import ulogging
 
 from opcode import upyopcodes
 from opcode import opmap
 from opcode import stack_effect
+from ucodetype import CodeType
 from .qstrs import static_qstr_list
 
 # Current supported .mpy version
@@ -72,64 +70,6 @@ class AttrDict:
 
 def get_opcode_ns():
     return AttrDict(opmap)
-
-
-mp_raw_code_t_layout = OrderedDict({
-    "kind": uctypes.BFUINT32 | 0 << uctypes.BF_POS | 3 << uctypes.BF_LEN,
-    "scope_flags": uctypes.BFUINT32 | 3 << uctypes.BF_POS | 7 << uctypes.BF_LEN | uctypes.PREV_OFFSET,
-    "n_pos_args": uctypes.BFUINT32 | 10 << uctypes.BF_POS | 11 << uctypes.BF_LEN | uctypes.PREV_OFFSET,
-    "fun_data": (uctypes.PTR, uctypes.VOID),
-    "const_table": (uctypes.PTR, uctypes.VOID),
-})
-uctypes.calc_offsets(mp_raw_code_t_layout)
-
-
-class CodeType:
-
-    def __init__(self, bc=None):
-        self.co_name = "??"
-        self.co_filename = "??"
-        self.co_lnotab = b'\x00\x00'
-        self.co_cellvars = ()
-        self.co_flags = 0
-        self.co_argcount = 0
-        self.co_kwonlyargcount = 0
-        self.mpy_def_pos_args = 0
-        self.mpy_excstacksize = 0
-        if bc is not None:
-            self.co_code = bc.get_bc()
-            self.co_names = bc.co_names
-            self.co_consts = bc.co_consts
-            self.mpy_consts = bc.co_consts
-            self.co_stacksize = self.mpy_stacksize = bc.stk_use
-            self.mpy_excstacksize = bc.exc_stk_use
-
-    def __repr__(self):
-        return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
-
-    def get_code(self):
-        fake_out = MPYOutput(None)
-        code = fake_out.pack_code(self).getvalue()
-        return code
-
-    def get_const_table(self):
-        consts_arr = uarray.array("P", [0] * len(self.mpy_consts))
-        for i in range(len(self.mpy_consts)):
-            if isinstance(self.mpy_consts[i], CodeType):
-                raw_code = self.codeobj2rawcode(self.mpy_consts[i])
-                consts_arr[i] = uctypes.addressof(raw_code)
-            else:
-                consts_arr[i] = id(self.mpy_consts[i])
-        return consts_arr
-
-    @staticmethod
-    def codeobj2rawcode(codeobj):
-        buf = bytearray(uctypes.sizeof(mp_raw_code_t_layout))
-        rc = uctypes.struct(uctypes.addressof(buf), mp_raw_code_t_layout)
-        rc.kind = 2  # MP_CODE_BYTECODE
-        rc.fun_data = uctypes.addressof(codeobj.get_code())
-        rc.const_table = uctypes.addressof(codeobj.get_const_table())
-        return rc
 
 
 class Bytecode:
