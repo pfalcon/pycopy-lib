@@ -11,6 +11,8 @@ def randrange(start, stop=None):
     while upper > pwr2:
         pwr2 <<= 1
         bits += 1
+    if bits == 0:
+        return start
     while True:
         r = getrandbits(bits)
         if r < upper:
