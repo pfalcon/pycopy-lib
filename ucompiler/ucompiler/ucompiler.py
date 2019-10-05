@@ -271,6 +271,17 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.YIELD_FROM)
 
+    def visit_Assert(self, node):
+        self.visit(node.test)
+        true_l = self.bc.get_label()
+        self.bc.jump(opc.POP_JUMP_IF_TRUE, true_l)
+        self.bc.add(opc.LOAD_GLOBAL, "AssertionError")
+        if node.msg is not None:
+            self.visit(node.msg)
+            self.bc.add(opc.CALL_FUNCTION, 1, 0)
+        self.bc.add(opc.RAISE_VARARGS, 1)
+        self.bc.put_label(true_l)
+
     def visit_Raise(self, node):
         arg = 0
         if node.exc is not None:
