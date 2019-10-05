@@ -82,7 +82,6 @@ class Compiler(ast.NodeVisitor):
         assert not args.kwonlyargs
         assert not args.kw_defaults
         assert args.kwarg is None
-        assert not args.defaults
 
         is_lambda = isinstance(node, ast.Lambda)
 
@@ -112,6 +111,7 @@ class Compiler(ast.NodeVisitor):
             co.co_name = node.name
         co.co_filename = self.filename
         co.co_argcount = len(args.args)
+        co.mpy_def_pos_args = len(args.defaults)
         # Here mpy_stacksize corresponds to VM stack size, we also need there
         # space for locals.
         co.mpy_stacksize += len(self.symtab.all_locals)
@@ -119,7 +119,15 @@ class Compiler(ast.NodeVisitor):
         self.bc = prev_bc
         self.symtab = prev_symtab
 
-        self.bc.add(opc.MAKE_FUNCTION, co)
+        if args.defaults:
+            for v in args.defaults:
+                self.visit(v)
+            self.bc.add(opc.BUILD_TUPLE, len(args.defaults))
+            self.bc.add(opc.LOAD_NULL)
+            self.bc.add(opc.MAKE_FUNCTION_DEFARGS, co)
+        else:
+            self.bc.add(opc.MAKE_FUNCTION, co)
+
         if not is_lambda:
             self._visit_var(node.name, ast.StoreConst())
 
