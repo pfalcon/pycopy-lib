@@ -78,10 +78,8 @@ class Compiler(ast.NodeVisitor):
 
     def _visit_function(self, node):
         args = node.args
-        assert args.vararg is None
         assert not args.kwonlyargs
         assert not args.kw_defaults
-        assert args.kwarg is None
 
         is_lambda = isinstance(node, ast.Lambda)
 
@@ -90,6 +88,10 @@ class Compiler(ast.NodeVisitor):
         self.symtab = self.symtab_map[node]
         self.symtab.finalize()
         self.bc = Bytecode()
+        if args.vararg:
+            self.bc.set_flag(ucodetype.FLAG_VARARGS)
+        if args.kwarg:
+            self.bc.set_flag(ucodetype.FLAG_VARKEYWORDS)
 
         # Store arg names in const table, to support calling by keyword
         for a in args.args:
