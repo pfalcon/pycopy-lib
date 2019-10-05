@@ -271,6 +271,16 @@ class Compiler(ast.NodeVisitor):
         self.bc.add(opc.LOAD_CONST_NONE)
         self.bc.add(opc.YIELD_FROM)
 
+    def visit_Raise(self, node):
+        arg = 0
+        if node.exc is not None:
+            self.visit(node.exc)
+            arg = 1
+            if node.cause is not None:
+                self.visit(node.cause)
+                arg = 2
+        self.bc.add(opc.RAISE_VARARGS, arg)
+
     def visit_Return(self, node):
         if node.value is None:
             self.bc.add(opc.LOAD_CONST_NONE)
