@@ -34,15 +34,6 @@ MP_OPCODE_QSTR = 1
 MP_OPCODE_VAR_UINT = 2
 MP_OPCODE_OFFSET = 3
 
-# extra bytes:
-MP_BC_MAKE_CLOSURE = 0x62
-MP_BC_MAKE_CLOSURE_DEFARGS = 0x63
-MP_BC_RAISE_VARARGS = 0x5c
-# extra byte if caching enabled:
-MP_BC_LOAD_NAME = 0x1b
-MP_BC_LOAD_GLOBAL = 0x1c
-MP_BC_LOAD_ATTR = 0x1d
-MP_BC_STORE_ATTR = 0x26
 
 class config: pass
 
@@ -132,23 +123,20 @@ def make_opcode_format():
     ))
 
 
+hascache = (opmap["LOAD_NAME"], opmap["LOAD_GLOBAL"], opmap["LOAD_ATTR"], opmap["STORE_ATTR"])
+
+
 def mp_opcode_type(opcode, opcode_format=make_opcode_format()):
     f = (opcode_format[opcode >> 2] >> (2 * (opcode & 3))) & 3
     extra = 0
 
     if f == MP_OPCODE_QSTR:
         if config.MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE:
-            if (opcode == MP_BC_LOAD_NAME
-                or opcode == MP_BC_LOAD_GLOBAL
-                or opcode == MP_BC_LOAD_ATTR
-                or opcode == MP_BC_STORE_ATTR):
-                    extra = 1
+            if opcode in hascache:
+                extra = 1
     else:
-        extra = int(
-            opcode == MP_BC_RAISE_VARARGS
-            or opcode == MP_BC_MAKE_CLOSURE
-            or opcode == MP_BC_MAKE_CLOSURE_DEFARGS
-        )
+        if opcode in (opmap["RAISE_VARARGS"], opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
+            extra = 1
 
     return f, extra
 
@@ -186,8 +174,6 @@ def decode_varint(bytecode, i, signed=False):
             break
     return i, unum
 
-
-hascache = (MP_BC_LOAD_NAME, MP_BC_LOAD_GLOBAL, MP_BC_LOAD_ATTR, MP_BC_STORE_ATTR)
 
 has_forward_offset = (
     opmap["FOR_ITER"], opmap["POP_EXCEPT_JUMP"],
