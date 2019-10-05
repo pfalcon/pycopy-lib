@@ -28,6 +28,7 @@
 
 import ure
 
+opbase = {}
 opmap = {}
 opname = [None] * 256
 op_implicit_arg = [None] * 256
@@ -41,8 +42,21 @@ with open("../../pycopy/py/bc0.h") as f:
             continue
 #        print(m.group(1), m.group(2))
         name, val = m.group(1), m.group(2)
-        val = int(val, 0)
+        if name.endswith("_NUM") or name.endswith("_EXCESS"):
+            continue
 #        print(name, val)
+        if name.startswith("BASE_"):
+            val = int(val, 0)
+            opbase[name] = val
+            continue
+        base = 0
+        if "+" in val:
+            m = ure.match(r"MP_BC_([A-Z_]+) \+ (0x[0-9a-f]+)", val)
+            assert m
+            base = opbase[m.group(1)]
+            val = m.group(2)
+        val = int(val, 0)
+        val += base
         opmap[name] = val
         opname[val] = name
 
