@@ -38,7 +38,7 @@ from ucodetype import CodeType
 from .qstrs import static_qstr_list
 
 # Current supported .mpy version
-MPY_VERSION = 4
+MPY_VERSION = 5
 
 # .mpy feature flags
 MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE = 1
