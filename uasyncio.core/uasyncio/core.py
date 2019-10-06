@@ -13,8 +13,8 @@ def set_debug(val):
     global DEBUG, log
     DEBUG = val
     if val:
-        import logging
-        log = logging.getLogger("uasyncio.core")
+        import ulogging
+        log = ulogging.getLogger("uasyncio.core")
 
 
 class CancelledError(Exception):
