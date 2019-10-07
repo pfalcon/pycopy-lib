@@ -80,8 +80,6 @@ def copy(x):
     if copier:
         return copier(x)
 
-    raise Error("un(shallow)copyable object of type %s" % cls)
-
     dispatch_table = {}
     reductor = dispatch_table.get(cls)
     if reductor:
@@ -95,7 +93,7 @@ def copy(x):
             if reductor:
                 rv = reductor()
             else:
-                raise Error("un(shallow)copyable object of type %s" % cls)
+                return _copy_instance(x)
 
     return _reconstruct(x, rv, 0)
 
@@ -126,6 +124,18 @@ def _copy_with_copy_method(x):
     return x.copy()
 if PyStringMap is not None:
     d[PyStringMap] = _copy_with_copy_method
+
+def _copy_instance(x, memo=None):
+    tp = type(x)
+    o = object.__new__(tp)
+    for f in dir(x):
+        if hasattr(tp, f):
+            continue
+        v = getattr(x, f)
+        if memo is not None:
+            v = deepcopy(v, memo)
+        setattr(o, f, v)
+    return o
 
 del d
 
