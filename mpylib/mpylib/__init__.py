@@ -165,6 +165,16 @@ class Bytecode:
         self.co_code = self.buf.getvalue()
         return self.co_code
 
+    def get_codeobj(self):
+        co = CodeType()
+        co.co_code = self.get_bc()
+        co.co_names = self.co_names
+        co.co_consts = self.co_consts
+        co.mpy_consts = self.co_consts
+        co.co_stacksize = co.mpy_stacksize = self.stk_use
+        co.mpy_excstacksize = self.exc_stk_use
+        return co
+
 
 class QStrWindow:
     def __init__(self, size):
