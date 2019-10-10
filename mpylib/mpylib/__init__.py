@@ -150,6 +150,18 @@ class Bytecode:
         else:
             self.add(opmap["LOAD_CONST_SMALL_INT"], val)
 
+    def fastlocal_op(self, opcode, no):
+        if no < 16:
+            if opcode == opmap["LOAD_FAST_N"]:
+                opcode = opmap["LOAD_FAST_MULTI"] + no
+            elif opcode == opmap["STORE_FAST_N"]:
+                opcode = opmap["STORE_FAST_MULTI"] + no
+            else:
+                assert 0
+            self.add(opcode)
+        else:
+            self.add(opcode, no)
+
     def get_bc(self):
         lab_id = 0
         for labl in self.labels:
