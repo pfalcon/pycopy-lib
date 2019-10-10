@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = module
-version = 1.4
+version = 1.4.1
 author = Paul Sokolovsky
 extra_modules = upip_utarfile
 desc = Simple package manager for Pycopy project: https://github.com/pfalcon/pycopy
