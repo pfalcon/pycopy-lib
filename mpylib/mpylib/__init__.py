@@ -172,8 +172,11 @@ class Bytecode:
             lab_pos = labl[0]
             assert lab_pos is not None, "Label #%d was not added to code" % lab_id
             for ref in labl[1:]:
-                self.buf.seek(ref - 2)
-                rel = lab_pos - ref + 0x8000
+                self.buf.seek(ref - 3)
+                opcode = self.buf.readbin("B")
+                rel = lab_pos - ref
+                if opcode not in upyopcodes.has_forward_offset:
+                    rel += 0x8000
                 assert 0 <= rel <= 0xffff
                 self.buf.writebin("<H", rel)
             lab_id += 1
