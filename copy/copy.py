@@ -170,6 +170,7 @@ def deepcopy(x, memo=None, _nil=[]):
             if copier:
                 y = copier(memo)
             else:
+                dispatch_table = {}
                 reductor = dispatch_table.get(cls)
                 if reductor:
                     rv = reductor(x)
@@ -182,8 +183,7 @@ def deepcopy(x, memo=None, _nil=[]):
                         if reductor:
                             rv = reductor()
                         else:
-                            raise Error(
-                                "un(deep)copyable object of type %s" % cls)
+                            return _copy_instance(x, memo)
                 y = _reconstruct(x, rv, 1, memo)
 
     # If is its own copy, don't memoize.
