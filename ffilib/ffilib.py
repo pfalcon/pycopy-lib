@@ -1,4 +1,5 @@
 import sys
+import uarray
 try:
     import ffi
 except ImportError:
@@ -35,6 +36,11 @@ def open(name, maxver=10, extra=()):
 
 def libc():
     return open("libc", 6)
+
+
+def makeref(typ, val):
+    return uarray.array(typ, [val])
+
 
 # Find out bitness of the platform, even if long ints are not supported
 # TODO: All bitness differences should be removed from pycopy-lib, and
