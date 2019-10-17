@@ -1,0 +1,5 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+long_desc = Additional bytes methods (for CPython compatibility) represented as functions.
