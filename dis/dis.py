@@ -78,7 +78,7 @@ def disassemble(code, real_qstrs=False, qstr_ids=True):
             next_i, optarg = upyopcodes.decode_varint(bc, i + 1, signed=signed)
             if opcode_str.startswith("CALL_FUNCTION"):
                 optarg = "n=%d nkw=%d" % (optarg & 0xff, optarg >> 8)
-            elif opcode_str in ("LOAD_CONST_OBJ", "MAKE_FUNCTION", "MAKE_CLOSURE"):
+            elif opcode_str in ("LOAD_CONST_OBJ", "MAKE_FUNCTION", "MAKE_FUNCTION_DEFARGS", "MAKE_CLOSURE"):
                 optarg = "%d (%r)" % (optarg, code.co_consts[optarg])
 
             if opcode_str == "MAKE_CLOSURE":
