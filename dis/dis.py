@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
+# This file is part of the standard library of Pycopy project, minimalist
+# and lightweight Python implementation.
 #
-# "dis" module for Pycopy, https://github.com/pfalcon/pycopy
+# https://github.com/pfalcon/pycopy
+# https://github.com/pfalcon/pycopy-lib
 #
 # The MIT License (MIT)
 #
