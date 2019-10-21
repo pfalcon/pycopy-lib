@@ -13,5 +13,7 @@ def stack_effect(opcode, *args):
     delta = op_stack_effect[opcode]
     if delta is not None:
         return delta
+    if opcode == opmap["CALL_FUNCTION"]:
+        return -(1 + args[0] + args[1] * 2) + 1
     print(opcode, *args)
     assert 0, opname[opcode]
