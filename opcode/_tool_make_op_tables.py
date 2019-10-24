@@ -118,16 +118,25 @@ for i in range(16):
     op_stack_effect[STORE_FAST_MULTI + i] = -1
 
 for k, v in opmap.items():
+    # We'll override LOAD_ATTR/SUBSCR below
     if k.startswith("LOAD_"):
         op_stack_effect[v] = 1
     elif k.startswith("STORE_"):
         op_stack_effect[v] = -1
+    elif k.startswith("DELETE_"):
+        op_stack_effect[v] = 0
     elif k.startswith("POP_JUMP_"):
         op_stack_effect[v] = -1
 
+op_stack_effect[opmap["LOAD_ATTR"]] = 0
+op_stack_effect[opmap["STORE_ATTR"]] = -2
+op_stack_effect[opmap["LOAD_SUBSCR"]] = -1
+op_stack_effect[opmap["STORE_SUBSCR"]] = -3
 op_stack_effect[opmap["JUMP"]] = 0
 op_stack_effect[opmap["DUP_TOP"]] = 1
 op_stack_effect[opmap["POP_TOP"]] = -1
+op_stack_effect[opmap["ROT_TWO"]] = 0
+op_stack_effect[opmap["ROT_THREE"]] = 0
 op_stack_effect[opmap["RETURN_VALUE"]] = -1
 op_stack_effect[opmap["MAKE_FUNCTION"]] = 1
 op_stack_effect[opmap["BUILD_MAP"]] = 1
