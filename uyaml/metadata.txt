@@ -1,0 +1,6 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+desc = Simple parser for YAML subset for Pycopy.
+long_desc = Simple parser for YAML subset for the Pycopy project (https://github.com/pfalcon/pycopy).
