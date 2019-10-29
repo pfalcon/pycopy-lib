@@ -2,5 +2,7 @@ MANIFEST
 __pycache__
 *.egg-info
 */dist/
+*/_/
 *.org
 *.1
+setup.py
