@@ -57,7 +57,7 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
             host, port = host.split(":", 1)
             port = int(port)
 
-        ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
+        ai = usocket.getaddrinfo(host, port, usocket.AF_INET, usocket.SOCK_STREAM)
         ai = ai[0]
 
         resp_d = None
