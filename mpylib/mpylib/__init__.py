@@ -394,7 +394,7 @@ class MPYOutput:
 
         buf.write(code.co_lnotab)
 
-        buf.write(bytes(code.co_cellvars))
+        buf.write(bytes(code.mpy_cellvars))
         buf.writebin("B", 0xff)
 
         return buf
