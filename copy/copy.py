@@ -254,6 +254,14 @@ d[dict] = _deepcopy_dict
 if PyStringMap is not None:
     d[PyStringMap] = _deepcopy_dict
 
+def _deepcopy_set(x, memo):
+    y = set()
+    memo[id(x)] = y
+    for value in x:
+        y.add(deepcopy(value, memo))
+    return y
+d[set] = _deepcopy_set
+
 def _deepcopy_method(x, memo): # Copy instance methods
     return type(x)(x.__func__, deepcopy(x.__self__, memo))
 _deepcopy_dispatch[types.MethodType] = _deepcopy_method
