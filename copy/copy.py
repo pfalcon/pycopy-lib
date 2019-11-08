@@ -1,3 +1,6 @@
+# Originally from CPython (https://github.com/python/cpython/)
+# Changes for pycopy-lib project (https://github.com/pfalcon/pycopy-lib)
+# by Paul Sokolovsky.
 """Generic (shallow and deep) copying operations.
 
 Interface summary:
