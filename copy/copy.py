@@ -133,7 +133,8 @@ def _copy_instance(x, memo=None):
     o = object.__new__(tp)
     for f in dir(x):
         if hasattr(tp, f):
-            continue
+            if getattr(tp, f) is getattr(x, f):
+                continue
         v = getattr(x, f)
         if memo is not None:
             v = deepcopy(v, memo)
