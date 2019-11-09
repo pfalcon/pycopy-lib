@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = module
-version = 0.2
+version = 0.3
 author = Paul Sokolovsky
-long_desc = Simple XML tokenizer, more efficient than xmltok module (API WIP).
+long_desc = Simple XML tokenizer for Pycopy project (https://github.com/pfalcon/pycopy), more efficient than xmltok module (API WIP).
