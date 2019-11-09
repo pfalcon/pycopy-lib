@@ -42,10 +42,8 @@ class XMLTokenizer:
 
     def __init__(self, f):
         self.f = f
+        self.c = ""
         self.nextch()
-
-    def curch(self):
-        return self.c
 
     def getch(self):
         c = self.c
@@ -59,18 +57,18 @@ class XMLTokenizer:
         self.c = self.f.read(1)
 
     def skip_ws(self):
-        while self.curch().isspace():
+        while self.c.isspace():
             self.nextch()
 
     def isident(self):
         self.skip_ws()
-        return self.curch().isalpha()
+        return self.c.isalpha()
 
     def getident(self):
         self.skip_ws()
         ident = ""
         while self.c:
-            c = self.curch()
+            c = self.c
             if not(c.isalpha() or c.isdigit() or c in "_-."):
                 break
             ident += self.getch()
@@ -79,7 +77,7 @@ class XMLTokenizer:
     def putnsident(self, res):
         ns = ""
         ident = self.getident()
-        if self.curch() == ":":
+        if self.c == ":":
             self.nextch()
             ns = ident
             ident = self.getident()
@@ -88,7 +86,7 @@ class XMLTokenizer:
 
     def match(self, c):
         self.skip_ws()
-        if self.curch() == c:
+        if self.c == c:
             self.nextch()
             return True
         return False
@@ -106,7 +104,7 @@ class XMLTokenizer:
             if quote != '"' and quote != "'":
                 raise XMLSyntaxError
             val = ""
-            while self.curch() != quote:
+            while self.c != quote:
                 val += self.getch()
             self.expect(quote)
             res[3] = val
