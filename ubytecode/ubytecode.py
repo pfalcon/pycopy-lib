@@ -87,6 +87,8 @@ class Bytecode:
         elif opcode in (opmap["MAKE_FUNCTION"], opmap["MAKE_FUNCTION_DEFARGS"]):
             MPYOutput.write_uint(None, len(self.co_consts), self.buf)
             self.co_consts.append(arg)
+        elif opcode == opmap["RAISE_VARARGS"]:
+            self.buf.writebin("B", arg)
         elif fl == upyopcodes.MP_OPCODE_OFFSET:
             self.buf.writebin("<H", arg)
         elif fl == upyopcodes.MP_OPCODE_QSTR:
