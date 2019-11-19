@@ -126,9 +126,16 @@ class PCREPattern:
     def match(self, s, pos=0, endpos=-1):
         return self.search(s, pos, endpos, PCRE_ANCHORED)
 
+    def _handle_repl_escapes(self, repl, match):
+        def handle_backrefs(bk_match):
+            gr = bk_match.group(1)
+            if gr.startswith("g"):
+                gr = gr[2:-1]
+            gr = int(gr)
+            return match.group(gr)
+        return sub(r"\\(\d+|g<\d+>)", handle_backrefs, repl)
+
     def sub(self, repl, s, count=0):
-        if not callable(repl):
-            assert "\\" not in repl, "Backrefs not implemented"
         res = ""
         while s:
             m = self.search(s)
@@ -138,6 +145,8 @@ class PCREPattern:
             res += s[:beg]
             if callable(repl):
                 res += repl(m)
+            elif "\\" in repl:
+                res += self._handle_repl_escapes(repl, m)
             else:
                 res += repl
             s = s[end:]
