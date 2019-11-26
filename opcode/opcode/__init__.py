@@ -38,6 +38,8 @@ def stack_effect(opcode, *args):
         return -(1 + args[0] + args[1] * 2) + 1
     if opcode == opmap["CALL_FUNCTION_VAR_KW"]:
         return -(1 + args[0] + args[1] * 2 + 2) + 1
+    if opcode == opmap["MAKE_CLOSURE"]:
+        return -args[1] + 1
     if opcode in (opmap["BUILD_TUPLE"], opmap["BUILD_LIST"], opmap["BUILD_SET"]):
         return -args[0] + 1
     print(opcode, *args)
