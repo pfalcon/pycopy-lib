@@ -58,7 +58,6 @@ name = "posix"
 sep = const("/")
 curdir = const(".")
 pardir = const("..")
-environ = {"WARNING": "NOT_IMPLEMENTED"}
 
 
 libc = ffilib.libc()
@@ -340,3 +339,12 @@ def spawnvp(mode, file, args):
             return rc >> 8
         return -sig
     execvp(file, args)
+
+
+class _Environ:
+
+    def __getitem__(self, k):
+        return getenv(k)
+
+
+environ = _Environ()
