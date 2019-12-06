@@ -142,6 +142,7 @@ op_stack_effect[opmap["MAKE_FUNCTION"]] = 1
 op_stack_effect[opmap["BUILD_MAP"]] = 1
 op_stack_effect[opmap["STORE_MAP"]] = -2
 op_stack_effect[opmap["IMPORT_NAME"]] = -1
+op_stack_effect[opmap["GET_ITER"]] = 0
 op_stack_effect[opmap["GET_ITER_STACK"]] = -1 + 4
 op_stack_effect[opmap["FOR_ITER"]] = 1  # If jumps: -4, fallthru: 1
 # Stack effect for linear execution
