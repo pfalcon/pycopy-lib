@@ -72,7 +72,7 @@ with open("../../pycopy/py/runtime0.h") as f:
             m = ure.match(r" +MP_UNARY_OP_([A-Z_]+)", l)
             if m:
                 op = m.group(1)
-                if op == "NUM_BYTECODE":
+                if op == "BOOL":
                     want_unary = False
                     cnt = 0
                     continue
@@ -85,7 +85,7 @@ with open("../../pycopy/py/runtime0.h") as f:
             m = ure.match(r" +MP_BINARY_OP_([A-Z_]+)", l)
             if m:
                 op = m.group(1)
-                if op == "NUM_BYTECODE":
+                if op == "DIVMOD":
                     want_binary = False
                     cnt = 0
                     continue
