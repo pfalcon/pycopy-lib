@@ -271,7 +271,7 @@ None, None, 1, 1, 1, 1, -1, -1,
 # 0x28
 0, 0, None, None, 1, None, None, -1, 
 # 0x30
-None, None, 1, None, None, None, None, None, 
+None, None, 1, -1, None, None, None, None, 
 # 0x38
 None, None, None, None, None, None, None, None, 
 # 0x40
@@ -281,9 +281,9 @@ None, None, None, 1, None, None, None, None,
 # 0x50
 1, 1, 1, 1, 1, -1, -3, 1, 
 # 0x58
-None, -1, 0, 0, None, None, None, 3, 
+None, -1, 0, 0, None, None, 0, 3, 
 # 0x60
-None, None, -2, -1, None, None, None, None, 
+None, None, -2, -1, 0, -1, None, None, 
 # 0x68
 None, None, None, None, None, None, None, None, 
 # 0x70
