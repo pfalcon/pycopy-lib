@@ -139,6 +139,7 @@ op_stack_effect[opmap["ROT_TWO"]] = 0
 op_stack_effect[opmap["ROT_THREE"]] = 0
 op_stack_effect[opmap["RETURN_VALUE"]] = -1
 op_stack_effect[opmap["MAKE_FUNCTION"]] = 1
+op_stack_effect[opmap["MAKE_FUNCTION_DEFARGS"]] = -1
 op_stack_effect[opmap["BUILD_MAP"]] = 1
 op_stack_effect[opmap["STORE_MAP"]] = -2
 op_stack_effect[opmap["IMPORT_NAME"]] = -1
