@@ -132,6 +132,8 @@ def _copy_instance(x, memo=None):
     tp = type(x)
     o = object.__new__(tp)
     for f in dir(x):
+        if f == "__class__":
+            continue
         if hasattr(tp, f):
             if getattr(tp, f) is getattr(x, f):
                 continue
