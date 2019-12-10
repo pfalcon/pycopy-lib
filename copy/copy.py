@@ -135,6 +135,8 @@ def _copy_instance(x, memo=None):
         if f == "__class__":
             continue
         if hasattr(tp, f):
+            if callable(getattr(tp, f)):
+                continue
             if getattr(tp, f) is getattr(x, f):
                 continue
         v = getattr(x, f)
