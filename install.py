@@ -59,6 +59,7 @@ def should_install_2(f):
 
 
 mod = sys.argv[1]
+mod = mod.rstrip("/")
 
 if mod.startswith("cpython-"):
     dest_dir = "~/.local/lib/python3.6/site-packages"
