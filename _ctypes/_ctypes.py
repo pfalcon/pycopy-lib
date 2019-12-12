@@ -51,7 +51,8 @@ class CFuncPtr:
             else:
                 callargs.append(a)
                 argspec += builtin_map[type(a)]
-        f = ffi.func("i", self.addr, argspec)
+        restype = getattr(self, "restype", self._restype_)
+        f = ffi.func(restype._type_, self.addr, argspec)
         return f(*callargs)
 
 
