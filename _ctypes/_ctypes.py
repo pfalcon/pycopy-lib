@@ -41,7 +41,7 @@ class CFuncPtr:
 
     def __call__(self, *args):
         print("*", args)
-        builtin_map = {int: "i", bytes: "P"}
+        builtin_map = {int: "i", float: "d", bytes: "P"}
         argspec = ""
         callargs = []
         for a in args:
