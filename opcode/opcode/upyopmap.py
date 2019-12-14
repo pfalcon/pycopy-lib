@@ -275,13 +275,13 @@ None, None, 1, -1, None, None, None, None,
 # 0x38
 None, None, None, None, None, None, None, None, 
 # 0x40
-None, None, 0, -1, -1, -1, -1, None, 
+None, None, 0, -1, -1, -1, -1, 2, 
 # 0x48
-None, None, None, 1, None, None, None, None, 
+0, 0, 0, 1, None, None, None, None, 
 # 0x50
 1, 1, 1, 1, 1, -1, -3, 1, 
 # 0x58
-None, -1, 0, 0, None, None, 0, 3, 
+None, -1, 0, 0, -2, -1, 0, 3, 
 # 0x60
 None, None, -2, -1, 0, -1, None, None, 
 # 0x68
