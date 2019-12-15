@@ -122,6 +122,7 @@ some extension modules which are deemed to be worth being a part
 of "Pycopy standard library". This section lists them to easy
 discovery:
 
+* byteslib - similar to `string`, function variants of `bytes` methods.
 * uaiohttpclient - HTTP client for uasyncio
 * uargparse - small subset of argparse module
 * uasyncio - asynchronous scheduling and I/O, roughly based on CPython's
