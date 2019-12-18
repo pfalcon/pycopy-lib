@@ -38,7 +38,7 @@ def libc():
     return open("libc", 6)
 
 
-def makeref(typ, val):
+def makeref(typ, val=0):
     return uarray.array(typ, [val])
 
 
