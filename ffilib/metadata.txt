@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = module
-version = 0.2
+version = 0.2.1
 author = Damien George, Paul Sokolovsky
 desc = Pycopy FFI helper module
 long_desc = Pycopy FFI helper module to easily interface with underlying shared libraries.
