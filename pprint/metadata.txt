@@ -1,3 +1,3 @@
-srctype = dummy
+srctype = pycopy-lib
 type = module
-version = 0.1
+version = 0.2
