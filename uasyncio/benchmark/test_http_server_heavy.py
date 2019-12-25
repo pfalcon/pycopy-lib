@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(level=logging.DEBUG)
 
 signal.signal(signal.SIGPIPE, signal.SIG_IGN)
-loop = asyncio.get_event_loop()
+loop = asyncio.get_event_loop(runq_len=30, waitq_len=30)
 #mem_info()
 loop.call_soon(asyncio.start_server(serve, "0.0.0.0", 8081, backlog=100))
 loop.run_forever()
