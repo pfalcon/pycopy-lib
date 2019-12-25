@@ -14,8 +14,11 @@ def print_http_headers(url):
         if line:
             print(line.rstrip())
 
-import logging
-logging.basicConfig(level=logging.INFO)
+
+import ulogging as logging
+logging.basicConfig(level=logging.DEBUG)
+#asyncio.set_debug(True)
+
 url = "google.com"
 loop = asyncio.get_event_loop()
 #task = asyncio.async(print_http_headers(url))
