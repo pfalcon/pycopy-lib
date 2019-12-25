@@ -112,16 +112,19 @@ class StreamReader:
     def readexactly(self, n):
         buf = b""
         while n:
-            yield IORead(self.polls)
             res = self.ios.read(n)
             if res is None:
-                # See comment in read()
-                continue
-            if not res:
+                yield IORead(self.polls)
+            elif res is uio.WANT_WRITE:
+                yield IOWrite(self.polls)
+            elif not res:
                 yield IOReadDone(self.polls)
                 break
-            buf += res
-            n -= len(res)
+            else:
+                buf += res
+                n -= len(res)
+                # Give other tasks a chance to run
+                yield
         return buf
 
     def readline(self):
@@ -129,17 +132,20 @@ class StreamReader:
             log.debug("StreamReader.readline()")
         buf = b""
         while True:
-            yield IORead(self.polls)
             res = self.ios.readline()
             if res is None:
-                # See comment in read()
-                continue
-            if not res:
+                yield IORead(self.polls)
+            elif res is uio.WANT_WRITE:
+                yield IOWrite(self.polls)
+            elif not res:
                 yield IOReadDone(self.polls)
                 break
-            buf += res
-            if buf[-1] == 0x0a:
-                break
+            else:
+                buf += res
+                if buf[-1] == 0x0a:
+                    break
+                # Give other tasks a chance to run
+                yield
         if DEBUG and __debug__:
             log.debug("StreamReader.readline(): %s", buf)
         return buf
