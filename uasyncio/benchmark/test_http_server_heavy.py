@@ -29,9 +29,10 @@ def serve(reader, writer):
         yield from writer.aclose()
 
 
-import logging
+import ulogging as logging
 logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(level=logging.DEBUG)
+
 signal.signal(signal.SIGPIPE, signal.SIG_IGN)
 loop = asyncio.get_event_loop()
 #mem_info()
