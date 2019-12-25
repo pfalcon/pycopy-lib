@@ -152,8 +152,8 @@ class StreamReader:
 
     def aclose(self):
         yield IOReadDone(self.polls)
-        # .ios wraps .polls, so closing ios will lead to closure of polls too
         self.ios.close()
+        self.polls.close()
 
     def __repr__(self):
         return "<StreamReader %r %r>" % (self.polls, self.ios)
