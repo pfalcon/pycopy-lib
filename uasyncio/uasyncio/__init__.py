@@ -218,6 +218,7 @@ def open_connection(host, port, ssl=False):
         s.connect(ai[-1])
     except OSError as e:
         if e.args[0] != uerrno.EINPROGRESS:
+            s.close()
             raise
     if DEBUG and __debug__:
         log.debug("open_connection: After connect")
