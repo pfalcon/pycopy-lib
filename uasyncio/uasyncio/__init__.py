@@ -2,6 +2,7 @@
 import uerrno
 import uselect as select
 import usocket as _socket
+import uio
 from uasyncio.core import *
 
 
@@ -33,7 +34,7 @@ class PollEventLoop(EventLoop):
     def remove_reader(self, sock):
         if DEBUG and __debug__:
             log.debug("remove_reader(%s)", sock)
-        self.poller.unregister(sock)
+        self.poller.unregister(sock, False)
 
     def add_writer(self, sock, cb, *args):
         if DEBUG and __debug__:
@@ -97,13 +98,13 @@ class StreamReader:
 
     def read(self, n=-1):
         while True:
-            yield IORead(self.polls)
             res = self.ios.read(n)
-            if res is not None:
+            if res is None:
+                yield IORead(self.polls)
+            elif res is uio.WANT_WRITE:
+                yield IOWrite(self.polls)
+            else:
                 break
-            # This should not happen for real sockets, but can easily
-            # happen for stream wrappers (ssl, websockets, etc.)
-            #log.warn("Empty read")
         if not res:
             yield IOReadDone(self.polls)
         return res
