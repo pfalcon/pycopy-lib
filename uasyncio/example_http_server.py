@@ -11,9 +11,10 @@ def serve(reader, writer):
     print("Finished processing request")
 
 
-import logging
-#logging.basicConfig(level=logging.INFO)
+import ulogging as logging
 logging.basicConfig(level=logging.DEBUG)
+#asyncio.set_debug(True)
+
 loop = asyncio.get_event_loop()
 loop.call_soon(asyncio.start_server(serve, "127.0.0.1", 8081))
 loop.run_forever()
