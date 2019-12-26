@@ -119,6 +119,10 @@ def stat(name):
     return stat_result(uos.stat(name))
 
 
+def lstat(name):
+    return stat_result(uos.stat(name, False))
+
+
 if hasattr(uos, "getcwd"):
     getcwd = uos.getcwd
 else:
