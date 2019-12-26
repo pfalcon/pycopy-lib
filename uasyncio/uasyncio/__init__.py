@@ -245,7 +245,7 @@ def open_connection(host, port, ssl=False):
     return StreamReader(s, s2), StreamWriter(s, s2)
 
 
-def start_server(client_coro, host, port, backlog=10):
+def start_server(client_coro, host, port, backlog=10, ssl=None):
     if DEBUG and __debug__:
         log.debug("start_server(%s, %s)", host, port)
     ai = _socket.getaddrinfo(host, port, 0, _socket.SOCK_STREAM)
@@ -264,12 +264,16 @@ def start_server(client_coro, host, port, backlog=10):
             if DEBUG and __debug__:
                 log.debug("start_server: After iowait")
             s2, client_addr = s.accept()
-            s2.setblocking(False)
+            s3 = s2
+            if ssl:
+                import ussl
+                s3 = ussl.wrap_socket(s2, server_side=True, do_handshake=False)
+            s3.setblocking(False)
             if DEBUG and __debug__:
                 log.debug("start_server: After accept: %s", s2)
             extra = {"peername": client_addr}
-            yield client_coro(StreamReader(s2), StreamWriter(s2, extra))
-            s2 = None
+            yield client_coro(StreamReader(s2, s3), StreamWriter(s2, s3, extra))
+            s2 = s3 = None
     finally:
         if s2:
             s2.close()
