@@ -235,18 +235,14 @@ def open_connection(host, port, ssl=False):
     if DEBUG and __debug__:
         log.debug("open_connection: After connect")
     yield IOWrite(s)
-#    if __debug__:
-#        assert s2.fileno() == s.fileno()
     if DEBUG and __debug__:
         log.debug("open_connection: After iowait: %s", s)
+    s2 = s
     if ssl:
-        print("Warning: uasyncio SSL support is alpha")
         import ussl
-        s.setblocking(True)
-        s2 = ussl.wrap_socket(s)
-        s.setblocking(False)
-        return StreamReader(s, s2), StreamWriter(s2, {})
-    return StreamReader(s), StreamWriter(s, {})
+        s2 = ussl.wrap_socket(s, do_handshake=False)
+        s2.setblocking(False)
+    return StreamReader(s, s2), StreamWriter(s, s2)
 
 
 def start_server(client_coro, host, port, backlog=10):
