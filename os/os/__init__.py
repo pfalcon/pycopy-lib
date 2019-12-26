@@ -101,7 +101,23 @@ def check_error(ret):
 def raise_error():
     raise OSError(uos.errno())
 
-stat = uos.stat
+
+class stat_result:
+
+    def __init__(self, st):
+        self.st = st
+        for fld in dir(stat_):
+            if not fld.startswith("ST_"):
+                continue
+            setattr(self, fld.lower(), st[getattr(stat_, fld)])
+
+    def __getitem__(self, i):
+        return self.st[i]
+
+
+def stat(name):
+    return stat_result(uos.stat(name))
+
 
 if hasattr(uos, "getcwd"):
     getcwd = uos.getcwd
