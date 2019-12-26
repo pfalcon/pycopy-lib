@@ -161,8 +161,11 @@ class StreamReader:
 
 class StreamWriter:
 
-    def __init__(self, s, extra):
-        self.s = s
+    def __init__(self, polls, ios=None, extra=None):
+        if ios is None:
+            ios = polls
+        self.polls = polls
+        self.ios = ios
         self.extra = extra
 
     def awrite(self, buf, off=0, sz=-1):
@@ -175,24 +178,25 @@ class StreamWriter:
             sz = len(buf) - off
         if DEBUG and __debug__:
             log.debug("StreamWriter.awrite(): spooling %d bytes", sz)
-        while True:
-            res = self.s.write(buf, off, sz)
-            # If we spooled everything, return immediately
+        while sz:
+            res = self.ios.write(buf, off, sz)
+            # If we spooled everything, fast return
             if res == sz:
                 if DEBUG and __debug__:
                     log.debug("StreamWriter.awrite(): completed spooling %d bytes", res)
                 return
-            if res is None:
-                res = 0
-            if DEBUG and __debug__:
-                log.debug("StreamWriter.awrite(): spooled partial %d bytes", res)
-            assert res < sz
-            off += res
-            sz -= res
-            yield IOWrite(self.s)
-            #assert s2.fileno() == self.s.fileno()
-            if DEBUG and __debug__:
-                log.debug("StreamWriter.awrite(): can write more")
+            elif res is None:
+                yield IOWrite(self.polls)
+            elif res is uio.WANT_READ:
+                yield IORead(self.polls)
+            else:
+                if DEBUG and __debug__:
+                    log.debug("StreamWriter.awrite(): spooled partial %d bytes", res)
+                assert res != 0 and res < sz
+                off += res
+                sz -= res
+                # Give other tasks a chance to run
+                yield
 
     # This function is tentative, subject to change
     def awritestr(self, s):
@@ -204,14 +208,15 @@ class StreamWriter:
             yield from self.awrite(buf)
 
     def aclose(self):
-        yield IOWriteDone(self.s)
-        self.s.close()
+        yield IOWriteDone(self.polls)
+        self.ios.close()
+        self.polls.close()
 
     def get_extra_info(self, name, default=None):
         return self.extra.get(name, default)
 
     def __repr__(self):
-        return "<StreamWriter %r>" % self.s
+        return "<StreamWriter %r %r>" % (self.polls, self.ios)
 
 
 def open_connection(host, port, ssl=False):
