@@ -197,23 +197,20 @@ class MPYInput:
 
         assert kind == MP_CODE_BYTECODE
 
-        self.cnt = 0
-        name_idx, prelude = self.read_prelude(co)
-        prelude_len = self.cnt
+        prelude_len = self.read_prelude(co)
         log.debug("len of prelude: %d", prelude_len)
         co.co_code, co.co_names = self.read_bytecode(bc_len - prelude_len)
         log.debug("co_code: %s, co_names=%s", co.co_code, co.co_names)
 
-        co.co_name = self.read_qstr()
-        co.co_filename = self.read_qstr()
-
         n_obj = self.read_uint()
         n_raw_code = self.read_uint()
         log.info("n_obj=%d n_raw_code=%d", n_obj, n_raw_code)
-        log.info("arg qstrs: %d", prelude[3] + prelude[4])
 
-        co.mpy_argnames = tuple([self.read_qstr() for _ in range(prelude[3] + prelude[4])])
+        num_args = co.co_argcount + co.co_kwonlyargcount
+        log.info("argname qstrs: %d", num_args)
+        co.mpy_argnames = tuple([self.read_qstr() for _ in range(num_args)])
         co.mpy_consts = tuple([self.read_obj() for _ in range(n_obj)])
+
         log.info("Recursively reading %d code object(s)", n_raw_code)
         co.mpy_codeobjs = tuple([self.read_raw_code() for _ in range(n_raw_code)])
         co.co_consts = co.mpy_argnames + co.mpy_consts + co.mpy_codeobjs
@@ -270,48 +267,72 @@ class MPYInput:
         co.mpy_def_pos_args = n_def_pos_args
         return ip, ip2, (n_state, n_exc_stack, scope_flags, n_pos_args, n_kwonly_args, n_def_pos_args, code_info_size)
 
-    def read_prelude(self, co):
-        n_state = self.read_uint()
-        n_exc_stack = self.read_uint()
-        scope_flags = self.read_byte()
-        n_pos_args = self.read_byte()
-        n_kwonly_args = self.read_byte()
-        n_def_pos_args = self.read_byte()
-        code_info_size_sz = self.cnt
-        code_info_size = self.read_uint()
-        code_info_size_sz = self.cnt - code_info_size_sz
-        log.debug("n_state=%d, n_exc_stack=%d, scope_flags=0x%x, n_pos=%d, n_kwonly=%d n_def_pos=%d code_info_size=%d",
-            n_state, n_exc_stack, scope_flags, n_pos_args, n_kwonly_args, n_def_pos_args, code_info_size)
-        log.debug("size of varlen-encoded code_info_size field: %d", code_info_size_sz)
+    def read_sig(self, co):
+        z = self.read_byte()
+        S = (z >> 3) & 0xf
+        E = (z >> 2) & 0x1
+        F = 0
+        A = z & 0x3
+        K = 0
+        D = 0
+        n = 0
+        while z & 0x80:
+            z = self.read_byte()
+            S |= (z & 0x30) << (2 * n)
+            E |= (z & 0x02) << n
+            F |= ((z & 0x40) >> 6) << n
+            A |= (z & 0x4) << n
+            K |= ((z & 0x08) >> 3) << n
+            D |= (z & 0x1) << n
+            n += 1
+        S += 1
 
-        for _ in range(code_info_size - code_info_size_sz):
-            self.read_byte()
+        co.mpy_stacksize = S
+        co.mpy_excstacksize = E
+        co.co_flags = F
 
-        cells = []
-        while True:
-            idx = self.read_byte()
-            if idx == 255:
-                break
-            cells.append(idx)
+        co.co_argcount = A
+        co.co_kwonlyargcount = K
+        co.mpy_def_pos_args = D
 
-        log.debug("cells: %s", cells)
-
-        co.mpy_stacksize = n_state
-        co.mpy_excstacksize = n_exc_stack
         # Despite CPython docs saying "co_stacksize is the required stack
         # size (including local variables)", it's actually doesn't include
-        # local variables (which function arguments being such too). This
+        # local variables (with function arguments being such too). This
         # was reported as https://bugs.python.org/issue38316 .
         # We don't readily have a number of local vars here, so at least
         # subtract number of arguments.
-        co.co_stacksize = n_state - (n_pos_args + n_kwonly_args)
-        co.co_argcount = n_pos_args
-        co.co_kwonlyargcount = n_kwonly_args
-        co.co_flags = scope_flags
-        co.mpy_def_pos_args = n_def_pos_args
-        co.mpy_cellvars = tuple(cells)
+        co.co_stacksize = co.mpy_stacksize - (co.co_argcount + co.co_kwonlyargcount)
 
-        return -1, (n_state, n_exc_stack, scope_flags, n_pos_args, n_kwonly_args, n_def_pos_args, code_info_size)
+    def read_info_size(self):
+        C = 0
+        I = 0
+        n = 0
+        while True:
+            z = self.read_byte()
+            C |= (z & 1) << n
+            I |= ((z & 0x7e) >> 1) << (6 * n)
+            if not (z & 0x80):
+                break
+            n += 1
+        return I, C
+
+    def read_prelude(self, co):
+        self.cnt = 0
+        self.read_sig(co)
+        # n_info is in-memory size
+        n_info, n_cells = self.read_info_size()
+        # In-memory prelude size
+        prel_sz = self.cnt + n_info + n_cells
+
+        co.co_name = self.read_qstr()
+        co.co_filename = self.read_qstr()
+        # Previous 2 count as 4 bytes in-memory
+        n_info -= 4
+
+        co.co_lnotab = self.read(n_info)
+        co.mpy_cellvars = tuple(self.read(n_cells))
+
+        return prel_sz
 
 
 class MPYOutput:
