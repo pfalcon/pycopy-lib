@@ -71,6 +71,14 @@ def isdir(path):
     except OSError:
         return False
 
+def islink(path):
+    import stat
+    try:
+        mode = os.lstat(path)[0]
+        return stat.S_ISLNK(mode)
+    except OSError:
+        return False
+
 
 def expanduser(s):
     if s == "~" or s.startswith("~/"):
