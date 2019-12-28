@@ -63,6 +63,7 @@ class Bytecode:
         self.stk_use = 0
         self.exc_stk_ptr = 0
         self.exc_stk_use = 0
+        self.co_flags = 0
         self.only_for_mpy = False
 
     def add(self, opcode, *args):
@@ -116,6 +117,9 @@ class Bytecode:
 
     def add_const(self, c):
         self.co_consts.append(c)
+
+    def set_flag(self, fl):
+        self.co_flags |= fl
 
     def get_label(self):
         label = len(self.labels)
@@ -178,4 +182,5 @@ class Bytecode:
         co.mpy_consts = self.co_consts
         co.co_stacksize = co.mpy_stacksize = self.stk_use
         co.mpy_excstacksize = self.exc_stk_use
+        co.co_flags = self.co_flags
         return co
