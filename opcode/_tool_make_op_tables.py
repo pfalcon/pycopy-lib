@@ -130,6 +130,7 @@ for k, v in opmap.items():
 
 op_stack_effect[opmap["LOAD_ATTR"]] = 0
 op_stack_effect[opmap["LOAD_METHOD"]] = 1
+op_stack_effect[opmap["LOAD_SUPER_METHOD"]] = -1
 op_stack_effect[opmap["STORE_ATTR"]] = -2
 op_stack_effect[opmap["LOAD_SUBSCR"]] = -1
 op_stack_effect[opmap["STORE_SUBSCR"]] = -3
