@@ -263,7 +263,7 @@ None, None, None, None, None, None, None, None,
 # 0x08
 None, None, None, None, None, None, None, None, 
 # 0x10
-1, 1, 1, 0, 1, 1, -1, -1, 
+1, 1, 1, 0, 1, -1, -1, -1, 
 # 0x18
 -2, 0, 0, -1, None, None, None, None, 
 # 0x20
