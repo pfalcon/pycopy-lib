@@ -331,6 +331,20 @@ class Compiler(ast.NodeVisitor):
             self.bc.add(opc.ROT_THREE)
             self.bc.add(opc.STORE_SUBSCR)
 
+    def visit_Slice(self, node):
+        def emit_dim(dim):
+            if dim is None:
+                self.bc.add(opc.LOAD_CONST_NONE)
+            else:
+                self.visit(dim)
+        num = 2
+        emit_dim(node.lower)
+        emit_dim(node.upper)
+        if node.step is not None:
+            emit_dim(node.step)
+            num = 3
+        self.bc.add(opc.BUILD_SLICE, num)
+
     def visit_Index(self, node):
         self.visit(node.value)
 
