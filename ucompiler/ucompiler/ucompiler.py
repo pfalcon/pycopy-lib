@@ -104,6 +104,20 @@ class Compiler(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         self._visit_function(node)
 
+    def visit_ImportFrom(self, node):
+        self.bc.load_int(node.level)
+        for n in node.names:
+            self.bc.add(opc.LOAD_CONST_STRING, n.name)
+        self.bc.add(opc.BUILD_TUPLE, len(node.names))
+        self.bc.add(opc.IMPORT_NAME, node.module or "")
+        if len(node.names) == 1 and node.names[0].name == "*":
+            self.bc.add(opc.IMPORT_STAR)
+            return
+        for n in node.names:
+            self.bc.add(opc.IMPORT_FROM, n.name)
+            self._visit_var(n.asname or n.name, ast.StoreConst())
+        self.bc.add(opc.POP_TOP)
+
     def visit_Import(self, node):
         for n in node.names:
             self.bc.load_int(0)
