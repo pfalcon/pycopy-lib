@@ -142,6 +142,7 @@ op_stack_effect[opmap["POP_EXCEPT_JUMP"]] = 0
 op_stack_effect[opmap["END_FINALLY"]] = -1
 op_stack_effect[opmap["WITH_CLEANUP"]] = -2
 op_stack_effect[opmap["DUP_TOP"]] = 1
+op_stack_effect[opmap["DUP_TOP_TWO"]] = 2
 op_stack_effect[opmap["POP_TOP"]] = -1
 op_stack_effect[opmap["ROT_TWO"]] = 0
 op_stack_effect[opmap["ROT_THREE"]] = 0
