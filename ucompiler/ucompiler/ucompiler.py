@@ -514,12 +514,41 @@ class Compiler(ast.NodeVisitor):
         else:
             self.bc.add(op, var)
 
+    def _visit_seq_target(self, t):
+        if isinstance(t, (ast.Tuple, ast.List)):
+            before_star = 0
+            after_star = 0
+            star = None
+            for el in t.elts:
+                if isinstance(el, ast.Starred):
+                    star = el
+                elif star:
+                    after_star += 1
+                else:
+                    before_star += 1
+            if star:
+                self.bc.add(opc.UNPACK_EX, after_star << 8 | before_star)
+            else:
+                self.bc.add(opc.UNPACK_SEQUENCE, len(t.elts))
+            for v in t.elts:
+                self.visit(v)
+        else:
+            assert 0
+
     def visit_Tuple(self, node):
+        if isinstance(node.ctx, ast.Store):
+            self._visit_seq_target(node)
+            return
+
         for v in node.elts:
             self.visit(v)
         self.bc.add(opc.BUILD_TUPLE, len(node.elts))
 
     def visit_List(self, node):
+        if isinstance(node.ctx, ast.Store):
+            self._visit_seq_target(node)
+            return
+
         for v in node.elts:
             self.visit(v)
         self.bc.add(opc.BUILD_LIST, len(node.elts))
