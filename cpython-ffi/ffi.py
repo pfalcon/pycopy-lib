@@ -5,8 +5,9 @@ import array
 
 class Func:
 
-    def __init__(self, f):
+    def __init__(self, f, restype):
         self.f = f
+        self.restype = restype
 
     def __call__(self, *args):
 
@@ -20,7 +21,10 @@ class Func:
 
         args = [conv_arg(x) for x in args]
         #print(args)
-        return self.f(*args)
+        res = self.f(*args)
+        if self.restype == "s":
+            res = res.decode("utf-8")
+        return res
 
 
 class Var:
@@ -60,7 +64,7 @@ class DynMod:
         #print(name, argtypes)
         f.argtypes = argtypes
         f.restype = self.typemap[ret]
-        return Func(f)
+        return Func(f, ret)
 
     def var(self, type, name):
         ctype = self.typemap[type]
