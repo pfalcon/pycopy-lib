@@ -37,6 +37,7 @@ class DynMod:
     typemap = {
         "v": None,
         "s": ctypes.c_char_p,
+        "S": ctypes.c_char_p,
         "i": ctypes.c_int,
         "I": ctypes.c_uint,
         "l": ctypes.c_long,
