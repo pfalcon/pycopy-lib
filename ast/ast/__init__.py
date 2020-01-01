@@ -85,7 +85,8 @@ class NodeVisitor:
             val = getattr(node, f)
             if isinstance(val, list):
                 for v in val:
-                    self.visit(v)
+                    if isinstance(v, AST):
+                        self.visit(v)
             elif isinstance(val, AST):
                 self.visit(val)
 
