@@ -192,6 +192,9 @@ class PCREPattern:
                 res.append(m.groups())
             beg, end = m.span(0)
             start = end
+            if beg == end:
+                # Have progress on empty matches
+                start += 1
 
     def finditer(self, s, pos=0, endpos=-1):
         if endpos != -1:
@@ -204,6 +207,9 @@ class PCREPattern:
             yield m
             beg, end = m.span(0)
             pos = end
+            if beg == end:
+                # Have progress on empty matches
+                pos += 1
 
 
 def compile(pattern, flags=0):
