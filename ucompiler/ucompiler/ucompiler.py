@@ -106,6 +106,10 @@ class Compiler(ast.NodeVisitor):
     def visit_Bytes(self, node):
         self.bc.add(opc.LOAD_CONST_OBJ, node.s)
 
+    def generic_visit(self, node):
+        log.error("Unsupported AST node: %s", ast.dump(node))
+        raise NotImplementedError
+
 
 def compile_ast(tree, filename="<file>"):
     symtable_b = usymtable.SymbolTableBuilder()
