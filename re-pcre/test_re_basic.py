@@ -35,6 +35,8 @@ assert re.split('(\W+)', '...words, words...') == ['', '...', 'words', ', ', 'wo
 
 assert re.sub(r"[ :/?&]", "_", "http://foo.ua/bar/?a=1&b=baz/") == "http___foo.ua_bar__a=1_b=baz_"
 
+# findall
+
 text = "He was carefully disguised but captured quickly by police."
 assert re.findall(r"\w+ly", text) == ['carefully', 'quickly']
 
@@ -53,6 +55,10 @@ text = "  \thello there\n  \t  how are you?"
 indents = _leading_whitespace_re.findall(text)
 assert indents == ['  \t', '  \t  ']
 
+# handling of empty matches
+indent_re = re.compile('^([ ]*)(?=\S)', re.MULTILINE)
+s = "line number one\nline number two"
+assert indent_re.findall(s) == ['', '']
 
 # finditer
 # based on CPython's test_re.py
@@ -62,3 +68,7 @@ assert [item.group(0) for item in iter] == [":", "::", ":::"]
 pat = re.compile(r":+")
 iter = pat.finditer("a:b::c:::d", 3, 8)
 assert [item.group(0) for item in iter] == ["::", "::"]
+
+s = "line one\nline two\n   3"
+iter = re.finditer(r"^ *", s, re.MULTILINE)
+assert [m.group() for m in iter] == ["", "", "   "]
