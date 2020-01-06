@@ -100,6 +100,9 @@ class NodeTransformer(NodeVisitor):
             if isinstance(val, list):
                 newl = []
                 for v in val:
+                    if not isinstance(v, AST):
+                        newl.append(v)
+                        continue
                     newv = self.visit(v)
                     if newv is None:
                         pass
