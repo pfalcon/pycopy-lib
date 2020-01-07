@@ -135,6 +135,8 @@ op_stack_effect[opmap["STORE_ATTR"]] = -2
 op_stack_effect[opmap["LOAD_SUBSCR"]] = -1
 op_stack_effect[opmap["STORE_SUBSCR"]] = -3
 op_stack_effect[opmap["JUMP"]] = 0
+# Simplification
+op_stack_effect[opmap["UNWIND_JUMP"]] = 0
 op_stack_effect[opmap["SETUP_EXCEPT"]] = 0
 op_stack_effect[opmap["SETUP_FINALLY"]] = 0
 op_stack_effect[opmap["SETUP_WITH"]] = 2
