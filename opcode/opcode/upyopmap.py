@@ -275,7 +275,7 @@ None, None, 1, -1, None, None, None, None,
 # 0x38
 None, None, None, None, None, None, None, None, 
 # 0x40
-None, None, 0, -1, -1, -1, -1, 2, 
+0, None, 0, -1, -1, -1, -1, 2, 
 # 0x48
 0, 0, 0, 1, None, None, None, None, 
 # 0x50
