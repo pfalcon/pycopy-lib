@@ -52,7 +52,10 @@ def mp_opcode_type(opcode):
             if opcode in hascache:
                 extra = 1
     else:
-        if opcode in (opmap["RAISE_VARARGS"], opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
+        if opcode in (
+            opmap["RAISE_VARARGS"], opmap["UNWIND_JUMP"],
+            opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]
+        ):
             extra = 1
 
     return f, extra
