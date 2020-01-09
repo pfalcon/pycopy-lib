@@ -47,6 +47,9 @@ pcre_exec = pcre.func("i", "pcre_exec", "PPsiiipi")
 #            int what, void *where);
 pcre_fullinfo = pcre.func("i", "pcre_fullinfo", "PPip")
 
+# int pcre_get_stringnumber(const pcre *code, const char *name);
+pcre_get_stringnumber = pcre.func("i", "pcre_get_stringnumber", "PP")
+
 
 IGNORECASE = I = 1
 MULTILINE = M = 2
@@ -67,13 +70,20 @@ class error(Exception):
 
 class PCREMatch:
 
-    def __init__(self, s, is_str, num_matches, offsets):
+    def __init__(self, patobj, s, is_str, num_matches, offsets):
+        self.patobj = patobj
         self.s = s
         self.is_str = is_str
         self.num = num_matches
         self.offsets = offsets
 
-    def sub(self, i):
+    def substr(self, i):
+        if isinstance(i, str):
+            n = i
+            i = pcre_get_stringnumber(self.patobj, n)
+            if i < 0:
+                raise IndexError("no such group: %s" % n)
+        i <<= 1
         s = self.s[self.offsets[i]:self.offsets[i + 1]]
         if self.is_str:
             s = s.decode()
@@ -81,10 +91,10 @@ class PCREMatch:
 
     def group(self, *n):
         if not n:
-            return self.sub(0)
+            return self.substr(0)
         if len(n) == 1:
-            return self.sub(n[0] * 2)
-        return tuple(self.sub(i * 2) for i in n)
+            return self.substr(n[0])
+        return tuple(self.substr(i) for i in n)
 
     def groups(self, default=None):
         assert default is None
@@ -121,7 +131,7 @@ class PCREPattern:
             return None
         # We don't care how many matching subexpressions we got, we
         # care only about total # of capturing ones (including empty)
-        return PCREMatch(s, is_str, cap_count + 1, ov)
+        return PCREMatch(self.obj, s, is_str, cap_count + 1, ov)
 
     def match(self, s, pos=0, endpos=-1):
         return self.search(s, pos, endpos, PCRE_ANCHORED)
