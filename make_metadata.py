@@ -103,6 +103,8 @@ PYPY_DEVELS_EMAIL = 'pypy-dev@python.org'
 def parse_metadata(f):
     data = {}
     for l in f:
+        while l.endswith("\\\n"):
+            l = l[:-2] + f.readline()
         l = l.strip()
         if l[0] == "#":
             continue
