@@ -1,0 +1,12 @@
+srctype = pycopy-lib
+type = module
+version = 0.2
+desc = pycopy-lib meta-package, installs most of pycopy-lib
+depends = argparse, array, binascii, byteslib, \
+    collections, collections.defaultdict, collections.deque, copy, \
+    functools, future, glob, hashlib, io, \
+    operator, os, pprint, random, re-pcre, \
+    socket, string, struct, subprocess, \
+    time, types, \
+    ulogging, \
+    warnings
