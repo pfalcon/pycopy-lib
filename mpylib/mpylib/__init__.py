@@ -82,7 +82,7 @@ class MPYInput:
         self.cnt = 0
 
     def read_header(self):
-        header = self.f.read(4)
+        header = self.read(4)
 
         if header[0] != ord('M'):
             raise Exception('not a valid .mpy file')
@@ -98,6 +98,10 @@ class MPYInput:
 
     def has_flag(self, flag):
         return self.feature_flags & flag
+
+    def read(self, sz):
+        self.cnt += sz
+        return self.f.read(sz)
 
     def read_byte(self, buf=None):
         self.cnt += 1
@@ -126,17 +130,16 @@ class MPYInput:
             # qstr in table
             return self.qstr_win.access(ln >> 1)
         ln >>= 1
-        qs = self.f.read(ln).decode()
-        self.cnt += ln
+        qs = self.read(ln).decode()
         self.qstr_win.push(qs)
         return qs
 
     def read_obj(self):
-        obj_type = self.f.read(1)
+        obj_type = self.read(1)
         if obj_type == b'e':
             return Ellipsis
         else:
-            buf = self.f.read(self.read_uint())
+            buf = self.read(self.read_uint())
             if obj_type == b's':
                 return str(buf, 'utf8')
             elif obj_type == b'b':
