@@ -1,0 +1,3 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
