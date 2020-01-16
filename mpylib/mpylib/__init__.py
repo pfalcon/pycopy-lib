@@ -80,6 +80,7 @@ class MPYInput:
         # Count of bytes read so far (can be reset freely). Mostly used to
         # track the size of variable-length components, while reading them.
         self.cnt = 0
+        self.off = 0
 
     def read_header(self):
         header = self.read(4)
@@ -101,10 +102,12 @@ class MPYInput:
 
     def read(self, sz):
         self.cnt += sz
+        self.off += sz
         return self.f.read(sz)
 
     def read_byte(self, buf=None):
         self.cnt += 1
+        self.off += 1
         b = self.f.read(1)[0]
         if buf is not None:
             buf.append(b)
