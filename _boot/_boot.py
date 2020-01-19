@@ -11,6 +11,21 @@ def _setup():
     builtins.vars = vars
     builtins.FileNotFoundError = OSError
 
+    from micropython import writable_ns
+    import string
+
+    PATCHES = {
+        str: (
+            string, ("expandtabs", "isidentifier", "ljust", "translate"),
+        ),
+    }
+
+    for typ, (mod, idlist) in PATCHES.items():
+        writable_ns(typ, True)
+        for name in idlist:
+            setattr(typ, name, getattr(mod, name))
+        writable_ns(typ, False)
+
 
 try:
     _setup()
