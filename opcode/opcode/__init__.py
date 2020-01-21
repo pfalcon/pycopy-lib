@@ -48,6 +48,11 @@ def stack_effect(opcode, *args):
         return -args[1] -2 + 1
     if opcode in (opmap["BUILD_TUPLE"], opmap["BUILD_LIST"], opmap["BUILD_SET"]):
         return -args[0] + 1
+    if opcode == opmap["STORE_COMP"]:
+        if args[0] & 3 == 1:
+            return -2
+        else:
+            return -1
     if opcode == opmap["RAISE_VARARGS"]:
         return -args[0]
     print(opcode, *args)
