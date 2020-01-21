@@ -41,13 +41,13 @@ from uos2 import _exit, _libc as libc
 P_WAIT = 0
 P_NOWAIT = 1
 
-error = const(OSError)
+error = OSError
 name = "posix"
-sep = const("/")
-curdir = const(".")
-pardir = const("..")
-devnull = const("/dev/null")
-linesep = const("\n")
+sep = "/"
+curdir = "."
+pardir = ".."
+devnull = "/dev/null"
+linesep = "\n"
 
 
 if libc:
