@@ -54,6 +54,7 @@ class CodeType:
         self.co_filename = "??"
         self.co_lnotab = b'\x00\x00'
         self.co_cellvars = ()
+        self.mpy_cellvars = ()
         self.mpy_consts = ()
         self.co_flags = 0
         self.co_argcount = 0
