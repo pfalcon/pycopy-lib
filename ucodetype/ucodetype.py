@@ -6,7 +6,8 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2019 Paul Sokolovsky
+# Copyright (c) 2019-2020 Paul Sokolovsky
+# Bytecode prelude encoding routines (c) 2019 Damien P. George
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +27,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import sys
 from ucollections import OrderedDict
 import uarray
 import uctypes
+import uio
 
 
 FLAG_VARARGS = 0x01
@@ -66,10 +69,10 @@ class CodeType:
         return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
 
     def get_code(self):
-        from mpylib import MPYOutput
-        fake_out = MPYOutput(None)
-        code = fake_out.pack_code(self).getvalue()
-        return code
+        stream = uio.BytesIO()
+        self.pack_prelude(stream)
+        stream.write(self.co_code)
+        return stream.getvalue()
 
     def get_const_table(self):
         consts_arr = uarray.array("P", [0] * len(self.mpy_consts))
@@ -89,3 +92,50 @@ class CodeType:
         rc.fun_data = uctypes.addressof(codeobj.get_code())
         rc.const_table = uctypes.addressof(codeobj.get_const_table())
         return rc
+
+    def pack_sig(self, stream):
+        S = self.mpy_stacksize
+        E = self.mpy_excstacksize
+        F = self.co_flags & 0xf
+        A = self.co_argcount
+        K = self.co_kwonlyargcount
+        D = self.mpy_def_pos_args
+
+        S -= 1
+        z = (S & 0xf) << 3 | (E & 1) << 2 | (A & 3)
+        while S | E | F | A | K | D:
+            stream.writebin("B", z | 0x80)
+            z = (F & 1) << 6 | (S & 3) << 4 | (K & 1) << 3 \
+                | (A & 1) << 2 | (E & 1) << 1 | (D & 1);
+            S >>= 2
+            E >>= 1
+            F >>= 1
+            A >>= 1
+            K >>= 1
+            D >>= 1
+        stream.writebin("B", z)
+
+    def pack_info_size(self, stream):
+        I = len(self.co_lnotab) + 4
+        C = len(self.mpy_cellvars)
+        while True:
+            z = (I & 0x3f) << 1 | (C & 1)
+            C >>= 1
+            I >>= 6
+            if C | I:
+                z |= 0x80
+                stream.writebin("B", z)
+            else:
+                break
+        stream.writebin("B", z)
+
+    def pack_prelude(self, stream, name_writer=None):
+        self.pack_sig(stream)
+        self.pack_info_size(stream)
+        if name_writer:
+            name_writer(self, stream)
+        else:
+            stream.writebin("<H", id(sys.intern(self.co_name)) >> 2)
+            stream.writebin("<H", id(sys.intern(self.co_filename)) >> 2)
+        stream.write(self.co_lnotab)
+        stream.write(bytes(self.mpy_cellvars))
