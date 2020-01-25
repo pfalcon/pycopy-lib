@@ -78,7 +78,7 @@ class Bytecode:
             arg = args[0]
         fl, extra = upyopcodes.mp_opcode_type(opcode)
 
-        if opcode == opmap["CALL_FUNCTION"]:
+        if opcode in (opmap["CALL_FUNCTION"], opmap["CALL_FUNCTION_VAR_KW"]):
             MPYWriter.write_uint(None, args[0] + (args[1] << 8), self.buf)
         elif opcode == opmap["LOAD_CONST_SMALL_INT"]:
             MPYWriter.write_int(None, arg, self.buf)
