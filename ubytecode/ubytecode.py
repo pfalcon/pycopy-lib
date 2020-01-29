@@ -109,7 +109,7 @@ class Bytecode:
         elif fl == upyopcodes.MP_OPCODE_VAR_UINT:
             MPYOutput.write_uint(None, arg, self.buf)
 
-        if opcode in (opmap["SETUP_EXCEPT"], opmap["SETUP_FINALLY"]):
+        if opcode in (opmap["SETUP_EXCEPT"], opmap["SETUP_FINALLY"], opmap["SETUP_WITH"]):
             self.exc_stk_ptr += 1
             if self.exc_stk_ptr > self.exc_stk_use:
                 self.exc_stk_use = self.exc_stk_ptr
