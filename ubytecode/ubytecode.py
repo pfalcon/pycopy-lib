@@ -147,7 +147,7 @@ class Bytecode:
                 opcode = opmap["LOAD_FAST_MULTI"] + no
             elif opcode == opmap["STORE_FAST_N"]:
                 opcode = opmap["STORE_FAST_MULTI"] + no
-            elif opcode == opmap["DELETE_FAST"]:
+            elif opcode in (opmap["DELETE_FAST"], opmap["LOAD_DEREF"], opmap["STORE_DEREF"]):
                 # No "multi" form with implicit arg
                 self.add(opcode, no)
                 return
