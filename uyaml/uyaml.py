@@ -115,3 +115,27 @@ class YamlParser:
 
     def parse(self):
         return self.parse_block(0)
+
+
+def dump(data, stream, indent=0):
+    def do_indent(indent):
+        stream.write("  " * indent)
+
+    if isinstance(data, list):
+        for i in data:
+            do_indent(indent - 1)
+            stream.write("- ")
+            dump(i, stream, indent + 1)
+    elif isinstance(data, dict):
+        for k, v in data.items():
+            do_indent(indent)
+            stream.write(str(k))
+            if isinstance(v, (list, dict)):
+                stream.write(":\n")
+                dump(v, stream, indent + 1)
+            else:
+                stream.write(": ")
+                dump(v, stream, indent + 1)
+    else:
+        stream.write(str(data))
+        stream.write("\n")
