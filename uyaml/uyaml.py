@@ -26,6 +26,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import uio
+
+
 class YamlParser:
 
     def __init__(self, f):
@@ -78,6 +81,32 @@ class YamlParser:
                 i = l.index(until)
             return l[:i], l[i:]
 
+    def parse_flow(self, l):
+        if l.startswith("["):
+            rbuf = uio.StringIO(l)
+            rbuf.read(1)
+            res = []
+            ident = ""
+            while True:
+                c = rbuf.read(1)
+                if not c:
+                    assert False, "Unexpected end if line"
+                if c == "]":
+                    res.append(ident.strip())
+                    break
+                if c == ",":
+                    res.append(ident.strip())
+                    ident = ""
+                    continue
+                ident += c
+            rest = rbuf.read().strip()
+            assert rest == ""
+            return res, ""
+        elif l.startswith("{"):
+            raise NotImplementedError
+        else:
+            return self.parse_str(l, "")
+
     def parse_block(self, target_indent):
         res = self.detect_block_type()()
         while True:
@@ -109,7 +138,7 @@ class YamlParser:
                 k, rest = self.parse_str(subl, ":")
                 assert rest[0] == ":"
                 rest = rest[1:].strip()
-                v, rest = self.parse_str(rest, "")
+                v, rest = self.parse_flow(rest)
                 res[k] = v
                 assert rest == ""
 
