@@ -13,10 +13,14 @@ def _setup():
 
     from micropython import writable_ns
     import string
+    import byteslib
 
     PATCHES = {
         str: (
             string, ("expandtabs", "isidentifier", "ljust", "translate"),
+        ),
+        bytes: (
+            byteslib, ("fromhex", "hex"),
         ),
     }
 
