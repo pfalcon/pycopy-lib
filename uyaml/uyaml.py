@@ -63,6 +63,40 @@ class YamlParser:
         else:
             return dict
 
+    def match(self, s):
+        if self.pl.startswith(s):
+            self.pl = self.pl[len(s):].lstrip()
+            return True
+        return False
+
+    def expect(self, s):
+        assert self.match(s), "Expected %r at %r" % (s, self.pl)
+
+    def parse_atomic_with_sep(self, seps=None):
+        if self.pl[0] in ("'", '"'):
+            sep = self.pl[0]
+            i = 1
+            while True:
+                if i >= len(self.pl):
+                    assert 0
+                if self.pl[i] == sep:
+                    break
+                i += 1
+            ret = self.pl[1:i]
+            self.pl = self.pl[i + 1:].lstrip()
+            return ret
+        else:
+            if not seps:
+                ret = self.pl.strip()
+                self.pl = ""
+                return ret
+            for i in range(len(self.pl)):
+                if self.pl[i] in seps:
+                    break
+            ret = self.pl[:i]
+            self.pl = self.pl[i:]
+            return ret
+
     def parse_str(self, l, until):
         if l[0] in ("'", '"'):
             sep = l[0]
@@ -82,30 +116,37 @@ class YamlParser:
             return l[:i], l[i:]
 
     def parse_flow(self, l):
-        if l.startswith("["):
-            rbuf = uio.StringIO(l)
-            rbuf.read(1)
+        self.pl = l
+        res = self.parse_inline()
+        return res, self.pl
+
+    def parse_inline(self, seps=None):
+        if self.match("["):
             res = []
-            ident = ""
+            if self.match("]"):
+                return res
             while True:
-                c = rbuf.read(1)
-                if not c:
-                    assert False, "Unexpected end if line"
-                if c == "]":
-                    res.append(ident.strip())
+                el = self.parse_inline((",", "]"))
+                res.append(el)
+                if self.match("]"):
                     break
-                if c == ",":
-                    res.append(ident.strip())
-                    ident = ""
-                    continue
-                ident += c
-            rest = rbuf.read().strip()
-            assert rest == ""
-            return res, ""
-        elif l.startswith("{"):
-            raise NotImplementedError
+                self.expect(",")
+            return res
+        elif self.match("{"):
+            res = {}
+            if self.match("}"):
+                return res
+            while True:
+                key = self.parse_inline((":",))
+                self.expect(":")
+                val = self.parse_inline((",", "}"))
+                res[key] = val
+                if self.match("}"):
+                    break
+                self.expect(",")
+            return res
         else:
-            return self.parse_str(l, "")
+            return self.parse_atomic_with_sep(seps)
 
     def parse_block(self, target_indent):
         res = self.detect_block_type()()
