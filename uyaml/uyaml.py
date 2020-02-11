@@ -72,6 +72,12 @@ class YamlParser:
     def expect(self, s):
         assert self.match(s), "Expected %r at %r" % (s, self.pl)
 
+    def eol(self):
+        return self.pl == ""
+
+    def expect_eol(self):
+        assert self.eol(), repr(self.pl)
+
     def parse_atomic_with_sep(self, seps=None):
         if self.pl[0] in ("'", '"'):
             sep = self.pl[0]
@@ -93,32 +99,11 @@ class YamlParser:
             for i in range(len(self.pl)):
                 if self.pl[i] in seps:
                     break
+            else:
+                i += 1
             ret = self.pl[:i]
             self.pl = self.pl[i:]
             return ret
-
-    def parse_str(self, l, until):
-        if l[0] in ("'", '"'):
-            sep = l[0]
-            i = 1
-            while True:
-                if i >= len(l):
-                    assert 0
-                if l[i] == sep:
-                    break
-                i += 1
-            return l[1:i], l[i + 1:]
-        else:
-            if until == "":
-                i = len(l)
-            else:
-                i = l.index(until)
-            return l[:i], l[i:]
-
-    def parse_flow(self, l):
-        self.pl = l
-        res = self.parse_inline()
-        return res, self.pl
 
     def parse_inline(self, seps=None):
         if self.match("["):
@@ -149,39 +134,47 @@ class YamlParser:
             return self.parse_atomic_with_sep(seps)
 
     def parse_block(self, target_indent):
-        res = self.detect_block_type()()
+        res = None
         while True:
-            l = self.readline()
-#            print("*", l)
-            if not l:
+            rawl = self.readline()
+            if not rawl:
                 return res
-            indent, subl = self.calc_indent(l)
+            indent, l = self.calc_indent(rawl)
             if indent != target_indent:
-                self.unreadline(l)
+                self.unreadline(rawl)
                 return res
 
-            subl = subl.rstrip()
-            if isinstance(res, list):
-                if subl.startswith("- "):
-                    res.append(subl[2:])
-                else:
-                    self.unreadline(l)
+            l = l.rstrip()
+            self.pl = l
+            as_list = False
+            if self.match("- "):
+                as_list = True
+                if res is None:
+                    res = []
+
+            r = self.parse_inline((":",))
+            if self.match(":"):
+                if res is None:
+                    res = {}
+                elif isinstance(res, list):
+                    self.unreadline(rawl)
                     return res
-            elif subl.endswith(":"):
-                nextl = self.readline()
-                nexti, _ = self.calc_indent(nextl)
-                self.unreadline(nextl)
-                subobj = self.parse_block(nexti)
-                k, rest = self.parse_str(subl, ":")
-                assert rest == ":", rest
-                res[k] = subobj
+
+                if self.eol():
+                    nextl = self.readline()
+                    nexti, _ = self.calc_indent(nextl)
+                    self.unreadline(nextl)
+                    subobj = self.parse_block(nexti)
+                    res[r] = subobj
+                else:
+                    res[r] = self.parse_inline()
             else:
-                k, rest = self.parse_str(subl, ":")
-                assert rest[0] == ":"
-                rest = rest[1:].strip()
-                v, rest = self.parse_flow(rest)
-                res[k] = v
-                assert rest == ""
+                if not as_list and res is None:
+                    assert target_indent == 0
+                    return r
+                res.append(r)
+                print(res)
+                self.expect_eol()
 
     def parse(self):
         return self.parse_block(0)
