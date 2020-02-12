@@ -152,7 +152,13 @@ class YamlParser:
                 if res is None:
                     res = []
 
-            r = self.parse_inline((":",))
+            if as_list and self.pl.startswith("- "):
+                rawl = rawl.replace("- ", "  ", 1)
+                self.unreadline(rawl)
+                r = self.parse_block(target_indent + 2)
+            else:
+                r = self.parse_inline((":",))
+
             if self.match(":"):
                 if res is None:
                     res = {}
