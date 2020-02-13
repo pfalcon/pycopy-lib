@@ -46,7 +46,7 @@ def stack_effect(opcode, *args):
         return -args[1] + 1
     if opcode == opmap["MAKE_CLOSURE_DEFARGS"]:
         return -args[1] -2 + 1
-    if opcode in (opmap["BUILD_TUPLE"], opmap["BUILD_LIST"], opmap["BUILD_SET"]):
+    if opcode in (opmap["BUILD_TUPLE"], opmap["BUILD_LIST"], opmap["BUILD_SET"], opmap["BUILD_SLICE"]):
         return -args[0] + 1
     if opcode == opmap["STORE_COMP"]:
         if args[0] & 3 == 1:
