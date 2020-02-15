@@ -66,4 +66,7 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--version":
+        print("%s version 0.1" % sys.argv[0])
+        sys.exit()
     main()
