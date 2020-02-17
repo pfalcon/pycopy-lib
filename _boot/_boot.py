@@ -5,6 +5,10 @@ def vars(obj):
     return {k: getattr(obj, k) for k in dir(obj) if not k.startswith("__")}
 
 
+def getrecursionlimit():
+    return 100
+
+
 def _setup():
     import builtins
 
@@ -12,6 +16,7 @@ def _setup():
     builtins.FileNotFoundError = OSError
 
     from micropython import writable_ns
+    import sys
     import string
     import byteslib
 
@@ -29,6 +34,13 @@ def _setup():
         for name in idlist:
             setattr(typ, name, getattr(mod, name))
         writable_ns(typ, False)
+
+    # sys is a special case which cannot be handled with wrapper module and
+    # sys.modules["sys"] substitution, due to special handling of assignments
+    # to sys.stdout and friends. So, patch the module namespace directly.
+    writable_ns(sys, True)
+    sys.getrecursionlimit = getrecursionlimit
+    writable_ns(sys, False)
 
 
 try:
