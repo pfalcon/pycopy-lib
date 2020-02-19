@@ -103,6 +103,12 @@ class YamlParser:
                 i += 1
             ret = self.pl[:i]
             self.pl = self.pl[i:]
+
+            try:
+                ret = int(ret, 0)
+            except ValueError:
+                pass
+
             return ret
 
     def parse_inline(self, seps=None):
