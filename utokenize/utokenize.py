@@ -23,7 +23,7 @@ class TokenInfo(namedtuple("TokenInfo", ("type", "string", "start", "end", "line
 
 def get_indent(l):
     for i in range(len(l)):
-        if l[i] != " ":
+        if l[i] != " " and l[i] != "\t":
             return i, l[i:]
 
 
@@ -100,7 +100,7 @@ def tokenize(readline):
 
         if paren_level == 0:
             if i > indent_stack[-1]:
-                yield TokenInfo(INDENT, " " * i, lineno, 0, org_l)
+                yield TokenInfo(INDENT, org_l[:i], lineno, 0, org_l)
                 indent_stack.append(i)
             elif i < indent_stack[-1]:
                 while i != indent_stack[-1]:
