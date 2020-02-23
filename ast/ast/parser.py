@@ -916,6 +916,8 @@ class Parser:
         if self.check(","):
             target = ast.Tuple(elts=[target], ctx=ast.Store())
             while self.match(","):
+                if self.check("in"):
+                    break
                 target.elts.append(self.match_expr(ctx=ast.Store, rbp=BP_LVALUE))
         self.expect("in")
         expr = self.require_expr(rbp=rbp)
