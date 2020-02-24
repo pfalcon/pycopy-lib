@@ -3,5 +3,5 @@ type = package
 author = Paul Sokolovsky
 desc = Pure-Python implementation of the "ast" module
 long_desc = README.rst
-version = 2.3.5
+version = 2.3.6
 depends = utokenize
