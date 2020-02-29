@@ -16,3 +16,5 @@ assert expandtabs("123\n\t") == '123\n        '
 assert ljust("foo", 5) == "foo  "
 assert ljust("foo", 2) == "foo"
 assert ljust("foo", 5, "-") == "foo--"
+
+assert encode("foo", "utf-8", "strict") == b"foo"
