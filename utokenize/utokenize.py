@@ -119,7 +119,7 @@ def tokenize(readline):
                 elif l.startswith("0b") or l.startswith("0B"):
                     t = "0b"
                     l = l[2:]
-                while l and (l[0].isdigit() or l[0] == "." or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
+                while l and (l[0].isdigit() or l[0] == "." or l[0] == "_" or (t.startswith("0x") and l[0] in "ABCDEFabcdef")):
                     if l[0] == ".":
                         if seen_dot:
                             break
@@ -132,7 +132,7 @@ def tokenize(readline):
                     if l[0] in ("+", "-"):
                         t += l[0]
                         l = l[1:]
-                    while l and l[0].isdigit():
+                    while l and (l[0].isdigit() or l[0] == "_"):
                         t += l[0]
                         l = l[1:]
                 if l.startswith("j"):
