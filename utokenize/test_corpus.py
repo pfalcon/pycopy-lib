@@ -18,7 +18,7 @@ def handle_one(f):
 
 if len(sys.argv) > 1 and sys.argv[1] == "--make-expected":
     for f in glob.glob("testdata/*.py"):
-        rc = os.system("python3.5 example_test_dump_cpy.py %s >%s.cpy" % (f, f))
+        rc = os.system("python3.6 example_test_dump_cpy.py %s >%s.cpy" % (f, f))
         assert rc == 0
     sys.exit()
 
