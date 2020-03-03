@@ -1,6 +1,8 @@
 def update(s, *others):
     for o in others:
-        s.update(o)
+        if not isinstance(o, (set, frozenset)):
+            o = set(o)
+        s |= o
     return s
 
 
@@ -12,7 +14,9 @@ def union(s, *others):
 
 def intersection_update(s, *others):
     for o in others:
-        s.intersection_update(o)
+        if not isinstance(o, (set, frozenset)):
+            o = set(o)
+        s &= o
     return s
 
 
@@ -24,7 +28,9 @@ def intersection(s, *others):
 
 def difference_update(s, *others):
     for o in others:
-        s.difference_update(o)
+        if not isinstance(o, (set, frozenset)):
+            o = set(o)
+        s -= o
     return s
 
 
