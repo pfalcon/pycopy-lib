@@ -19,6 +19,7 @@ def _setup():
     import sys
     import string
     import byteslib
+    import setlib
 
     PATCHES = {
         str: (
@@ -26,6 +27,9 @@ def _setup():
         ),
         bytes: (
             byteslib, ("fromhex", "hex"),
+        ),
+        set: (
+            setlib, ("update", "union", "intersection_update", "intersection", "difference_update", "difference"),
         ),
     }
 
