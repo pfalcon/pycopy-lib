@@ -1,0 +1,7 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
+author = Paul Sokolovsky
+desc = PyYAML compatible wrapper for Pycopy's uyaml module
+long_desc = PyYAML compatible wrapper for Pycopy's uyaml module (https://github.com/pfalcon/pycopy-lib).
+depends = uyaml
