@@ -2,7 +2,7 @@
 # This module is part of Pycopy https://github.com/pfalcon/pycopy
 # and pycopy-lib https://github.com/pfalcon/pycopy-lib projects.
 #
-# Copyright (c) 2019 Paul Sokolovsky
+# Copyright (c) 2019, 2020 Paul Sokolovsky
 #
 # The MIT License
 #
@@ -240,7 +240,7 @@ class TokAnd(TokInfix):
     lbp = 40
     ast_bin_op = ast.And
 
-class TokNot(TokPrefix):
+class TokNot(TokPrefix, TokInfix):
     nbp = 50
     ast_un_op = ast.Not
 
@@ -249,9 +249,7 @@ class TokNot(TokPrefix):
     @classmethod
     def led(cls, p, left, t):
         p.expect("in")
-        right = p.expr(cls.lbp)
-        node = ast.Compare(ops=[ast.NotIn()], left=left, comparators=[right])
-        return node
+        return super().led(p, left, t)
 
 class TokEq(TokInfix):
     lbp = 60
