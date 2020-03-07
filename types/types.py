@@ -21,7 +21,10 @@ SimpleNamespace = None  # TODO: Add better sentinel which can't match anything
 
 def _g():
     yield 1
-GeneratorType = type(_g())
+__g = _g()
+GeneratorType = type(__g)
+# Prevent "generator never ran" warning.
+next(__g)
 
 class _C:
     def _m(self): pass
