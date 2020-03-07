@@ -99,7 +99,7 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
 
                 if l.startswith(b"Transfer-Encoding:"):
                     if b"chunked" in l:
-                        raise ValueError("Unsupported " + l)
+                        raise ValueError("Unsupported " + l.decode())
                 elif l.startswith(b"Location:") and 300 <= status <= 399:
                     if not redir_cnt:
                         raise ValueError("Too many redirects")
