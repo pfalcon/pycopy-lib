@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = module
-version = 0.8.2
+version = 0.8.3
 author = Paul Sokolovsky
 long_desc = README.rst
