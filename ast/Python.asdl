@@ -1,4 +1,8 @@
--- ASDL's six builtin types are identifier, int, string, bytes, object, singleton
+-- ASDL's 7 builtin types are:
+-- identifier, int, string, bytes, object, singleton, constant
+--
+-- singleton: None, True or False
+-- constant can be None, whereas None means "no value" for object.
 
 module Python
 {
@@ -24,6 +28,8 @@ module Python
           | Delete(expr* targets)
           | Assign(expr* targets, expr value)
           | AugAssign(expr target, operator op, expr value)
+          -- 'simple' indicates that we annotate simple name without parens
+          | AnnAssign(expr target, expr annotation, expr? value, int simple)
 
           -- use 'orelse' because else is a keyword in target languages
           | For(expr target, expr iter, stmt* body, stmt* orelse)
@@ -71,9 +77,12 @@ module Python
          | Call(expr func, expr* args, keyword* keywords)
          | Num(object n) -- a number as a PyObject.
          | Str(string s) -- need to specify raw, unicode, etc?
+         | FormattedValue(expr value, int? conversion, expr? format_spec)
+         | JoinedStr(expr* values)
          | Bytes(bytes s)
          | NameConstant(singleton value)
          | Ellipsis
+         | Constant(constant value)
 
          -- the following expression can appear in assignment context
          | Attribute(expr value, identifier attr, expr_context ctx)
@@ -101,7 +110,7 @@ module Python
 
     cmpop = Eq | NotEq | Lt | LtE | Gt | GtE | Is | IsNot | In | NotIn
 
-    comprehension = (expr target, expr iter, expr* ifs)
+    comprehension = (expr target, expr iter, expr* ifs, int is_async)
 
     excepthandler = ExceptHandler(expr? type, identifier? name, stmt* body)
                     attributes (int lineno, int col_offset)
