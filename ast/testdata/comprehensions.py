@@ -17,3 +17,5 @@ any(x for x in foo)
 {x for x in y}
 
 [lambda: None for x in y]
+
+[x for x in s].copy()
