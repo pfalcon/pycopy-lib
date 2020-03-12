@@ -204,7 +204,7 @@ class TokFor(TokBase):
         ifs = []
         while p.match("if"):
             ifs.append(p.expr(20))
-        comp = ast.comprehension(target=target, iter=expr, ifs=ifs)
+        comp = ast.comprehension(target=target, iter=expr, ifs=ifs, is_async=0)
         if isinstance(left, GenComp):
             left.generators.append(comp)
             return left
