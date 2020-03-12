@@ -29,6 +29,8 @@ class Assign(stmt):
     _fields = ('targets', 'value')
 class AugAssign(stmt):
     _fields = ('target', 'op', 'value')
+class AnnAssign(stmt):
+    _fields = ('target', 'annotation', 'value', 'simple')
 class For(stmt):
     _fields = ('target', 'iter', 'body', 'orelse')
 class AsyncFor(stmt):
@@ -100,12 +102,18 @@ class Num(expr):
     _fields = ('n',)
 class Str(expr):
     _fields = ('s',)
+class FormattedValue(expr):
+    _fields = ('value', 'conversion', 'format_spec')
+class JoinedStr(expr):
+    _fields = ('values',)
 class Bytes(expr):
     _fields = ('s',)
 class NameConstant(expr):
     _fields = ('value',)
 class Ellipsis(expr):
     _fields = ()
+class Constant(expr):
+    _fields = ('value',)
 class Attribute(expr):
     _fields = ('value', 'attr', 'ctx')
 class Subscript(expr):
@@ -201,7 +209,7 @@ class In(cmpop):
 class NotIn(cmpop):
     _fields = ()
 class comprehension(AST):
-    _fields = ('target', 'iter', 'ifs')
+    _fields = ('target', 'iter', 'ifs', 'is_async')
 class excepthandler(AST): pass
 class ExceptHandler(excepthandler):
     _fields = ('type', 'name', 'body')
