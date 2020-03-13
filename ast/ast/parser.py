@@ -200,11 +200,17 @@ class TokFor(TokBase):
     lbp = 7
     @classmethod
     def led(cls, p, left, t):
+        is_async = 0
+        if t.string == "async":
+            is_async = 1
+            t = p.tok
+            p.next()
+            assert t.string == "for"
         target, expr = p.match_for_in(20)
         ifs = []
         while p.match("if"):
             ifs.append(p.expr(20))
-        comp = ast.comprehension(target=target, iter=expr, ifs=ifs, is_async=0)
+        comp = ast.comprehension(target=target, iter=expr, ifs=ifs, is_async=is_async)
         if isinstance(left, GenComp):
             left.generators.append(comp)
             return left
@@ -537,6 +543,7 @@ pratt_token_map = {
     ",": TokComma,
     "yield": TokYield,
     "for": TokFor,
+    "async": TokFor,
     "lambda": TokLambda,
     "if": TokIf, "else": TokDelim,
     "or": TokOr,
