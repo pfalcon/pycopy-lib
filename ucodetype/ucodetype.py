@@ -55,7 +55,7 @@ class CodeType:
     def __init__(self):
         self.co_name = "??"
         self.co_filename = "??"
-        self.co_lnotab = b'\x00\x00'
+        self.co_lnotab = b'\x00'
         self.co_cellvars = ()
         self.mpy_cellvars = ()
         self.mpy_consts = ()
