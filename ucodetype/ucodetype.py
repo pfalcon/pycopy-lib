@@ -55,6 +55,7 @@ class CodeType:
     def __init__(self):
         self.co_name = "??"
         self.co_filename = "??"
+        self.co_firstlineno = 0
         self.co_lnotab = b'\x00'
         self.co_cellvars = ()
         self.mpy_cellvars = ()
@@ -66,7 +67,7 @@ class CodeType:
         self.mpy_excstacksize = 0
 
     def __repr__(self):
-        return '<code object %s, file "%s", line ??>' % (self.co_name, self.co_filename)
+        return '<code object %s, file "%s", line %d>' % (self.co_name, self.co_filename, self.co_firstlineno)
 
     def get_code(self):
         stream = uio.BytesIO()
