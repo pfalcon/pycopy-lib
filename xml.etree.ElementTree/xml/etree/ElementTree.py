@@ -48,6 +48,9 @@ class Element:
     def __len__(self):
         return len(self._children)
 
+    def append(self, el):
+        self._children.append(el)
+
 
 class ElementTree:
 
