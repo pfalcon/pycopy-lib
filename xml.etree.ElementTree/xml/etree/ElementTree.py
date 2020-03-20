@@ -51,6 +51,12 @@ class Element:
     def append(self, el):
         self._children.append(el)
 
+    def get(self, key, default=None):
+        return self.attrib.get(key, default)
+
+    def set(self, key, value):
+        self.attrib[key] = value
+
 
 class ElementTree:
 
