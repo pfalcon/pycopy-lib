@@ -1,4 +1,6 @@
 import usocket
+from parse import urlencode
+import ure
 
 class Response:
 
@@ -6,6 +8,13 @@ class Response:
         self.raw = f
         self.encoding = "utf-8"
         self._cached = None
+        self.status_code = None
+        self.reason = None
+        self.headers = None
+        # cookie support as dict
+        self.cookies = None
+        # url to see redirect targets
+        self.url = None
 
     def close(self):
         if self.raw:
@@ -31,8 +40,9 @@ class Response:
         import ujson
         return ujson.loads(self.content)
 
-
-def request(method, url, data=None, json=None, headers={}, stream=None, parse_headers=True):
+def request(method, url, params={}, cookies={}, data=None, json=None, headers={}, stream=None, parse_headers=True, followRedirect=False):
+    if not params == {}:
+        url = url.rstrip('?') + '?' + urlencode(params, doseq=True)
     redir_cnt = 1
     while True:
         try:
@@ -58,20 +68,32 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
         resp_d = None
         if parse_headers is not False:
             resp_d = {}
-
+        
+        print('Socket create')
         s = usocket.socket(ai[0], ai[1], ai[2])
         try:
+            print('Socket connect')
             s.connect(ai[-1])
             if proto == "https:":
                 s = ussl.wrap_socket(s, server_hostname=host)
+            print ('Socket wrapped')
             s.write(b"%s /%s HTTP/1.0\r\n" % (method, path))
-            if not "Host" in headers:
+            print('Socket: ')
+            print(b"%s /%s HTTP/1.0\r\n" % (method, path))
+            if "Host" not in headers:
                 s.write(b"Host: %s\r\n" % host)
             # Iterate over keys to avoid tuple alloc
             for k in headers:
                 s.write(k)
                 s.write(b": ")
                 s.write(headers[k])
+                s.write(b"\r\n")
+                # print(k, b": ".decode('utf-8'), headers[k], b"\r\n".decode('utf-8'))
+            for cookie in cookies:
+                s.write(b"Cookie: ")
+                s.write(cookie)
+                s.write(b"=")
+                s.write(cookies[cookie])
                 s.write(b"\r\n")
             if json is not None:
                 assert data is None
@@ -80,57 +102,79 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
                 s.write(b"Content-Type: application/json\r\n")
             if data:
                 s.write(b"Content-Length: %d\r\n" % len(data))
+                # print("Content-Length: %d\r\n" % len(data))
             s.write(b"Connection: close\r\n\r\n")
             if data:
                 s.write(data)
-
+                # print(data)
+            print('Start readline')
             l = s.readline()
-            #print(l)
+            #print('Received protocoll and resultcode %s' % l.decode('utf-8'))
             l = l.split(None, 2)
             status = int(l[1])
             reason = ""
             if len(l) > 2:
                 reason = l[2].rstrip()
+            # Loop to read header data
             while True:
                 l = s.readline()
+                #print('Received Headerdata %s' % l.decode('utf-8'))
                 if not l or l == b"\r\n":
                     break
-                #print(l)
-
+                # Header data
                 if l.startswith(b"Transfer-Encoding:"):
                     if b"chunked" in l:
-                        raise ValueError("Unsupported " + l.decode())
+                        # decode added, can't cast implicit from bytes to string
+                        raise ValueError("Unsupported " + l.decode('utf-8'))
                 elif l.startswith(b"Location:") and 300 <= status <= 399:
                     if not redir_cnt:
                         raise ValueError("Too many redirects")
                     redir_cnt -= 1
                     url = l[9:].decode().strip()
-                    #print("redir to:", url)
-                    status = 300
-                    break
-
+                    #print("Redirect to: %s" % url)
+                    status = 302
+                    # removed break to collect cookies in the header
+                    # in case of a redirect
+                    # break
                 if parse_headers is False:
                     pass
                 elif parse_headers is True:
                     l = l.decode()
+                    # print('Headers: %s ' % l)
                     k, v = l.split(":", 1)
-                    resp_d[k] = v.strip()
+                    # adding cookie support (cookies are overwritten as they have the same key in dict)
+                    # supplied in the request
+                    # not supported is the domain attribute of cookies, this is not set
+                    if (k == 'Set-Cookie'):
+                        #for cookie as array
+                        #cookies.append(v.strip())
+                        ck, cv = v.split("=", 1)
+                        cookies[ck.strip()] = cv.strip()
+                    # else it is not a cookie, just normal header
+                    else:
+                        resp_d[k] = v.strip()
                 else:
                     parse_headers(l, resp_d)
         except OSError:
             s.close()
+            print('Socket closed')
             raise
-
-        if status != 300:
+        # if redirect repeat else leave loop
+        if status != 302:
             break
-
+        # if redirect false leave loop
+        if (status == 302) and (followRedirect == False):
+            break
+        # if 300 and redirect = true loop
     resp = Response(s)
+    resp.url = url
     resp.status_code = status
     resp.reason = reason
     if resp_d is not None:
         resp.headers = resp_d
+    # adding cookie support
+    resp.cookies = cookies
     return resp
-
 
 def head(url, **kw):
     return request("HEAD", url, **kw)
