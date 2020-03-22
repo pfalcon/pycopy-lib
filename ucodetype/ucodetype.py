@@ -136,7 +136,7 @@ class CodeType:
         if name_writer:
             name_writer(self, stream)
         else:
-            stream.writebin("<H", id(sys.intern(self.co_name)) >> 2)
-            stream.writebin("<H", id(sys.intern(self.co_filename)) >> 2)
+            stream.writebin("<H", id(sys.intern(self.co_name)) >> 3)
+            stream.writebin("<H", id(sys.intern(self.co_filename)) >> 3)
         stream.write(self.co_lnotab)
         stream.write(bytes(self.mpy_cellvars))
