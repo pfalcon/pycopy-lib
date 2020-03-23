@@ -50,6 +50,10 @@ mp_raw_code_t_layout = OrderedDict({
 uctypes.calc_offsets(mp_raw_code_t_layout)
 
 
+def str2qstr(s):
+    return id(sys.intern(s)) >> 3
+
+
 class CodeType:
 
     def __init__(self):
@@ -136,7 +140,7 @@ class CodeType:
         if name_writer:
             name_writer(self, stream)
         else:
-            stream.writebin("<H", id(sys.intern(self.co_name)) >> 3)
-            stream.writebin("<H", id(sys.intern(self.co_filename)) >> 3)
+            stream.writebin("<H", str2qstr(self.co_name))
+            stream.writebin("<H", str2qstr(self.co_filename))
         stream.write(self.co_lnotab)
         stream.write(bytes(self.mpy_cellvars))
