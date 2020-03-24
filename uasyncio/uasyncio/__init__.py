@@ -1,4 +1,5 @@
-# (c) 2014-2019 Paul Sokolovsky. MIT license.
+# (c) 2014-2020 Paul Sokolovsky. MIT license.
+from micropython import const
 import uerrno
 import uselect as select
 import usocket as _socket
@@ -88,13 +89,14 @@ class PollEventLoop(EventLoop):
                 self.call_soon(cb)
 
 
-class StreamReader:
+class Stream:
 
-    def __init__(self, polls, ios=None):
+    def __init__(self, polls, ios=None, extra=None):
         if ios is None:
             ios = polls
         self.polls = polls
         self.ios = ios
+        self.extra = extra
 
     def read(self, n=-1):
         while True:
@@ -150,24 +152,6 @@ class StreamReader:
             log.debug("StreamReader.readline(): %s", buf)
         return buf
 
-    def aclose(self):
-        yield IOReadDone(self.polls)
-        self.ios.close()
-        self.polls.close()
-
-    def __repr__(self):
-        return "<StreamReader %r %r>" % (self.polls, self.ios)
-
-
-class StreamWriter:
-
-    def __init__(self, polls, ios=None, extra=None):
-        if ios is None:
-            ios = polls
-        self.polls = polls
-        self.ios = ios
-        self.extra = extra
-
     def awrite(self, buf, off=0, sz=-1):
         # This method is called awrite (async write) to not proliferate
         # incompatibility with original asyncio. Unlike original asyncio
@@ -216,7 +200,10 @@ class StreamWriter:
         return self.extra.get(name, default)
 
     def __repr__(self):
-        return "<StreamWriter %r %r>" % (self.polls, self.ios)
+        return "<Stream %r %r>" % (self.polls, self.ios)
+
+
+StreamReader = StreamWriter = const(Stream)
 
 
 def open_connection(host, port, ssl=False):
