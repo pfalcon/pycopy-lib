@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = package
-version = 3.5
+version = 3.6
 author = Paul Sokolovsky
 desc = Lightweight asyncio-like library for Pycopy, built around native Python coroutines.
 long_desc = README.rst
