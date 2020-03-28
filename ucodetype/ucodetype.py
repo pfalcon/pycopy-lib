@@ -94,6 +94,7 @@ class CodeType:
         buf = bytearray(uctypes.sizeof(mp_raw_code_t_layout))
         rc = uctypes.struct(uctypes.addressof(buf), mp_raw_code_t_layout)
         rc.kind = 2  # MP_CODE_BYTECODE
+        rc.scope_flags = codeobj.co_flags
         rc.fun_data = uctypes.addressof(codeobj.get_code())
         rc.const_table = uctypes.addressof(codeobj.get_const_table())
         return rc
