@@ -211,7 +211,8 @@ class MPYInput:
         co.mpy_argnames = tuple([self.read_qstr() for _ in range(num_args)])
         co.mpy_consts = tuple([self.read_obj() for _ in range(n_obj)])
 
-        log.info("Recursively reading %d code object(s)", n_raw_code)
+        if n_raw_code:
+            log.info("Recursively reading %d code object(s)", n_raw_code)
         co.mpy_codeobjs = tuple([self.read_raw_code() for _ in range(n_raw_code)])
         co.co_consts = co.mpy_argnames + co.mpy_consts + co.mpy_codeobjs
         co.co_varnames = co.mpy_argnames
