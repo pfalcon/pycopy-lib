@@ -17,9 +17,9 @@ class WSWriter:
         # Reader is passed for symmetry with WSReader() and ignored.
         self.s = writer
 
-    async def awrite(self, data):
+    async def awrite(self, data, binary=False):
         assert len(data) < 126
-        await self.s.awrite(b"\x81")
+        await self.s.awrite(b"\x82" if binary else b"\x81")
         await self.s.awrite(bytes([len(data)]))
         await self.s.awrite(data)
 
