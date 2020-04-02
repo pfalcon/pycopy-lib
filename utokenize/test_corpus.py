@@ -25,7 +25,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "--make-expected":
 
 errors = False
 
-for f in glob.glob("testdata/*.py"):
+for f in sorted(glob.glob("testdata/*.py")):
     e = handle_one(f)
     errors = errors or not e
 
