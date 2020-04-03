@@ -2,6 +2,7 @@
 # This module is part of the Pycopy project, https://github.com/pfalcon/pycopy
 from token import *
 from ucollections import namedtuple
+import uio
 
 
 COMMENT = N_TOKENS + 0
@@ -28,9 +29,11 @@ def get_indent(l):
 
 def get_str(l, readline):
     lineno = 0
+    s = uio.StringIO()
 
     if l.startswith('"""') or l.startswith("'''"):
-        s = sep = l[0:3]
+        sep = l[0:3]
+        s += sep
         l = l[3:]
         pos = 0
         while True:
@@ -46,9 +49,10 @@ def get_str(l, readline):
             assert l
             lineno += 1
         s += l[:i + 3]
-        return s, l[i + 3:], lineno
+        return s.getvalue(), l[i + 3:], lineno
 
-    s = sep = l[0]
+    sep = l[0]
+    s += sep
     l = l[1:]
     quoted = False
     while l:
@@ -66,7 +70,7 @@ def get_str(l, readline):
             quoted = True
         elif c == sep:
             break
-    return s, l, lineno
+    return s.getvalue(), l, lineno
 
 
 def tokenize(readline):
