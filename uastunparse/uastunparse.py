@@ -52,5 +52,14 @@ class ASTUnparse(ast.NodeVisitor):
     def visit_Name(self, node):
         self.f.write(node.id)
 
+    def visit_Str(self, node):
+        self.f.write(repr(node.s))
+
+    def visit_Bytes(self, node):
+        self.f.write(str(node.s))
+
     def visit_Num(self, node):
         self.f.write(str(node.n))
+
+    def visit_NameConstant(self, node):
+        self.f.write(str(node.value))
