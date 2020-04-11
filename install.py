@@ -49,6 +49,8 @@ def should_install_1(f):
 
 # Second check for installability
 def should_install_2(f):
+    if os.path.islink(f):
+        return False
     if "/example" in f:
         return False
     if "/test_" in f:
