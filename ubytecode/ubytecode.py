@@ -6,7 +6,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2019 Paul Sokolovsky
+# Copyright (c) 2019-2020 Paul Sokolovsky
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -86,13 +86,12 @@ class Bytecode:
         elif opcode == opmap["LOAD_CONST_OBJ"]:
             MPYOutput.write_uint(None, len(self.mpy_consts), self.buf)
             self.mpy_consts.append(arg)
-        elif opcode in (opmap["MAKE_FUNCTION"], opmap["MAKE_FUNCTION_DEFARGS"]):
+        elif opcode in (opmap["MAKE_FUNCTION"], opmap["MAKE_FUNCTION_DEFARGS"],
+                        opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
             MPYOutput.write_uint(None, len(self.mpy_consts), self.buf)
             self.mpy_consts.append(arg)
-        elif opcode in (opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
-            MPYOutput.write_uint(None, len(self.mpy_consts), self.buf)
-            self.mpy_consts.append(arg)
-            self.buf.writebin("B", args[1])
+            if opcode in (opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
+                self.buf.writebin("B", args[1])
         elif opcode == opmap["RAISE_VARARGS"]:
             self.buf.writebin("B", arg)
         elif fl == upyopcodes.MP_OPCODE_OFFSET:
