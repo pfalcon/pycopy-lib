@@ -44,6 +44,11 @@ Specific differences:
   instead. Also, both StreamReader and StreamWriter have .aclose()
   coroutine method.
 
+Documentation
+-------------
+
+https://pycopy.readthedocs.io/en/latest/library/uasyncio.html
+
 Advanced topics
 ---------------
 
