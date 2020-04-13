@@ -54,10 +54,12 @@ def get_opcode_ns():
 
 class Bytecode:
 
-    def __init__(self):
+    def __init__(self, codeobjs_off=-1):
         self.buf = uio.BytesIO()
         self.co_names = []
         self.mpy_consts = []
+        self.mpy_codeobjs = []
+        self.codeobj_off = codeobjs_off
         self.labels = []
         self.stk_ptr = 0
         self.stk_use = 0
@@ -88,8 +90,12 @@ class Bytecode:
             self.mpy_consts.append(arg)
         elif opcode in (opmap["MAKE_FUNCTION"], opmap["MAKE_FUNCTION_DEFARGS"],
                         opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
-            MPYOutput.write_uint(None, len(self.mpy_consts), self.buf)
-            self.mpy_consts.append(arg)
+            if self.codeobj_off >= 0:
+                MPYOutput.write_uint(None, len(self.mpy_codeobjs) + self.codeobj_off, self.buf)
+                self.mpy_codeobjs.append(arg)
+            else:
+                MPYOutput.write_uint(None, len(self.mpy_consts), self.buf)
+                self.mpy_consts.append(arg)
             if opcode in (opmap["MAKE_CLOSURE"], opmap["MAKE_CLOSURE_DEFARGS"]):
                 self.buf.writebin("B", args[1])
         elif opcode == opmap["RAISE_VARARGS"]:
@@ -116,6 +122,12 @@ class Bytecode:
             self.exc_stk_ptr -= 1
 
     def add_const(self, c):
+        if self.codeobj_off >= 0:
+            # add_const() is expected to be used to add function arg names, which
+            # should happen before processing scope body (in particular, before
+            # adding enclosed scopes (codeobjs)).
+            assert not self.mpy_codeobjs
+            self.codeobj_off += 1
         self.mpy_consts.append(c)
 
     def set_flag(self, fl):
@@ -157,6 +169,9 @@ class Bytecode:
             self.add(opcode, no)
 
     def get_bc(self):
+        if self.codeobj_off >= 0:
+            assert len(self.mpy_consts) == self.codeobj_off, "consts: %d vs codeobj_off: %d" % (len(self.mpy_consts), self.codeobj_off)
+
         lab_id = 0
         for labl in self.labels:
             lab_pos = labl[0]
@@ -178,7 +193,7 @@ class Bytecode:
         co = CodeType()
         co.co_code = self.get_bc()
         co.co_names = self.co_names
-        co.co_consts = self.mpy_consts
+        co.co_consts = self.mpy_consts + self.mpy_codeobjs
         co.mpy_consts = self.mpy_consts
         co.co_stacksize = co.mpy_stacksize = self.stk_use
         co.mpy_excstacksize = self.exc_stk_use
