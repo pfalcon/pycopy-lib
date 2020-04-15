@@ -782,13 +782,21 @@ class Parser:
         if not res:
             return None
 
+        ann = None
+        if self.match(":"):
+            ann = self.match_expr()
+
         if self.check("="):
             targets = []
             while self.match("="):
                 self.set_ctx(res, ast.Store())
                 targets.append(res)
                 res = self.match_expr()
-            return ast.Assign(targets=targets, value=res)
+            if ann is None:
+                return ast.Assign(targets=targets, value=res)
+            else:
+                assert len(targets) == 1
+                return ast.AnnAssign(target=targets[0], annotation=ann, value=res, simple=1)
 
         elif self.check(OP) and self.tok.string.endswith("="):
             self.set_ctx(res, ast.Store())
@@ -802,7 +810,11 @@ class Parser:
             val = self.match_expr()
             return ast.AugAssign(target=res, op=op_type(), value=val)
 
-        return ast.Expr(value=res)
+        if ann is None:
+            return ast.Expr(value=res)
+        else:
+            self.set_ctx(res, ast.Store())
+            return ast.AnnAssign(target=res, annotation=ann, value=None, simple=1)
 
     def match_compound_stmt(self):
         if self.match("@"):
