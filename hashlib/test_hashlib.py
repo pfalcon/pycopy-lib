@@ -23,4 +23,7 @@ patterns = [
 ]
 
 for algo, input, output in patterns:
-    assert hashlib.new(algo, input).digest() == output
+    hsh = hashlib.new(algo, input)
+    assert hsh.digest() == output
+    assert hsh.digest_size > 0
+    assert hsh.block_size > 0
