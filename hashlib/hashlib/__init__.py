@@ -15,7 +15,14 @@ class _hd_mixin:
 
 def init():
     edict = {}
-    for i in ("md5", "sha1", "sha224", "sha256", "sha384", "sha512"):
+    for i, props in {
+        "md5": {"digest_size": 16, "block_size": 64},
+        "sha1": {"digest_size": 20, "block_size": 64},
+        "sha224": edict,
+        "sha256": {"digest_size": 32, "block_size": 64},
+        "sha384": edict,
+        "sha512": edict
+    }.items():
         c = getattr(uhashlib, i, None)
         if not c:
             try:
@@ -24,7 +31,7 @@ def init():
                 continue
             c = getattr(c, i)
         else:
-            c = type(i, (c, _hd_mixin), edict)
+            c = type(i, (c, _hd_mixin), props)
         globals()[i] = c
 
 init()
