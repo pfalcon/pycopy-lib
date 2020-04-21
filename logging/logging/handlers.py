@@ -52,7 +52,10 @@ class RotatingFileHandler(Handler):
                     except OSError:
                         pass
 
-            os.rename(self.filename, self.filename + ".1")
+            try:
+                os.rename(self.filename, self.filename + ".1")
+            except OSError:
+                pass
             self._counter = 0
 
         with open(self.filename, "a") as f:
