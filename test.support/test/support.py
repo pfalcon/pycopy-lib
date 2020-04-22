@@ -21,6 +21,8 @@ def run_unittest(*classes):
             suite.addTest(c)
     runner = unittest.TestRunner()
     result = runner.run(suite)
+    if not result.wasSuccessful():
+        sys.exit(1)
 
 def can_symlink():
     return False
