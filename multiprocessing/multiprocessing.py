@@ -37,7 +37,7 @@ class Connection:
 
     def __init__(self, fd):
         self.fd = fd
-        self.f = open(fd)
+        self.f = open(fd, "r+b")
 
     def __repr__(self):
         return "<Connection %s>" % self.f
