@@ -29,9 +29,6 @@ class XMLTokenizer:
 
     def nextch(self):
         self.c = self.f.read(1)
-        if not self.c:
-            raise StopIteration
-        return self.c
 
     def skip_ws(self):
         while self.curch().isspace():
@@ -112,7 +109,7 @@ class XMLTokenizer:
                     self.expect(">")
             else:
                 text = ""
-                while self.curch() != "<":
+                while self.c and self.c != "<":
                     text += self.getch()
                 if text:
                     yield (TEXT, text)
