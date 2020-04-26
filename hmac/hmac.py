@@ -85,6 +85,7 @@ class HMAC:
         key = key + bytes(blocksize - len(key))
         self.outer.update(translate(key, trans_5C))
         self.inner.update(translate(key, trans_36))
+        self.finalized = False
         if msg is not None:
             self.update(msg)
 
@@ -95,6 +96,8 @@ class HMAC:
     def update(self, msg):
         """Update this hashing object with the string msg.
         """
+        if self.finalized:
+            raise ValueError("Cannot call .update() after .digest()")
         self.inner.update(msg)
 
     def copy(self):
@@ -115,7 +118,8 @@ class HMAC:
 
         To be used only internally with digest() and hexdigest().
         """
-        h = self.outer.copy()
+        self.finalized = True
+        h = self.outer #.copy()
         h.update(self.inner.digest())
         return h
 
