@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = module
-version = 0.2.3
+version = 0.2.4
 author = Paul Sokolovsky
 long_desc = Simple XML tokenizer. See also pycopy-xmltok2.
