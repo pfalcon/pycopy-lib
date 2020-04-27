@@ -1,6 +1,6 @@
 import hmac
-from hashlib.sha256 import sha256
-from hashlib.sha512 import sha512
+from hashlib import sha256
+from hashlib import sha512
 
 msg = b'zlutoucky kun upel dabelske ody'
 
