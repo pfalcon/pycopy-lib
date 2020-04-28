@@ -365,6 +365,7 @@ class SymbolTableBuilder(ast.NodeVisitor):
 
     def __init__(self):
         self.symtab_map = {}
+        self.symtab_list = []
         self.symtab_stack = []
         # Current symtab
         self.symtab = None
@@ -372,6 +373,7 @@ class SymbolTableBuilder(ast.NodeVisitor):
     def new_scope(self, node, type):
         scope = SymbolTable(node, self.symtab, type)
         self.symtab_map[node] = scope
+        self.symtab_list.append(scope)
         self.symtab_stack.append(scope)
         self.symtab = scope
 
