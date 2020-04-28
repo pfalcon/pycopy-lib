@@ -1,3 +1,4 @@
+# Runs both in Pycopy and CPython.
 try:
     import uasyncio.core as asyncio
 except ImportError:
@@ -15,32 +16,36 @@ def looper(iters):
 
 
 def run_to():
+    # Should time out
     try:
         ret = yield from asyncio.wait_for(looper(2), 1)
-        print("result:", ret)
+        print("result #1:", ret)
         assert False
     except asyncio.TimeoutError:
-        print("Coro timed out")
+        print("Coro #1 timed out")
 
     print("=================")
 
+    # The expected run time of coro == timeout, should still time out
     try:
         ret = yield from asyncio.wait_for(looper(2), 2)
-        print("result:", ret)
+        print("result #2:", ret)
         assert False
     except asyncio.TimeoutError:
-        print("Coro timed out")
+        print("Coro #2 timed out")
 
     print("=================")
 
+    # Should not time out
     try:
         ret = yield from asyncio.wait_for(looper(2), 3)
-        print("result:", ret)
+        print("result #3:", ret)
     except asyncio.TimeoutError:
-        print("Coro timed out")
+        print("Coro #3 timed out")
         assert False
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(run_to())
+# Catch any coros which may still run (due to bugs)
 loop.run_until_complete(asyncio.sleep(1))
