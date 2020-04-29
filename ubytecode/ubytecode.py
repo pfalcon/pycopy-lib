@@ -32,7 +32,7 @@ import ulogging
 from opcode import opmap
 from opcode import upyopcodes
 from opcode import stack_effect
-from ucodetype import CodeType
+from ucodetype import CodeType, str2qstr
 from mpylib import MPYWriter
 
 
@@ -106,7 +106,7 @@ class Bytecode:
             if self.only_for_mpy:
                 self.buf.writebin("<H", 0)
             else:
-                self.buf.writebin("<H", id(sys.intern(arg)) >> 2)
+                self.buf.writebin("<H", str2qstr(arg))
             # cache
             if opcode in upyopcodes.hascache:
                 self.buf.writebin("B", 0)
