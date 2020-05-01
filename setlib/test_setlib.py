@@ -18,3 +18,5 @@ assert s1 == {1, 2, 3, 4}
 
 res = setlib.intersection(set('abc'), 'cbs')
 assert res == {'b', 'c'}
+
+assert res.update([1, 2]) is None
