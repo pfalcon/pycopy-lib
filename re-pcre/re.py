@@ -187,11 +187,12 @@ class PCREPattern:
                     res.append(s)
                     return res
 
-    def findall(self, s):
+    def findall(self, s, pos=0, endpos=-1):
+        if endpos != -1:
+            s = s[:endpos]
         res = []
-        start = 0
         while True:
-            m = self.search(s, start)
+            m = self.search(s, pos)
             if not m:
                 return res
             if m.num == 1:
@@ -201,10 +202,10 @@ class PCREPattern:
             else:
                 res.append(m.groups())
             beg, end = m.span(0)
-            start = end
+            pos = end
             if beg == end:
                 # Have progress on empty matches
-                start += 1
+                pos += 1
 
     def finditer(self, s, pos=0, endpos=-1):
         if endpos != -1:
