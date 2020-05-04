@@ -11,7 +11,7 @@ import unittest
 import io
 import sys
 import inspect
-import parser
+#import parser
 
 from test.support import captured_stderr, disable_gc, gc_collect
 
@@ -288,7 +288,8 @@ class TestPEP380Operation(unittest.TestCase):
             g.close()
         except ValueError as e:
             self.assertEqual(e.args[0], "nybbles have exploded with delight")
-            self.assertIsInstance(e.__context__, GeneratorExit)
+# Pycopy doesn't support nested exceptions
+#            self.assertIsInstance(e.__context__, GeneratorExit)
         else:
             self.fail("subgenerator failed to raise ValueError")
         self.assertEqual(trace,[
@@ -352,15 +353,16 @@ class TestPEP380Operation(unittest.TestCase):
         pex(e)
         e = StopIteration("spam")
         pex(e)
-        e.value = "eggs"
-        pex(e)
+# Pycopy doesn't support assignment to .value
+#        e.value = "eggs"
+#        pex(e)
         self.assertEqual(trace,[
             "StopIteration: ",
             "value = None",
             "StopIteration: spam",
             "value = spam",
-            "StopIteration: spam",
-            "value = eggs",
+#            "StopIteration: spam",
+#            "value = eggs",
         ])
 
 
@@ -554,11 +556,13 @@ class TestPEP380Operation(unittest.TestCase):
             self.assertEqual(next(gi), 1)
             gi.throw(AttributeError)
 
-        with captured_stderr() as output:
-            gi = g()
-            self.assertEqual(next(gi), 1)
-            gi.close()
-        self.assertIn('ZeroDivisionError', output.getvalue())
+# In Pycopy, exceptions in .close() are not ignored/printed to sys.stderr,
+# but propagated as usual.
+#        with captured_stderr() as output:
+#            gi = g()
+#            self.assertEqual(next(gi), 1)
+#            gi.close()
+#        self.assertIn('ZeroDivisionError', output.getvalue())
 
     def test_exception_in_initial_next_call(self):
         """
@@ -801,7 +805,9 @@ class TestPEP380Operation(unittest.TestCase):
         try:
             gi = g()
             next(gi)
-            gi.throw(GeneratorExit)
+# In Pycopy, don't throw GeneratorExit, call .close() instead
+#            gi.throw(GeneratorExit)
+            gi.close()
         except RuntimeError as e:
             self.assertEqual(e.args[0], "generator ignored GeneratorExit")
         else:
@@ -834,7 +840,7 @@ class TestPEP380Operation(unittest.TestCase):
             gi.throw(GeneratorExit)
         except ValueError as e:
             self.assertEqual(e.args[0], "Vorpal bunny encountered")
-            self.assertIsInstance(e.__context__, GeneratorExit)
+#            self.assertIsInstance(e.__context__, GeneratorExit)
         else:
             self.fail("subgenerator failed to raise ValueError")
         self.assertEqual(trace,[
@@ -911,7 +917,8 @@ class TestPEP380Operation(unittest.TestCase):
             def __next__(self):
                 return 42
             def close(self_):
-                self.assertTrue(g1.gi_running)
+# Pycopy doesn't have .gi_running
+#                self.assertTrue(g1.gi_running)
                 self.assertRaises(ValueError, next, g1)
         def one():
             yield from MyIt()
@@ -919,6 +926,7 @@ class TestPEP380Operation(unittest.TestCase):
         next(g1)
         g1.close()
 
+    @unittest.skip("Pycopy doesn't support inspect.stack()")
     def test_delegator_is_visible_to_debugger(self):
         def call_stack():
             return [f[3] for f in inspect.stack()]
