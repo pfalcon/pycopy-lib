@@ -147,23 +147,30 @@ class PCREPattern:
 
     def sub(self, repl, s, count=0):
         res = ""
-        while s:
-            m = self.search(s)
+        pos = 0
+        while True:
+            m = self.search(s, pos)
             if not m:
-                return res + s
+                return res + s[pos:]
             beg, end = m.span()
-            res += s[:beg]
+            res += s[pos:beg]
             if callable(repl):
                 res += repl(m)
             elif "\\" in repl:
                 res += self._handle_repl_escapes(repl, m)
             else:
                 res += repl
-            s = s[end:]
+
+            pos = end
+            if beg == end:
+                # Have progress on empty matches
+                res += s[pos]
+                pos += 1
+
             if count != 0:
                 count -= 1
                 if count == 0:
-                    return res + s
+                    return res + s[pos:]
         return res
 
     def split(self, s, maxsplit=0):
