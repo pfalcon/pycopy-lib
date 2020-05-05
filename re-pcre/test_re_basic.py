@@ -46,6 +46,10 @@ assert re.findall(r"(\w+)(ly)", text) == [('careful', 'ly'), ('quick', 'ly')]
 text = "He was carefully disguised but captured quickly by police."
 assert re.findall(r"(\w+)ly", text) == ['careful', 'quick']
 
+r = re.compile(r"\w+ly")
+text = "carefully disguised but captured quickly by police."
+assert r.findall(text, 1) == ['arefully', 'quickly']
+
 _leading_whitespace_re = re.compile('(^[ \t]*)(?:[^ \t\n])', re.MULTILINE)
 text = "\tfoo\n\tbar"
 indents = _leading_whitespace_re.findall(text)
