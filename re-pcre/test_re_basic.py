@@ -21,6 +21,9 @@ m = re.match(r"(\d+)\.(\d+)", "24.1632")
 assert m.groups() == ('24', '1632')
 assert m.group(2, 1) == ('1632', '24')
 
+m = re.match("(b)|(:+)", ":a")
+assert m.groups() == (None, ":")
+
 # sub
 
 assert re.sub("a", "z", "caaab") == "czzzb"
@@ -48,6 +51,7 @@ assert re.split('(\W+)', 'Words, words, words.') == ['Words', ', ', 'words', ', 
 assert re.split('\W+', 'Words, words, words.', 1) == ['Words', 'words, words.']
 assert re.split('[a-f]+', '0a3B9', flags=re.IGNORECASE) == ['0', '3', '9']
 assert re.split('(\W+)', '...words, words...') == ['', '...', 'words', ', ', 'words', '...', '']
+assert re.split("(b)|(:+)", ":abc") == ['', None, ':', 'a', 'b', None, 'c']
 
 # findall
 
