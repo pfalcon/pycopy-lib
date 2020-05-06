@@ -84,7 +84,10 @@ class PCREMatch:
             if i < 0:
                 raise IndexError("no such group: %s" % n)
         i <<= 1
-        s = self.s[self.offsets[i]:self.offsets[i + 1]]
+        beg = self.offsets[i]
+        if beg == -1:
+            return None
+        s = self.s[beg:self.offsets[i + 1]]
         if self.is_str:
             s = s.decode()
         return s
