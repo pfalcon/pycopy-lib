@@ -31,6 +31,14 @@ assert re.sub("a", "z", "caaab", 10) == "czzzb"
 assert re.sub(r"[ :/?&]", "_", "http://foo.ua/bar/?a=1&b=baz/") == "http___foo.ua_bar__a=1_b=baz_"
 assert re.sub("a", lambda m: m.group(0) * 2, "caaab") == "caaaaaab"
 
+# zero-length matches
+assert re.sub('(?m)^(?!$)', '--', 'foo') == '--foo'
+assert re.sub('(?m)^(?!$)', '--', 'foo\n') == '--foo\n'
+assert re.sub('(?m)^(?!$)', '--', 'foo\na') == '--foo\n--a'
+assert re.sub('(?m)^(?!$)', '--', 'foo\n\na') == '--foo\n\n--a'
+assert re.sub('(?m)^(?!$)', '--', 'foo\n\na', 1) == '--foo\n\na'
+assert re.sub('(?m)^(?!$)', '--', 'foo\n  \na', 2) == '--foo\n--  \na'
+
 # split
 
 assert re.split('x*', 'foo') == ['foo']
