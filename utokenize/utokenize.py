@@ -51,26 +51,24 @@ def get_str(l, readline):
         s += l[:i + 3]
         return s.getvalue(), l[i + 3:], lineno
 
-    sep = l[0]
+    lbuf = uio.StringIO(l)
+    sep = lbuf.read(1)
     s += sep
-    l = l[1:]
-    quoted = False
-    while l:
-        c = l[0]
-        l = l[1:]
+    while True:
+        c = lbuf.read(1)
+        if not c:
+            break
         s += c
-        if quoted:
-            quoted = False
-        elif c == "\\":
-            if l == "\n":
-                s += "\n"
-                l = readline()
+        if c == "\\":
+            c = lbuf.read(1)
+            s += c
+            if c == "\n":
+                lbuf = uio.StringIO(readline())
                 lineno += 1
                 continue
-            quoted = True
         elif c == sep:
             break
-    return s.getvalue(), l, lineno
+    return s.getvalue(), lbuf.read(), lineno
 
 
 def tokenize(readline):
