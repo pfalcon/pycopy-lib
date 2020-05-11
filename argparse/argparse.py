@@ -123,7 +123,7 @@ class ArgumentParser:
 
     def usage(self, full):
         # print short usage
-        print("usage: %s [-h]" % self.prog or sys.argv[0], end="")
+        print("usage: %s [-h]" % (self.prog or sys.argv[0]), end="")
 
         def render_arg(arg):
             if arg.action == "store":
