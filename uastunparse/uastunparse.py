@@ -49,6 +49,9 @@ class ASTUnparse(ast.NodeVisitor):
         self.visit(node.value)
         self.f.write("\n")
 
+    def visit_Pass(self, node):
+        self.with_indent("pass\n")
+
     def visit_Name(self, node):
         self.f.write(node.id)
 
