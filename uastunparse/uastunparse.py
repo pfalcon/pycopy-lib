@@ -3,6 +3,13 @@ import ast
 
 class ASTUnparse(ast.NodeVisitor):
 
+    unop_map = {
+        ast.UAdd: "+",
+        ast.USub: "-",
+        ast.Invert: "~",
+        ast.Not: "not",
+    }
+
     def __init__(self, f):
         self.f = f
         self.level = 0
@@ -76,6 +83,13 @@ class ASTUnparse(ast.NodeVisitor):
     def visit_Pass(self, node):
         self.with_indent("pass")
         self.nl()
+
+    def visit_UnaryOp(self, node):
+        op = self.__class__.unop_map[type(node.op)]
+        self.f.write(op)
+        if op[0].isalpha():
+            self.f.write(" ")
+        self.visit(node.operand)
 
     def visit_Name(self, node):
         self.f.write(node.id)
