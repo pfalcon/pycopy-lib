@@ -149,12 +149,17 @@ class PCREPattern:
         return sub(r"\\(\d+|g<\d+>)", handle_backrefs, repl)
 
     def sub(self, repl, s, count=0):
-        res = ""
+        is_str = isinstance(s, str)
+        if is_str:
+            s = s.encode()
+
+        res = b""
         pos = 0
         while True:
             m = self.search(s, pos)
             if not m:
-                return res + s[pos:]
+                res += s[pos:]
+                break
             beg, end = m.span()
             res += s[pos:beg]
             if callable(repl):
@@ -167,13 +172,17 @@ class PCREPattern:
             pos = end
             if beg == end:
                 # Have progress on empty matches
-                res += s[pos]
+                res += s[pos:pos + 1]
                 pos += 1
 
             if count != 0:
                 count -= 1
                 if count == 0:
-                    return res + s[pos:]
+                    res += s[pos:]
+                    break
+
+        if is_str:
+            res = res.decode()
         return res
 
     def split(self, s, maxsplit=0):
