@@ -186,6 +186,10 @@ class PCREPattern:
         return res
 
     def split(self, s, maxsplit=0):
+        is_str = isinstance(s, str)
+        if is_str:
+            s = s.encode()
+
         res = []
         while True:
             m = self.search(s)
@@ -194,7 +198,7 @@ class PCREPattern:
                 g = m.group(0)
             if not m or not g:
                 res.append(s)
-                return res
+                break
             beg, end = m.span(0)
             res.append(s[:beg])
             if m.num > 1:
@@ -204,7 +208,14 @@ class PCREPattern:
                 maxsplit -= 1
                 if maxsplit == 0:
                     res.append(s)
-                    return res
+                    break
+
+        if is_str:
+            for x in res:
+                if x is not None:
+                    x.__class__ = str
+
+        return res
 
     def findall(self, s, pos=0, endpos=-1):
         if endpos != -1:
