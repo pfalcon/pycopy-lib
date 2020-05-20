@@ -220,22 +220,39 @@ class PCREPattern:
     def findall(self, s, pos=0, endpos=-1):
         if endpos != -1:
             s = s[:endpos]
+
+        is_str = isinstance(s, str)
+        if is_str:
+            s = s.encode()
+
         res = []
         while True:
             m = self.search(s, pos)
             if not m:
-                return res
+                break
             if m.num == 1:
                 res.append(m.group(0))
             elif m.num == 2:
                 res.append(m.group(1))
             else:
-                res.append(m.groups())
+                # Will be modified inplace, so must be copy of literal
+                x = b""[:]
+                res.append(m.groups(x))
             beg, end = m.span(0)
             pos = end
             if beg == end:
                 # Have progress on empty matches
                 pos += 1
+
+        if is_str:
+            for x in res:
+                if isinstance(x, tuple):
+                    for x1 in x:
+                        x1.__class__ = str
+                else:
+                    x.__class__ = str
+
+        return res
 
     def finditer(self, s, pos=0, endpos=-1):
         if endpos != -1:
