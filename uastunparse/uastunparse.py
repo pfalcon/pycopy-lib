@@ -84,6 +84,24 @@ class ASTUnparse(ast.NodeVisitor):
         self.with_indent("pass")
         self.nl()
 
+    def visit_Call(self, node):
+        self.visit(node.func)
+        self.f.write("(")
+        need_comma = False
+        for a in node.args:
+            if need_comma:
+                self.f.write(", ")
+            self.visit(a)
+            need_comma = True
+        for kw in node.keywords:
+            if need_comma:
+                self.f.write(", ")
+            self.f.write(kw.arg)
+            self.f.write("=")
+            self.visit(kw.value)
+            need_comma = True
+        self.f.write(")")
+
     def visit_UnaryOp(self, node):
         op = self.__class__.unop_map[type(node.op)]
         self.f.write(op)
