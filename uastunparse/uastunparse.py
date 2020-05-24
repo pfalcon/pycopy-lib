@@ -99,6 +99,24 @@ class ASTUnparse(ast.NodeVisitor):
             self.f.write(" ")
         self.visit(node.operand)
 
+    def _visit_seq(self, node, start, end):
+        self.f.write(start)
+        need_comma = False
+        for v in node.elts:
+            if need_comma:
+                self.f.write(", ")
+            self.visit(v)
+            need_comma = True
+        if isinstance(node, ast.Tuple) and len(node.elts) == 1:
+            self.f.write(",")
+        self.f.write(end)
+
+    def visit_List(self, node):
+        self._visit_seq(node, "[", "]")
+
+    def visit_Tuple(self, node):
+        self._visit_seq(node, "(", ")")
+
     def visit_Name(self, node):
         self.f.write(node.id)
 
