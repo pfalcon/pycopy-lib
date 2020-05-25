@@ -99,6 +99,18 @@ class ASTUnparse(ast.NodeVisitor):
             self.f.write(" ")
         self.visit(node.operand)
 
+    def visit_Dict(self, node):
+        self.f.write("{")
+        need_comma = False
+        for i in range(len(node.keys)):
+            if need_comma:
+                self.f.write(", ")
+            self.visit(node.keys[i])
+            self.f.write(": ")
+            self.visit(node.values[i])
+            need_comma = True
+        self.f.write("}")
+
     def _visit_seq(self, node, start, end):
         self.f.write(start)
         need_comma = False
