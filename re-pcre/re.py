@@ -77,7 +77,7 @@ class PCREMatch:
         self.num = num_matches
         self.offsets = offsets
 
-    def substr(self, i):
+    def substr(self, i, default=None):
         if isinstance(i, str):
             n = i
             i = pcre_get_stringnumber(self.patobj, n)
@@ -86,7 +86,7 @@ class PCREMatch:
         i <<= 1
         beg = self.offsets[i]
         if beg == -1:
-            return None
+            return default
         s = self.s[beg:self.offsets[i + 1]]
         if self.is_str:
             s = s.decode()
@@ -100,8 +100,7 @@ class PCREMatch:
         return tuple(self.substr(i) for i in n)
 
     def groups(self, default=None):
-        assert default is None
-        return tuple(self.group(i + 1) for i in range(self.num - 1))
+        return tuple(self.substr(i + 1, default) for i in range(self.num - 1))
 
     def start(self, n=0):
         return self.offsets[n*2]
