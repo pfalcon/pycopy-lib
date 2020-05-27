@@ -6,7 +6,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2014-2019 Paul Sokolovsky
+# Copyright (c) 2014-2020 Paul Sokolovsky
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from pycopy import const
 import sys
 import ffilib
 import uarray as array
@@ -63,6 +64,11 @@ UNICODE = U = 0x800
 
 PCRE_INFO_CAPTURECOUNT = 2
 
+_UNESCAPE_DICT = const({
+    b"\\": b"\\", b"n": b"\n", b"r": b"\r", b"t": b"\t",
+    b"v": b"\v", b"f": b"\f", b"a": b"\a", b"b": b"\b"
+})
+
 
 class error(Exception):
     pass
@@ -77,8 +83,11 @@ class PCREMatch:
         self.num = num_matches
         self.offsets = offsets
 
+    def _has_group(self, i):
+        return i < len(self.offsets) >> 1
+
     def substr(self, i, default=None):
-        if isinstance(i, str):
+        if isinstance(i, (str, bytes)):
             n = i
             i = pcre_get_stringnumber(self.patobj, n)
             if i < 0:
@@ -139,13 +148,52 @@ class PCREPattern:
         return self.search(s, pos, endpos, PCRE_ANCHORED)
 
     def _handle_repl_escapes(self, repl, match):
-        def handle_backrefs(bk_match):
-            gr = bk_match.group(1)
-            if gr.startswith("g"):
-                gr = gr[2:-1]
-            gr = int(gr)
-            return match.group(gr)
-        return sub(r"\\(\d+|g<\d+>)", handle_backrefs, repl)
+
+        def handle_escape(esc_match):
+            gr = None
+            e = esc_match.group(1)
+            if e.startswith("0"):
+                # Octal escape
+                return chr(int(e, 8))
+            elif e.startswith("g"):
+                gr = e[2:-1]
+            elif e.isdigit():
+                is_oct = False
+                if e.startswith("0"):
+                    is_oct = True
+                elif len(e) >= 3:
+                    try:
+                        int(e[:3], 8)
+                        is_oct = True
+                    except:
+                        pass
+
+                if is_oct:
+                    rest = e[3:]
+                    e = e[:3]
+                    val = int(e, 8)
+                    if val > 0xff:
+                        raise error(r"octal escape value \%s outside of range 0-0o377" % e.decode(), None, 0)
+                    return chr(val).encode() + rest
+
+                rest = e[2:]
+                e = e[:2]
+                gr = int(e)
+                if match._has_group(gr):
+                    return (match.group(gr) or b"") + rest
+                else:
+                    raise error("invalid group reference")
+            else:
+                r = _UNESCAPE_DICT.get(e)
+                if r is None:
+                    return b"\\" + e
+                return r
+
+            if gr.isdigit():
+                gr = int(gr)
+            return match.group(gr) or b""
+
+        return sub(r"\\(0[0-7]*|\d+|g<.+?>|.)", handle_escape, repl)
 
     def sub(self, repl, s, count=0):
         is_str = isinstance(s, str)
