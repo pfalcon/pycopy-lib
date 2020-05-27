@@ -1,6 +1,6 @@
 pycopy-lib
 ==========
-pycopy-lib is a project to develop a non-monolothic standard library
+pycopy-lib is a project to develop a non-monolithic standard library
 for the Pycopy project (https://github.com/pfalcon/pycopy), while
 where possible, staying compatible with other variants and implementations
 of Python. The goals of the project are:
