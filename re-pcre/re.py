@@ -317,7 +317,16 @@ class PCREPattern:
                 pos += 1
 
 
+def _check_compiled_flags(flags):
+        if flags:
+            raise ValueError("cannot process flags argument with a compiled pattern")
+
+
 def compile(pattern, flags=0):
+    if isinstance(pattern, PCREPattern):
+        _check_compiled_flags(flags)
+        return pattern
+
     if flags & ASCII:
         flags &= ~ASCII
     else:
