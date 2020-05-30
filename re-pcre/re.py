@@ -342,13 +342,21 @@ def compile(pattern, flags=0):
 
 
 def search(pattern, string, flags=0):
-    r = compile(pattern, flags)
+    if isinstance(pattern, PCREPattern):
+        _check_compiled_flags(flags)
+        r = pattern
+    else:
+        r = compile(pattern, flags)
     return r.search(string)
 
 
 def match(pattern, string, flags=0):
-    r = compile(pattern, flags | PCRE_ANCHORED)
-    return r.search(string)
+    if isinstance(pattern, PCREPattern):
+        _check_compiled_flags(flags)
+        r = pattern
+    else:
+        r = compile(pattern, flags | PCRE_ANCHORED)
+    return r.match(string)
 
 
 def sub(pattern, repl, s, count=0, flags=0):
@@ -361,7 +369,11 @@ def split(pattern, s, maxsplit=0, flags=0):
     return r.split(s, maxsplit)
 
 def findall(pattern, s, flags=0):
-    r = compile(pattern, flags)
+    if isinstance(pattern, PCREPattern):
+        _check_compiled_flags(flags)
+        r = pattern
+    else:
+        r = compile(pattern, flags)
     return r.findall(s)
 
 def finditer(pattern, s, flags=0):
