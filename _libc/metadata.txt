@@ -1,7 +1,7 @@
 dist_name = libc
 srctype = pycopy-lib
 type = module
-version = 0.3.2
+version = 0.4
 author = Paul Sokolovsky
-desc = Pycopy FFI helper module (deprecated)
-long_desc = Pycopy FFI helper module (deprecated, replaced by pycopy-ffilib).
+desc = Helper module for libc FFI for Pycopy project (https://github.com/pfalcon/pycopy)
+long_desc = Helper module for libc FFI for Pycopy project (https://github.com/pfalcon/pycopy).
