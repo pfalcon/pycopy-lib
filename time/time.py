@@ -4,6 +4,7 @@ import ustruct
 import uctypes
 import ffi
 import ffilib
+import _libc
 
 libc = ffilib.libc()
 
@@ -62,6 +63,17 @@ def gmtime(t=None):
 
 def mktime(tt):
     return mktime_(_tuple_to_c_tm(tt))
+
+
+def ctime(t=None):
+    # Sun Jun 20 23:21:05 1993
+    ctime_ = libc.func("P", "ctime", "P")
+    if t is None:
+        t = time()
+    t = int(t)
+    ref = ustruct.pack('l', t)
+    p = ctime_(ref)
+    return uctypes.bytes_at(p, _libc.strlen(p) - 1).decode()
 
 
 def perf_counter():
