@@ -13,9 +13,16 @@ import logging
 output = []
 cancelled = False
 
+# Can be used to make test run faster/slower and/or avoid floating point
+# rounding errors.
+def delay(n):
+    return n / 10
+
+
 def print1(msg):
     print(msg)
     output.append(msg)
+
 
 def looper1(iters):
     global cancelled
@@ -25,7 +32,7 @@ def looper1(iters):
             # sleep() isn't properly cancellable
             #yield from asyncio.sleep(1.0)
             t = time.time()
-            while time.time() - t < 1:
+            while time.time() - t < delay(1):
                 yield from asyncio.sleep(0)
         return 10
     except asyncio.CancelledError:
@@ -38,7 +45,7 @@ def looper2(iters):
         # sleep() isn't properly cancellable
         #yield from asyncio.sleep(1.0)
         t = time.time()
-        while time.time() - t < 1:
+        while time.time() - t < delay(1):
             yield from asyncio.sleep(0)
     return 10
 
@@ -46,7 +53,7 @@ def looper2(iters):
 def run_to():
     coro = looper1(10)
     task = loop.create_task(coro)
-    yield from asyncio.sleep(3)
+    yield from asyncio.sleep(delay(3))
     if is_uasyncio:
         asyncio.cancel(coro)
     else:
@@ -58,7 +65,7 @@ def run_to():
 
     coro = looper2(10)
     task = loop.create_task(coro)
-    yield from asyncio.sleep(2)
+    yield from asyncio.sleep(delay(2))
     if is_uasyncio:
         asyncio.cancel(coro)
     else:
