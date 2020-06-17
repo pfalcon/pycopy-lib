@@ -1,3 +1,4 @@
+# Runs both in Pycopy and CPython.
 import time
 try:
     import uasyncio.core as asyncio
@@ -9,6 +10,8 @@ import logging
 #logging.basicConfig(level=logging.DEBUG)
 #asyncio.set_debug(True)
 
+
+BUSY_SLEEP = 0
 
 output = []
 cancelled = False
@@ -29,11 +32,12 @@ def looper1(iters):
     try:
         for i in range(iters):
             print1("ping1")
-            # sleep() isn't properly cancellable
-            #yield from asyncio.sleep(1.0)
-            t = time.time()
-            while time.time() - t < delay(1):
-                yield from asyncio.sleep(0)
+            if BUSY_SLEEP:
+                t = time.time()
+                while time.time() - t < delay(1):
+                    yield from asyncio.sleep(0)
+            else:
+                yield from asyncio.sleep(delay(1))
         return 10
     except asyncio.CancelledError:
         print1("cancelled")
@@ -42,11 +46,12 @@ def looper1(iters):
 def looper2(iters):
     for i in range(iters):
         print1("ping2")
-        # sleep() isn't properly cancellable
-        #yield from asyncio.sleep(1.0)
-        t = time.time()
-        while time.time() - t < delay(1):
-            yield from asyncio.sleep(0)
+        if BUSY_SLEEP:
+            t = time.time()
+            while time.time() - t < delay(1):
+                yield from asyncio.sleep(0)
+        else:
+            yield from asyncio.sleep(delay(1))
     return 10
 
 
