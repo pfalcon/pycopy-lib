@@ -8,17 +8,23 @@ import logging
 #asyncio.set_debug(True)
 
 
+# Can be used to make test run faster/slower and/or avoid floating point
+# rounding errors.
+def delay(n):
+    return n / 10
+
+
 def looper(iters):
     for i in range(iters):
         print("ping")
-        yield from asyncio.sleep(1)
+        yield from asyncio.sleep(delay(1))
     return 10
 
 
 def run_to():
     # Should time out
     try:
-        ret = yield from asyncio.wait_for(looper(2), 1)
+        ret = yield from asyncio.wait_for(looper(2), delay(1))
         print("result #1:", ret)
         assert False
     except asyncio.TimeoutError:
@@ -28,7 +34,7 @@ def run_to():
 
     # The expected run time of coro == timeout, should still time out
     try:
-        ret = yield from asyncio.wait_for(looper(2), 2)
+        ret = yield from asyncio.wait_for(looper(2), delay(2))
         print("result #2:", ret)
         assert False
     except asyncio.TimeoutError:
@@ -38,7 +44,7 @@ def run_to():
 
     # Should not time out
     try:
-        ret = yield from asyncio.wait_for(looper(2), 3)
+        ret = yield from asyncio.wait_for(looper(2), delay(3))
         print("result #3:", ret)
     except asyncio.TimeoutError:
         print("Coro #3 timed out")
@@ -48,4 +54,4 @@ def run_to():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(run_to())
 # Catch any coros which may still run (due to bugs)
-loop.run_until_complete(asyncio.sleep(1))
+loop.run_until_complete(asyncio.sleep(delay(1)))
