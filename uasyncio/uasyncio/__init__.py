@@ -226,8 +226,10 @@ def open_connection(host, port, ssl=False):
         log.debug("open_connection: After iowait: %s", s)
     s2 = s
     if ssl:
-        import ussl
-        s2 = ussl.wrap_socket(s, do_handshake=False)
+        if ssl is True:
+            import ussl
+            ssl = ussl.SSLContext()
+        s2 = ssl.wrap_socket(s, do_handshake=False)
         s2.setblocking(False)
     return StreamReader(s, s2), StreamWriter(s, s2)
 
