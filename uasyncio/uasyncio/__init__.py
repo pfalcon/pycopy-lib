@@ -255,8 +255,7 @@ def start_server(client_coro, host, port, backlog=10, ssl=None):
             s2, client_addr = s.accept()
             s3 = s2
             if ssl:
-                import ussl
-                s3 = ussl.wrap_socket(s2, server_side=True, do_handshake=False)
+                s3 = ssl.wrap_socket(s2, server_side=True, do_handshake=False)
             s3.setblocking(False)
             if DEBUG and __debug__:
                 log.debug("start_server: After accept: %s", s2)
