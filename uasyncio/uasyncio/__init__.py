@@ -206,7 +206,7 @@ class Stream:
 StreamReader = StreamWriter = const(Stream)
 
 
-def open_connection(host, port, ssl=False):
+def open_connection(host, port, ssl=False, server_hostname=None):
     if DEBUG and __debug__:
         log.debug("open_connection(%s, %s)", host, port)
     ai = _socket.getaddrinfo(host, port, 0, _socket.SOCK_STREAM)
@@ -229,7 +229,7 @@ def open_connection(host, port, ssl=False):
         if ssl is True:
             import ussl
             ssl = ussl.SSLContext()
-        s2 = ssl.wrap_socket(s, do_handshake=False)
+        s2 = ssl.wrap_socket(s, server_hostname=server_hostname, do_handshake=False)
         s2.setblocking(False)
     return StreamReader(s, s2), StreamWriter(s, s2)
 
