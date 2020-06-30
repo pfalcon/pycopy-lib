@@ -1,3 +1,4 @@
+# Pycopy-specific
 try:
     import uasyncio as asyncio
 except:
@@ -15,7 +16,7 @@ async def receiver():
     with open('test_io_starve.py', 'rb') as f:
         sreader = asyncio.StreamReader(f)
         while True:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
             res = await sreader.readline()
             # Didn't get there with the original problem this test shows
             done = True
@@ -23,7 +24,7 @@ async def receiver():
 
 async def foo():
     start = time.time()
-    while time.time() - start < 1:
+    while time.time() - start < 0.3:
         await asyncio.sleep(0)
     loop.stop()
 
