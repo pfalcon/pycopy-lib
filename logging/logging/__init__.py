@@ -127,7 +127,7 @@ def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
         h = FileHandler(filename)
     else:
         h = StreamHandler(stream)
-    h.setFormatter(Formatter(format, style=style))
+    h.setFormatter(Formatter(format or "%(levelname)s:%(name)s:%(message)s", style=style))
     root.handlers.clear()
     root.addHandler(h)
 
