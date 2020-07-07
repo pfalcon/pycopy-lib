@@ -27,7 +27,8 @@ def urlopen(url, data=None, method="GET"):
     try:
         s.connect(ai[-1])
         if proto == "https:":
-            s = ussl.wrap_socket(s, server_hostname=host)
+            ctx = ussl.SSLContext()
+            s = ctx.wrap_socket(s, server_hostname=host)
 
         s.write(method)
         s.write(b" /")
