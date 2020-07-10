@@ -81,22 +81,12 @@ class Logger:
         self.handlers.append(hdlr)
 
 
-_level = INFO
-_loggers = {}
-
-
 def getLogger(name=None):
     if name is None:
         name = "root"
     if name in _loggers:
         return _loggers[name]
-    if name == "root":
-        l = Logger(name)
-        sh = StreamHandler()
-        sh.formatter = Formatter()
-        l.addHandler(sh)
-    else:
-        l = Logger(name)
+    l = Logger(name)
     _loggers[name] = l
     return l
 
@@ -236,9 +226,6 @@ class Formatter:
         raise NotImplementedError()
 
 
-root = getLogger()
-
-
 class LogRecord:
     def __init__(
         self, name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None
@@ -256,3 +243,11 @@ class LogRecord:
         self.exc_info = exc_info
         self.func = func
         self.sinfo = sinfo
+
+
+_level = INFO
+root = Logger("root")
+sh = StreamHandler()
+sh.formatter = Formatter()
+root.addHandler(sh)
+_loggers = {"root": root}
