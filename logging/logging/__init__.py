@@ -27,6 +27,7 @@ class Logger:
     def __init__(self, name):
         self.name = name
         self.handlers = None
+        self.parent = None
 
     def _level_str(self, level):
         l = _level_dict.get(level)
@@ -41,13 +42,16 @@ class Logger:
         return level >= (self.level or _level)
 
     def log(self, level, msg, *args):
-        if level >= (self.level or _level):
+        dest = self
+        while dest.level == NOTSET and dest.parent:
+            dest = dest.parent
+        if level >= dest.level:
             record = LogRecord(
                 self.name, level, None, None, msg, args, None, None, None
             )
 
-            if self.handlers:
-                for hdlr in self.handlers:
+            if dest.handlers:
+                for hdlr in dest.handlers:
                     hdlr.emit(record)
 
     def debug(self, msg, *args):
@@ -87,6 +91,8 @@ def getLogger(name=None):
     if name in _loggers:
         return _loggers[name]
     l = Logger(name)
+    # For now, we have shallow hierarchy, where parent of each logger is root.
+    l.parent = root
     _loggers[name] = l
     return l
 
