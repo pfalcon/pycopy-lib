@@ -253,6 +253,7 @@ class LogRecord:
 
 _level = INFO
 root = Logger("root")
+root.setLevel(WARNING)
 sh = StreamHandler()
 sh.formatter = Formatter()
 root.addHandler(sh)
