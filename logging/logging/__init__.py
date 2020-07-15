@@ -39,7 +39,7 @@ class Logger:
         self.level = level
 
     def isEnabledFor(self, level):
-        return level >= (self.level or _level)
+        return level >= self.level
 
     def log(self, level, msg, *args):
         dest = self
@@ -117,8 +117,7 @@ def exception(msg, *args):
     getLogger(None).exception(msg, *args)
 
 def basicConfig(level=INFO, filename=None, stream=None, format=None, style="%"):
-    global _level
-    _level = level
+    root.setLevel(level)
     if filename:
         h = FileHandler(filename)
     else:
@@ -251,7 +250,6 @@ class LogRecord:
         self.sinfo = sinfo
 
 
-_level = INFO
 root = Logger("root")
 root.setLevel(WARNING)
 sh = StreamHandler()
