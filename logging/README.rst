@@ -7,10 +7,9 @@ applications and libraries.
 
 Major differences to CPython logging:
 
-* No event propagation: events logged to a logger will not be passed to the handlers of
-  higher level (ancestor) logger. In CPython this matches the behaviour achieved by
-  setting ``Logger.propagate = False``.
-* Filters are not supported
+* Simplified event propagation, multilevel logger organization is not handled,
+  currently there're just 2 levels: root logger and specific named loggers.
+* Filters are not supported.
 
 Requirements
 ------------
