@@ -98,6 +98,9 @@ class YamlParser:
                 return ret
             for i in range(len(self.pl)):
                 if self.pl[i] in seps:
+                    # foo:bar is a string
+                    if self.pl[i] == ":" and i < len(self.pl) - 1 and not self.pl[i + 1].isspace():
+                        continue
                     break
             else:
                 i += 1
