@@ -157,6 +157,10 @@ class ArgumentParser:
         for opt in self.opt:
             print("  %-16s%s" % (', '.join(opt.names) + render_arg(opt), opt.help))
 
+    def error(self, msg):
+        sys.stderr.write("error: %s\n" % msg)
+        sys.exit(2)
+
     def parse_args(self, args=None):
         return self._parse_args_impl(args, False)
 
