@@ -176,8 +176,7 @@ class ArgumentParser:
             return self._parse_args(args, return_unknown)
         except _ArgError as e:
             self.usage(False)
-            print("error:", e)
-            sys.exit(2)
+            self.error(str(e))
 
     def _parse_args(self, args, return_unknown):
         argholder = Namespace()
