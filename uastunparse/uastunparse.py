@@ -109,6 +109,12 @@ class ASTUnparse(ast.NodeVisitor):
             self.f.write(" ")
         self.visit(node.operand)
 
+    def visit_Subscript(self, node):
+        self.visit(node.value)
+        self.f.write("[")
+        self.visit(node.slice)
+        self.f.write("]")
+
     def visit_Attribute(self, node):
         self.visit(node.value)
         self.f.write(".")
