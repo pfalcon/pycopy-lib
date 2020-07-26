@@ -10,6 +10,22 @@ class ASTUnparse(ast.NodeVisitor):
         ast.Not: "not",
     }
 
+    binop_map = {
+        ast.Add: "+",
+        ast.Sub: "-",
+        ast.Mult: "*",
+        ast.MatMult: "@",
+        ast.Div: "/",
+        ast.FloorDiv: "//",
+        ast.Mod: "%",
+        ast.Pow: "**",
+        ast.LShift: "<<",
+        ast.RShift: ">>",
+        ast.BitAnd: "&",
+        ast.BitOr: "|",
+        ast.BitXor: "^",
+    }
+
     def __init__(self, f):
         self.f = f
         self.level = 0
@@ -101,6 +117,14 @@ class ASTUnparse(ast.NodeVisitor):
             self.visit(kw.value)
             need_comma = True
         self.f.write(")")
+
+    def visit_BinOp(self, node):
+        op = self.__class__.binop_map[type(node.op)]
+        self.visit(node.left)
+        self.f.write(" ")
+        self.f.write(op)
+        self.f.write(" ")
+        self.visit(node.right)
 
     def visit_UnaryOp(self, node):
         op = self.__class__.unop_map[type(node.op)]
