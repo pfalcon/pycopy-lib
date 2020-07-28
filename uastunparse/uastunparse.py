@@ -26,6 +26,19 @@ class ASTUnparse(ast.NodeVisitor):
         ast.BitXor: "^",
     }
 
+    cmpop_map = {
+        ast.Eq: "==",
+        ast.NotEq: "!=",
+        ast.Lt: "<",
+        ast.LtE: "<=",
+        ast.Gt: ">",
+        ast.GtE: ">=",
+        ast.Is: "is",
+        ast.IsNot: "is not",
+        ast.In: "in",
+        ast.NotIn: "not in",
+    }
+
     def __init__(self, f):
         self.f = f
         self.level = 0
@@ -107,6 +120,15 @@ class ASTUnparse(ast.NodeVisitor):
             self.visit(kw.value)
             need_comma = True
         self.f.write(")")
+
+    def visit_Compare(self, node):
+        self.visit(node.left)
+        for i in range(len(node.ops)):
+            op = self.__class__.cmpop_map[type(node.ops[i])]
+            self.f.write(" ")
+            self.f.write(op)
+            self.f.write(" ")
+            self.visit(node.comparators[i])
 
     def visit_BinOp(self, node):
         op = self.__class__.binop_map[type(node.op)]
