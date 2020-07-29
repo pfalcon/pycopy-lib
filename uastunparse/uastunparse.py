@@ -39,6 +39,11 @@ class ASTUnparse(ast.NodeVisitor):
         ast.NotIn: "not in",
     }
 
+    boolop_map = {
+        ast.And: "and",
+        ast.Or: "or",
+    }
+
     def __init__(self, f):
         self.f = f
         self.level = 0
@@ -130,6 +135,17 @@ class ASTUnparse(ast.NodeVisitor):
             self.visit(kw.value)
             need_comma = True
         self.f.write(")")
+
+    def visit_BoolOp(self, node):
+        op = self.__class__.boolop_map[type(node.op)]
+        first = True
+        for v in node.values:
+            if not first:
+                self.f.write(" ")
+                self.f.write(op)
+                self.f.write(" ")
+            self.visit(v)
+            first = False
 
     def visit_Compare(self, node):
         self.visit(node.left)
