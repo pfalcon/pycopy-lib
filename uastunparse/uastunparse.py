@@ -108,6 +108,13 @@ class ASTUnparse(ast.NodeVisitor):
     def visit_Pass(self, node):
         self.with_indent("pass\n")
 
+    def visit_IfExp(self, node):
+        self.visit(node.body)
+        self.f.write(" if ")
+        self.visit(node.test)
+        self.f.write(" else ")
+        self.visit(node.orelse)
+
     def visit_Call(self, node):
         self.visit(node.func)
         self.f.write("(")
