@@ -108,6 +108,25 @@ class ASTUnparse(ast.NodeVisitor):
     def visit_Pass(self, node):
         self.with_indent("pass\n")
 
+    def _visit_arguments(self, args):
+        need_comma = False
+        def comma():
+            nonlocal need_comma
+            if need_comma:
+                self.f.write(", ")
+            else:
+                self.f.write(" ")
+            need_comma = True
+        for a in args.args:
+            comma()
+            self.f.write(a.arg)
+
+    def visit_Lambda(self, node):
+        self.f.write("lambda")
+        self._visit_arguments(node.args)
+        self.f.write(": ")
+        self.visit(node.body)
+
     def visit_IfExp(self, node):
         self.visit(node.body)
         self.f.write(" if ")
