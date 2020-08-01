@@ -3,6 +3,29 @@ import ast
 
 class ASTUnparse(ast.NodeVisitor):
 
+    precedence_map = {
+        ast.Lambda: 10,
+        ast.IfExp: 20,
+        ast.Or: 30,
+        ast.And: 40,
+        ast.Not: 50,
+        ast.Compare: 60,
+        ast.BitOr: 70,
+        ast.BitXor: 80,
+        ast.BitAnd: 90,
+        ast.LShift: 100, ast.RShift: 100,
+        ast.Add: 110, ast.Sub: 110,
+        ast.Mult: 120, ast.MatMult: 120, ast.Div: 120, ast.FloorDiv: 120, ast.Mod: 120,
+        ast.UAdd: 130, ast.USub: 130, ast.Invert: 130,
+        ast.Pow: 140,
+        ast.Await: 150,
+        ast.Attribute: 160,
+        ast.Subscript: 160,
+        ast.Call: 160,
+        ast.Tuple: 170, ast.List: 170, ast.Set: 170, ast.Dict: 170,
+        ast.Name: 1000, ast.Num: 1000, ast.Str: 1000,
+    }
+
     unop_map = {
         ast.UAdd: "+",
         ast.USub: "-",
@@ -58,6 +81,17 @@ class ASTUnparse(ast.NodeVisitor):
     def with_indent(self, s):
         self.indent()
         self.f.write(s)
+
+    def get_precedence(self, node):
+        if isinstance(node, ast.BinOp):
+            return self.__class__.precedence_map[type(node.op)]
+        elif isinstance(node, ast.UnaryOp):
+            return self.__class__.precedence_map[type(node.op)]
+        elif isinstance(node, ast.BoolOp):
+            return self.__class__.precedence_map[type(node.op)]
+        else:
+            return self.__class__.precedence_map[type(node)]
+        assert 0
 
     def visit_suite(self, suite):
         self.level += 1
@@ -118,6 +152,18 @@ class ASTUnparse(ast.NodeVisitor):
         self.with_indent("pass")
         self.nl()
 
+    def _visit_expr(self, parent, child):
+        # Render a node which is a part of expression, wrapping in parens
+        # if needed per precedence rules.
+        prec_p = self.get_precedence(parent)
+        prec_c = self.get_precedence(child)
+        need_parens = prec_p > prec_c
+        if need_parens:
+            self.f.write("(")
+        self.visit(child)
+        if need_parens:
+            self.f.write(")")
+
     def _visit_arguments(self, args):
         need_comma = False
         def comma():
@@ -146,7 +192,7 @@ class ASTUnparse(ast.NodeVisitor):
         self.visit(node.orelse)
 
     def visit_Call(self, node):
-        self.visit(node.func)
+        self._visit_expr(node, node.func)
         self.f.write("(")
         need_comma = False
         for a in node.args:
@@ -171,7 +217,7 @@ class ASTUnparse(ast.NodeVisitor):
                 self.f.write(" ")
                 self.f.write(op)
                 self.f.write(" ")
-            self.visit(v)
+            self._visit_expr(node, v)
             first = False
 
     def visit_Compare(self, node):
@@ -185,18 +231,18 @@ class ASTUnparse(ast.NodeVisitor):
 
     def visit_BinOp(self, node):
         op = self.__class__.binop_map[type(node.op)]
-        self.visit(node.left)
+        self._visit_expr(node, node.left)
         self.f.write(" ")
         self.f.write(op)
         self.f.write(" ")
-        self.visit(node.right)
+        self._visit_expr(node, node.right)
 
     def visit_UnaryOp(self, node):
         op = self.__class__.unop_map[type(node.op)]
         self.f.write(op)
         if op[0].isalpha():
             self.f.write(" ")
-        self.visit(node.operand)
+        self._visit_expr(node, node.operand)
 
     def visit_Subscript(self, node):
         self.visit(node.value)
