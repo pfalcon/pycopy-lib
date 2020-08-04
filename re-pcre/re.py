@@ -57,6 +57,8 @@ MULTILINE = M = 2
 DOTALL = S = 4
 VERBOSE = X = 8
 PCRE_ANCHORED = 0x10
+# Ignored
+LOCALE = L = 0
 
 # ASCII is a special value ditinguishable from 0
 ASCII = A = 0x4000
