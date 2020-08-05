@@ -391,3 +391,7 @@ def escape(s):
         else:
             res += "\\" + c
     return res
+
+
+def purge():
+    pass
