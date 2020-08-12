@@ -3,7 +3,10 @@ __version__ = "1.1.0"
 
 import struct
 import ffi
+import ulogging
 
+
+log = ulogging.getLogger(__name__)
 
 Union, Structure, Array = 0, 0, 0
 _Pointer = 0
@@ -37,7 +40,7 @@ class CFuncPtr:
             self.addr = addr_or_sym
         else:
             self.addr = addr_or_sym[1]._handle.addr(addr_or_sym[0])
-        print("CFuncPtr(%r): %r" % (addr_or_sym, self.addr))
+        log.debug("CFuncPtr(%r): %r" % (addr_or_sym, self.addr))
 
     def __call__(self, *args):
         print("*", args)
@@ -57,7 +60,7 @@ class CFuncPtr:
 
 
 def dlopen(name, mode):
-    print("dlopen(%s, %x)" % (name, mode))
+    log.debug("dlopen(%s, %x)" % (name, mode))
     return ffi.open(name)
 
 
