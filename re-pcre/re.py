@@ -197,13 +197,14 @@ class PCREPattern:
 
         return sub(r"\\(0[0-7]*|\d+|g<.+?>|.)", handle_escape, repl)
 
-    def sub(self, repl, s, count=0):
+    def subn(self, repl, s, count=0):
         is_str = isinstance(s, str)
         if is_str:
             s = s.encode()
 
         res = b""
         pos = 0
+        cnt_rpl = 0
         while True:
             m = self.search(s, pos)
             if not m:
@@ -217,6 +218,7 @@ class PCREPattern:
                 res += self._handle_repl_escapes(repl, m)
             else:
                 res += repl
+            cnt_rpl += 1
 
             pos = end
             if beg == end:
@@ -232,6 +234,10 @@ class PCREPattern:
 
         if is_str:
             res = res.decode()
+        return (res, cnt_rpl)
+
+    def sub(self, repl, s, count=0):
+        res, cnt = self.subn(repl, s, count)
         return res
 
     def split(self, s, maxsplit=0):
