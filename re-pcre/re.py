@@ -372,6 +372,11 @@ def sub(pattern, repl, s, count=0, flags=0):
     return r.sub(repl, s, count)
 
 
+def subn(pattern, repl, s, count=0, flags=0):
+    r = compile(pattern, flags)
+    return r.subn(repl, s, count)
+
+
 def split(pattern, s, maxsplit=0, flags=0):
     r = compile(pattern, flags)
     return r.split(s, maxsplit)
