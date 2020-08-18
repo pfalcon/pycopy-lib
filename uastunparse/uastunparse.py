@@ -99,6 +99,19 @@ class ASTUnparse(ast.NodeVisitor):
             self.visit(s)
         self.level -= 1
 
+    def visit_For(self, node):
+        self.with_indent("for ")
+        self.visit(node.target)
+        self.f.write(" in ")
+        self.visit(node.iter)
+        self.f.write(":")
+        self.nl()
+        self.visit_suite(node.body)
+        if node.orelse:
+            self.with_indent("else:")
+            self.nl()
+            self.visit_suite(node.orelse)
+
     def visit_While(self, node):
         self.with_indent("while ")
         self.visit(node.test)
