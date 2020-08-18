@@ -142,12 +142,15 @@ class ASTUnparse(ast.NodeVisitor):
     def visit_Pass(self, node):
         self.with_indent("pass\n")
 
-    def _visit_expr(self, parent, child):
+    def _visit_expr(self, parent, child, paren_on_equal=False):
         # Render a node which is a part of expression, wrapping in parens
         # if needed per precedence rules.
         prec_p = self.get_precedence(parent)
         prec_c = self.get_precedence(child)
-        need_parens = prec_p > prec_c
+        if paren_on_equal:
+            need_parens = prec_p >= prec_c
+        else:
+            need_parens = prec_p > prec_c
         if need_parens:
             self.f.write("(")
         self.visit(child)
@@ -210,13 +213,13 @@ class ASTUnparse(ast.NodeVisitor):
             first = False
 
     def visit_Compare(self, node):
-        self.visit(node.left)
+        self._visit_expr(node, node.left, paren_on_equal=True)
         for i in range(len(node.ops)):
             op = self.__class__.cmpop_map[type(node.ops[i])]
             self.f.write(" ")
             self.f.write(op)
             self.f.write(" ")
-            self.visit(node.comparators[i])
+            self._visit_expr(node, node.comparators[i], paren_on_equal=True)
 
     def visit_BinOp(self, node):
         op = self.__class__.binop_map[type(node.op)]
