@@ -14,3 +14,6 @@ install:
 	        (cd $$d; sh -c $(CMD)); \
 	    done \
 	fi
+
+rm-setup:
+	find -maxdepth 1 -name setup.py | xargs -n100 rm
