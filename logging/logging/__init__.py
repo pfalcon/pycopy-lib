@@ -137,9 +137,9 @@ class Handler:
 
 class StreamHandler(Handler):
     def __init__(self, stream=None):
+        super().__init__()
         self._stream = stream or sys.stderr
         self.terminator = "\n"
-        self.formatter = Formatter()
 
     def emit(self, record):
         self._stream.write(self.formatter.format(record) + self.terminator)
@@ -148,14 +148,13 @@ class StreamHandler(Handler):
         pass
 
 
-class FileHandler(Handler):
+class FileHandler(StreamHandler):
     def __init__(self, filename, mode="a", encoding=None, delay=False):
-        super().__init__()
+        super().__init__(None)
 
         self.encoding = encoding
         self.mode = mode
         self.delay = delay
-        self.terminator = "\n"
         self.filename = filename
 
         self._f = None
