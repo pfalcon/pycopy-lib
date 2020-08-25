@@ -157,19 +157,18 @@ class FileHandler(StreamHandler):
         self.delay = delay
         self.filename = filename
 
-        self._f = None
         if not delay:
-            self._f = open(self.filename, self.mode)
+            self._stream = open(self.filename, self.mode)
 
     def emit(self, record):
-        if self._f is None:
-            self._f = open(self.filename, self.mode)
+        if self._stream is None:
+            self._stream = open(self.filename, self.mode)
 
-        self._f.write(self.formatter.format(record) + self.terminator)
+        super().emit(record)
 
     def close(self):
-        if self._f is not None:
-            self._f.close()
+        if self._stream is not None:
+            self._stream.close()
 
 
 class Formatter:
