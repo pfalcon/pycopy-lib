@@ -314,7 +314,8 @@ class PCREPattern:
         if endpos != -1:
             s = s[:endpos]
         res = []
-        while True:
+        finish = len(s)
+        while pos <= finish:
             m = self.search(s, pos)
             if not m:
                 break
