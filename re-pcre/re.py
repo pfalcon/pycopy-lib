@@ -281,7 +281,8 @@ class PCREPattern:
             s = s.encode()
 
         res = []
-        while True:
+        finish = len(s)
+        while pos <= finish:
             m = self.search(s, pos)
             if not m:
                 break
