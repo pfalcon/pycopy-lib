@@ -77,6 +77,8 @@ text = "  \thello there\n  \t  how are you?"
 indents = _leading_whitespace_re.findall(text)
 assert indents == ['  \t', '  \t  ']
 
+assert re.findall(r"\b", "a") == ['', '']
+
 # handling of empty matches
 indent_re = re.compile('^([ ]*)(?=\S)', re.MULTILINE)
 s = "line number one\nline number two"
@@ -94,3 +96,5 @@ assert [item.group(0) for item in iter] == ["::", "::"]
 s = "line one\nline two\n   3"
 iter = re.finditer(r"^ *", s, re.MULTILINE)
 assert [m.group() for m in iter] == ["", "", "   "]
+
+assert [m.group() for m in re.finditer(r".*", "asdf")] == ["asdf", ""]
