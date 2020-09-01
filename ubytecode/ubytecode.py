@@ -147,7 +147,7 @@ class Bytecode:
         self.labels[label].append(self.buf.seek(0, 1))
 
     def load_int(self, val):
-        if -15 <= val <= 47:
+        if -16 <= val <= 47:
             self.add(0x80 + val)
         else:
             self.add(opmap["LOAD_CONST_SMALL_INT"], val)
