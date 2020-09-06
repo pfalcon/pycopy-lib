@@ -205,7 +205,8 @@ class PCREPattern:
         res = b""
         pos = 0
         cnt_rpl = 0
-        while True:
+        finish = len(s)
+        while pos <= finish:
             m = self.search(s, pos)
             if not m:
                 res += s[pos:]
