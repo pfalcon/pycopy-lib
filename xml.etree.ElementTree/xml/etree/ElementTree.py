@@ -40,6 +40,7 @@ class Element:
         self.tag = None
         self.attrib = {}
         self.text = None
+        self.tail = None
         self._children = []
 
     def __getitem__(self, i):
@@ -70,6 +71,7 @@ class ElementTree:
 def parse_el(stream):
     stack = []
     root = None
+    last = None
 
     for ev in xmltok2.tokenize(stream):
         typ = ev[0]
@@ -82,17 +84,21 @@ def parse_el(stream):
             else:
                 stack[-1]._children.append(el)
             stack.append(el)
+            last = None
 
         elif typ == xmltok2.ATTR:
             stack[-1].attrib[ev[2]] = ev[3]
 
         elif typ == xmltok2.TEXT:
-            stack[-1].text = ev[1]
+            if last is None:
+                stack[-1].text = ev[1]
+            else:
+                last.tail = ev[1]
 
         elif typ == xmltok2.END_TAG:
             if stack[-1].tag != ev[2]:
                 raise ParseError("mismatched tag: /%s (expected: /%s)" % (ev[1][1], stack[-1].tag))
-            stack.pop()
+            last = stack.pop()
 
     return root
 
