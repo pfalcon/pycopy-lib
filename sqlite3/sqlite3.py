@@ -86,6 +86,7 @@ class Cursor:
 
     def execute(self, sql, params=None):
         if params:
+            sql = sql.replace("?", "%s")
             params = [quote(v) for v in params]
             sql = sql % tuple(params)
         #print(sql)
