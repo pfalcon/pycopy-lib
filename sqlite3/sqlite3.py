@@ -1,4 +1,4 @@
-# (c) 2014-2018 Paul Sokolovsky. MIT license.
+# (c) 2014-2020 Paul Sokolovsky. MIT license.
 import sys
 import ffilib
 import uerrno
@@ -146,5 +146,7 @@ def connect(fname):
 
 def quote(val):
     if isinstance(val, str):
+        val = val.replace("'", "''")
         return "'%s'" % val
-    return str(val)
+    val = str(val)
+    return val.replace("'", "''")
