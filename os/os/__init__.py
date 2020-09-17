@@ -364,7 +364,10 @@ def spawnvp(mode, file, args):
 class _Environ:
 
     def __getitem__(self, k):
-        return getenv(k)
+        r = getenv(k)
+        if r is None:
+            raise KeyError(k)
+        return r
 
 
 environ = _Environ()
