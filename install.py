@@ -66,7 +66,7 @@ mod = mod.rstrip("/")
 if mod.startswith("cpython-"):
     dest_dir = "~/.local/lib/python3.6/site-packages"
 else:
-    dest_dir = "~/.micropython/lib"
+    dest_dir = "~/.pycopy/lib"
 
 dest_dir = os.path.expanduser(dest_dir)
 
