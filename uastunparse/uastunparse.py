@@ -140,6 +140,13 @@ class ASTUnparse(ast.NodeVisitor):
                 self.visit_suite(node.orelse)
             break
 
+    def visit_AugAssign(self, node):
+        self.indent()
+        self.visit(node.target)
+        self.f.write(" %s= " % self.__class__.binop_map[type(node.op)])
+        self.visit(node.value)
+        self.nl()
+
     def visit_Assign(self, node):
         self.indent()
         for n in node.targets:
