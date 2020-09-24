@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = module
-version = 0.5
+version = 0.6
 author = Paul Sokolovsky
 desc = Module to dump Python AST back to Python source
 long_desc = Module to dump Python AST back to Python source, part of the Pycopy standard library (https://github.com/pfalcon/pycopy).
