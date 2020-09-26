@@ -398,12 +398,21 @@ def finditer(pattern, s, flags=0):
 
 
 def escape(s):
-    res = ""
-    for c in s:
-        if '0' <= c <= '9' or 'A' <= c <= 'Z' or 'a' <= c <= 'z' or c == '_':
-            res += c
-        else:
-            res += "\\" + c
+    if isinstance(s, str):
+        res = ""
+        for c in s:
+            if '0' <= c <= '9' or 'A' <= c <= 'Z' or 'a' <= c <= 'z' or c == '_':
+                res += c
+            else:
+                res += "\\" + c
+    else:
+        res = b""
+        for c in s:
+            c = bytes([c])
+            if b'0' <= c <= b'9' or b'A' <= c <= b'Z' or b'a' <= c <= b'z' or c == b'_':
+                res += c
+            else:
+                res += b"\\" + c
     return res
 
 
