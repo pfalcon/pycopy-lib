@@ -58,6 +58,17 @@ class Element:
     def set(self, key, value):
         self.attrib[key] = value
 
+    def write(self, file):
+        assert self.tag is not None
+        file.write("<%s>" % self.tag)
+        if self.text is not None:
+            file.write(self.text)
+        for t in self._children:
+            t.write(file)
+        file.write("</%s>" % self.tag)
+        if self.tail is not None:
+            file.write(self.tail)
+
 
 class ElementTree:
 
@@ -66,6 +77,10 @@ class ElementTree:
 
     def getroot(self):
         return self.root
+
+    def write(self, file):
+        self.root.write(file)
+        file.write("\n")
 
 
 def parse_el(stream):
