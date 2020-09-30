@@ -60,7 +60,10 @@ class Element:
 
     def write(self, file):
         assert self.tag is not None
-        file.write("<%s>" % self.tag)
+        file.write("<%s" % self.tag)
+        for k, v in self.attrib.items():
+            file.write(' {}="{}"'.format(k, v))
+        file.write(">")
         if self.text is not None:
             file.write(self.text)
         for t in self._children:
