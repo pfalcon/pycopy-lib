@@ -58,6 +58,7 @@ name = "posix"
 sep = const("/")
 curdir = const(".")
 pardir = const("..")
+linesep = const("\n")
 
 
 libc = ffilib.libc()
