@@ -143,9 +143,10 @@ class StreamHandler(Handler):
 
     def emit(self, record):
         self._stream.write(self.formatter.format(record) + self.terminator)
+        self.flush()
 
     def flush(self):
-        pass
+        self._stream.flush()
 
 
 class FileHandler(StreamHandler):
