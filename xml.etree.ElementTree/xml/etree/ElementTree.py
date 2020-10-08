@@ -105,7 +105,9 @@ def parse_el(stream):
             last = None
 
         elif typ == xmltok2.ATTR:
-            stack[-1].attrib[ev[2]] = ev[3]
+            # Ignore attrs of processing instructions
+            if stack:
+                stack[-1].attrib[ev[2]] = ev[3]
 
         elif typ == xmltok2.TEXT:
             if last is None:
