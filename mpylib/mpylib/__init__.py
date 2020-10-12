@@ -6,7 +6,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) 2019 Paul Sokolovsky
+# Copyright (c) 2019-2020 Paul Sokolovsky
 # Copyright (c) 2016-2019 Damien P. George
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -492,3 +492,11 @@ class MPYOutput:
         #co.mpy_argnames = tuple([self.read_qstr() for _ in range(prelude[3] + prelude[4])])
         for c in code.mpy_consts:
             self.write_obj(c)
+
+
+# Similar to "marshal.load(f)" to load codeobj from .pyc in CPython
+def load(f):
+    mpy = MPYInput(f)
+    mpy.read_header()
+    codeobj = mpy.read_raw_code()
+    return codeobj
