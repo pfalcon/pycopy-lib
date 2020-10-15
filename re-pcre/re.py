@@ -73,7 +73,11 @@ _UNESCAPE_DICT = const({
 
 
 class error(Exception):
-    pass
+
+    def __init__(self, msg, pattern=None, pos=None):
+        self.msg = msg
+        self.pattern = pattern
+        self.pos = pos
 
 
 class PCREMatch:
