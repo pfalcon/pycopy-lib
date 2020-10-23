@@ -103,6 +103,7 @@ class Cursor:
             v = self.fetchone()
             assert v is None
             self.lastrowid = sqlite3_last_insert_rowid(self.h)
+        return self
 
     def close(self):
         s = sqlite3_finalize(self.stmnt)
@@ -131,6 +132,15 @@ class Cursor:
         if res == SQLITE_ROW:
             return self.make_row()
         check_error(self.h, res)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        res = self.fetchone()
+        if res is None:
+            raise StopIteration
+        return res
 
 
 def connect(fname):
