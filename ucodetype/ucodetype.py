@@ -63,7 +63,7 @@ class CodeType:
         self.co_lnotab = b'\x00'
         self.co_cellvars = ()
         self.mpy_cellvars = ()
-        self.mpy_consts = ()
+        self.co_consts = ()
         self.co_flags = 0
         self.co_argcount = 0
         self.co_kwonlyargcount = 0
@@ -80,13 +80,14 @@ class CodeType:
         return stream.getvalue()
 
     def get_const_table(self):
-        consts_arr = uarray.array("P", [0] * len(self.mpy_consts))
-        for i in range(len(self.mpy_consts)):
-            if isinstance(self.mpy_consts[i], CodeType):
-                raw_code = self.codeobj2rawcode(self.mpy_consts[i])
+        const_tbl = self.co_consts
+        consts_arr = uarray.array("P", [0] * len(const_tbl))
+        for i in range(len(const_tbl)):
+            if isinstance(const_tbl[i], CodeType):
+                raw_code = self.codeobj2rawcode(const_tbl[i])
                 consts_arr[i] = uctypes.addressof(raw_code)
             else:
-                consts_arr[i] = id(self.mpy_consts[i])
+                consts_arr[i] = id(const_tbl[i])
         return consts_arr
 
     @staticmethod
