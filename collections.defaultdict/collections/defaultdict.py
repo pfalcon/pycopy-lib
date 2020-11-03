@@ -43,3 +43,6 @@ class defaultdict:
 
     def items(self):
         return self.d.items()
+
+    def __repr__(self):
+        return "defaultdict(%r, %r)" % (self.default_factory, self.d)
