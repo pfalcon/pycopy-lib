@@ -47,6 +47,9 @@ def getargspec(func):
     raise NotImplementedError("This is over-dynamic function, not supported by Pycopy")
 
 def getmodule(obj, _filename=None):
+    if ismodule(obj):
+        return obj
+    print("Warning: inspect.getmodule(%r): returning None" % obj, file=sys.stderr)
     return None  # Not known
 
 def getmro(cls):
