@@ -87,6 +87,7 @@ if libc:
     execvp_ = libc.func("i", "execvp", "PP")
     kill_ = libc.func("i", "kill", "ii")
     getenv_ = libc.func("s", "getenv", "P")
+    putenv_ = libc.func("i", "putenv", "s")
 
 
 
@@ -312,6 +313,9 @@ def getenv(var, default=None):
     if var is None:
         return default
     return var
+
+def putenv(key, value):
+    return putenv_(key + "=" + value)
 
 def fsencode(s):
     if type(s) is bytes:
