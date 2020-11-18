@@ -7,6 +7,7 @@ SIG_IGN = 1
 SIGINT = 2
 SIGPIPE = 13
 SIGTERM = 15
+SIGWINCH = 28
 
 libc = ffilib.libc()
 
