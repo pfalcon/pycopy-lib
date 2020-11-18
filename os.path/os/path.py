@@ -1,4 +1,5 @@
 import os
+import ffilib
 
 
 sep = "/"
@@ -79,6 +80,13 @@ def islink(path):
     except OSError:
         return False
 
+def realpath(path):
+    libc = ffilib.libc()
+    if isinstance(path, str) or isinstance(path, bytes):
+        realpath_ = libc.func("s", "realpath", "ss")
+        # XXX: memory leak! should free() returned pointer, see man realpath
+        return realpath_(path, None)
+    raise TypeError
 
 def expanduser(s):
     if s == "~" or s.startswith("~/"):
