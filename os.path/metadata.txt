@@ -2,3 +2,4 @@ srctype = pycopy-lib
 type = package
 version = 0.2.2
 author = Paul Sokolovsky
+depends = ffilib
