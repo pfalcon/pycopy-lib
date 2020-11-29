@@ -1,4 +1,4 @@
-from utime import *
+from utime import clock, sleep, time
 from ucollections import namedtuple
 import ustruct
 import uctypes
