@@ -131,6 +131,8 @@ class Load(expr_context):
     _fields = ()
 class Store(expr_context):
     _fields = ()
+class StoreConst(expr_context):
+    _fields = ()
 class Del(expr_context):
     _fields = ()
 class AugLoad(expr_context):
