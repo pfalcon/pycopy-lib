@@ -13,15 +13,14 @@ submodules:
 
 * ``ast.types``, with AST node types auto-generated from CPython's ASDL
   description.
-* ``ast.parser``, implementing hand-written parser for Python 3.5,
+* ``ast.parser``, implementing hand-written parser for Python 3.6,
   utilizing recursive descent to parse statements, and Pratt operator
   precedence parser to parse expressions.
 * ``ast``, the main package, integrating submodules above, and exposing
   CPython-compatible API with corresponding additional functions and
   classes to process AST trees.
 
-At the time of writing, the parser supports Python 3.5 syntax with
-future-looking cleanups, e.g. ``async`` is treated as a keyword. Updates
+At the time of writing, the parser supports Python 3.6 syntax. Updates
 for the next versions of Python syntax are expected to follow.
 
 The package has small builtin test corpus to check that the AST trees
