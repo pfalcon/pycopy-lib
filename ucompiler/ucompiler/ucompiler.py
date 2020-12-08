@@ -168,6 +168,8 @@ class Compiler(ast.NodeVisitor):
             op = (opc.LOAD_NAME, opc.LOAD_GLOBAL, opc.LOAD_FAST_N, opc.LOAD_DEREF)[scope]
         elif isinstance(ctx, ast.Store):
             op = (opc.STORE_NAME, opc.STORE_GLOBAL, opc.STORE_FAST_N, opc.STORE_DEREF)[scope]
+        elif isinstance(ctx, ast.StoreConst):
+            op = (opc.STORE_NAME_CONST, opc.STORE_GLOBAL_CONST, opc.STORE_FAST_N, opc.STORE_DEREF)[scope]
         else:
             assert 0
 
