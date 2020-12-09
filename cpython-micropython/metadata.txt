@@ -1,0 +1,4 @@
+srctype = cpython-backport
+type = module
+version = 1.0
+depends = cpython-pycopy
