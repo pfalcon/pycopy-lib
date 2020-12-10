@@ -99,7 +99,7 @@ class Compiler(ast.NodeVisitor):
         self.symtab = prev_symtab
 
         self.bc.add(opc.MAKE_FUNCTION, co)
-        self._visit_var(node.name, ast.Store())
+        self._visit_var(node.name, ast.StoreConst())
 
     def visit_FunctionDef(self, node):
         self._visit_function(node)
