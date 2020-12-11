@@ -113,9 +113,9 @@ class Compiler(ast.NodeVisitor):
                 comps = n.name.split(".")
                 for c in comps[1:]:
                     self.bc.add(opc.LOAD_ATTR, c)
-                self._visit_var(n.asname, ast.Store())
+                self._visit_var(n.asname, ast.StoreConst())
             else:
-                self._visit_var(n.name.split(".", 1)[0], ast.Store())
+                self._visit_var(n.name.split(".", 1)[0], ast.StoreConst())
 
     def visit_Return(self, node):
         if node.value is None:
