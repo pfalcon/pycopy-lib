@@ -13,6 +13,7 @@ libc = ffilib.libc()
 
 signal_i = libc.func("i", "signal", "ii")
 signal_p = libc.func("i", "signal", "ip")
+siginterrupt = libc.func("i", "siginterrupt", "ii")
 
 _hmap = {}
 
@@ -27,4 +28,5 @@ def signal(n, handler):
     import ffi
     cb = ffi.callback("v", handler, "i")
     _hmap[n] = cb
+    siginterrupt(n, True)
     return signal_p(n, cb)
