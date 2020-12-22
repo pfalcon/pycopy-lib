@@ -26,3 +26,6 @@ def mem_alloc():
 
 gc.mem_free = mem_free
 gc.mem_alloc = mem_alloc
+
+
+import pycopy_imphook
