@@ -14,8 +14,7 @@ class ImphookFileLoader(importlib._bootstrap_external.FileLoader):
         global _import_hook
         #print("create_module", spec)
         basename = spec.origin.rsplit(".", 1)[0]
-        m = _import_hook(basename)
-        m.__name__ = spec.name
+        m = _import_hook(spec.name, basename)
         return m
 
     def exec_module(self, mod):
