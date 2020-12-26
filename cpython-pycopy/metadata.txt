@@ -1,5 +1,5 @@
 srctype = cpython-backport
 type = module
-version = 0.4
+version = 0.4.1
 depends = cpython-uio
 extra_modules = pycopy_imphook
