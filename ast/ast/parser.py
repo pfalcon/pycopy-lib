@@ -34,6 +34,9 @@ from . import types as ast
 log = ulogging.Logger(__name__)
 
 
+TOK_TYPE = 0
+TOK_STRING = 1
+
 BP_UNTIL_COMMA = 6
 BP_LVALUE = 160 - 1
 
@@ -517,7 +520,7 @@ class TokString(TokBase):
 class TokName(TokBase):
     @classmethod
     def nud(cls, p, t):
-        return ast.Name(id=t.string, ctx=ast.Load())
+        return ast.Name(id=t[TOK_STRING], ctx=ast.Load())
 
 class TokConst(TokBase):
     @classmethod
@@ -597,7 +600,7 @@ class Parser:
         while True:
             self.tok = next(self.tstream)
             log.debug("next: %r", self.tok)
-            if self.tok.type not in (utokenize.COMMENT, utokenize.NL):
+            if self.tok[TOK_TYPE] not in (utokenize.COMMENT, utokenize.NL):
                 break
 
     def error(self, msg="syntax error"):
@@ -622,15 +625,15 @@ class Parser:
 
     def check(self, what):
         if isinstance(what, str):
-            if self.tok.string == what and self.tok.type in (utokenize.NAME, utokenize.OP):
+            if self.tok[TOK_STRING] == what and self.tok[TOK_TYPE] in (utokenize.NAME, utokenize.OP):
                 return True
             return None
 
         if isinstance(what, int):
-            if self.tok.type == what:
+            if self.tok[TOK_TYPE] == what:
                 if what == utokenize.ENDMARKER:
                     return True
-                res = self.tok.string
+                res = self.tok[TOK_STRING]
                 if res == "":
                     return True
                 return res
@@ -659,7 +662,7 @@ class Parser:
     def is_delim(self):
         if self.is_end_of_stmt():
             return True
-        if self.tok.type == OP and self.tok.string in ("]", "}", ")", ":", "="):
+        if self.tok[TOK_TYPE] == OP and self.tok[TOK_STRING] in ("]", "}", ")", ":", "="):
             return True
 
     @staticmethod
@@ -1022,10 +1025,10 @@ class Parser:
 
     @staticmethod
     def get_token_class(t):
-        cls = pratt_token_map.get(t.type)
+        cls = pratt_token_map.get(t[TOK_TYPE])
         if cls:
             return cls
-        cls = pratt_token_map.get(t.string)
+        cls = pratt_token_map.get(t[TOK_STRING])
         if cls:
             return cls
         return TokName
