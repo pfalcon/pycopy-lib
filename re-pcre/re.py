@@ -26,6 +26,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import pycopy
 from pycopy import const
 import sys
 import ffilib
@@ -271,9 +272,10 @@ class PCREPattern:
                     break
 
         if is_str:
-            for x in res:
+            for i in range(len(res)):
+                x = res[i]
                 if x is not None:
-                    x.__class__ = str
+                    res[i] = pycopy.icast(x, str)
 
         return res
 
@@ -306,12 +308,12 @@ class PCREPattern:
                 pos += 1
 
         if is_str:
-            for x in res:
+            for i in range(len(res)):
+                x = res[i]
                 if isinstance(x, tuple):
-                    for x1 in x:
-                        x1.__class__ = str
+                    res[i] = tuple([pycopy.icast(x1, str) for x1 in x])
                 else:
-                    x.__class__ = str
+                    res[i] = pycopy.icast(x, str)
 
         return res
 
