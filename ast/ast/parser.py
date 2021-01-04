@@ -885,8 +885,14 @@ class Parser:
             return ast.Import(names=names)
         elif self.match("from"):
             level = 0
-            while self.match("."):
-                level += 1
+            while True:
+                if self.match("."):
+                    level += 1
+                # "..." is a single token (ellipsis)
+                elif self.match("..."):
+                    level += 3
+                else:
+                    break
             module = None
             if not self.check("import"):
                 module = self.match_dotted_name()
