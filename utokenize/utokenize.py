@@ -76,6 +76,7 @@ def generate_tokens(readline):
     indent_stack = [0]
     lineno = 0
     paren_level = 0
+    no_newline = False
 
     # generate_tokens() doesn't yield this, only tokenine() does.
     #yield TokenInfo(ENCODING, "utf-8", 0, 0, "")
@@ -86,6 +87,9 @@ def generate_tokens(readline):
         org_l = l
         if not l:
             break
+        if not l.endswith("\n"):
+            l += "\n"
+            no_newline = True
         i, l = get_indent(l)
 
         if l == "\n":
@@ -157,10 +161,11 @@ def generate_tokens(readline):
                 l = readline()
                 lineno += 1
             elif l[0] == "\n":
+                nl = "" if no_newline else "\n"
                 if paren_level > 0:
-                    yield TokenInfo(NL, "\n", lineno, 0, org_l)
+                    yield TokenInfo(NL, nl, lineno, 0, org_l)
                 else:
-                    yield TokenInfo(NEWLINE, "\n", lineno, 0, org_l)
+                    yield TokenInfo(NEWLINE, nl, lineno, 0, org_l)
                 break
             elif l[0].isspace():
                 l = l[1:]
