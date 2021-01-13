@@ -49,6 +49,9 @@ def getargspec(func):
 def getmodule(obj, _filename=None):
     if ismodule(obj):
         return obj
+    m = getattr(obj, "__module__", None)
+    if m is not None:
+        return sys.modules[m]
     print("Warning: inspect.getmodule(%r): returning None" % obj, file=sys.stderr)
     return None  # Not known
 
