@@ -88,6 +88,7 @@ if libc:
     kill_ = libc.func("i", "kill", "ii")
     getenv_ = libc.func("s", "getenv", "P")
     putenv_ = libc.func("i", "putenv", "s")
+    utimes_ = libc.func("i", "utimes", "sP")
 
 
 
@@ -258,6 +259,15 @@ def dup(fd):
 
 def access(path, mode):
     return access_(path, mode) == 0
+
+def utime(path, times):
+    at_s = int(times[0])
+    mt_s = int(times[1])
+    at_us = int((times[0] - at_s) * 1000000)
+    mt_us = int((times[1] - mt_s) * 1000000)
+    arr = array.array("L", [at_s, at_us, mt_s, mt_us])
+    r = utimes_(path, arr)
+    check_error(r)
 
 if hasattr(uos, "chdir"):
     chdir = uos.chdir
