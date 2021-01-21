@@ -12,7 +12,6 @@ def getmembers(obj, pred=None):
 
 def isfunction(obj):
     return isinstance(obj, type(isfunction))
-isroutine = isfunction
 
 def isgeneratorfunction(obj):
     return isinstance(obj, type(lambda:(yield)))
@@ -26,6 +25,9 @@ _Instance = _Class()
 
 def ismethod(obj):
     return isinstance(obj, type(_Instance.meth))
+
+def isroutine(obj):
+    return isfunction(obj) or ismethod(obj)
 
 def isclass(obj):
     return isinstance(obj, type)
