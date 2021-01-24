@@ -267,6 +267,10 @@ class ASTUnparse(ast.NodeVisitor):
             self.f.write(" ")
         self._visit_expr(node, node.operand)
 
+    def visit_Await(self, node):
+        self.f.write("await ")
+        self._visit_expr(node, node.value)
+
     def visit_Subscript(self, node):
         self.visit(node.value)
         self.f.write("[")
