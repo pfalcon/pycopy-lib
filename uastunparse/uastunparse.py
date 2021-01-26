@@ -71,6 +71,9 @@ class ASTUnparse(ast.NodeVisitor):
         self.f = f
         self.level = 0
 
+    def stmt_end(self, node):
+        self.nl()
+
     def nl(self):
         self.f.write("\n")
 
@@ -105,7 +108,7 @@ class ASTUnparse(ast.NodeVisitor):
         self.f.write(" in ")
         self.visit(node.iter)
         self.f.write(":")
-        self.nl()
+        self.stmt_end(node)
         self.visit_suite(node.body)
         if node.orelse:
             self.with_indent("else:")
@@ -116,7 +119,7 @@ class ASTUnparse(ast.NodeVisitor):
         self.with_indent("while ")
         self.visit(node.test)
         self.f.write(":")
-        self.nl()
+        self.stmt_end(node)
         self.visit_suite(node.body)
         if node.orelse:
             self.with_indent("else:")
@@ -128,7 +131,7 @@ class ASTUnparse(ast.NodeVisitor):
         while True:
             self.visit(node.test)
             self.f.write(":")
-            self.nl()
+            self.stmt_end(node)
             self.visit_suite(node.body)
             if node.orelse:
                 if len(node.orelse) == 1 and isinstance(node.orelse[0], ast.If):
@@ -145,7 +148,7 @@ class ASTUnparse(ast.NodeVisitor):
         self.visit(node.target)
         self.f.write(" %s= " % self.__class__.binop_map[type(node.op)])
         self.visit(node.value)
-        self.nl()
+        self.stmt_end(node)
 
     def visit_Assign(self, node):
         self.indent()
@@ -153,24 +156,24 @@ class ASTUnparse(ast.NodeVisitor):
             self.visit(n)
             self.f.write(" = ")
         self.visit(node.value)
-        self.nl()
+        self.stmt_end(node)
 
     def visit_Expr(self, node):
         self.indent()
         self.visit(node.value)
-        self.nl()
+        self.stmt_end(node)
 
     def visit_Continue(self, node):
         self.with_indent("continue")
-        self.nl()
+        self.stmt_end(node)
 
     def visit_Break(self, node):
         self.with_indent("break")
-        self.nl()
+        self.stmt_end(node)
 
     def visit_Pass(self, node):
         self.with_indent("pass")
-        self.nl()
+        self.stmt_end(node)
 
     def _visit_expr(self, parent, child, paren_on_equal=False):
         # Render a node which is a part of expression, wrapping in parens
