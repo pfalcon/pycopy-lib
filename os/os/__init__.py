@@ -75,6 +75,7 @@ if libc:
     open_ = libc.func("i", "open", "sii")
     read_ = libc.func("i", "read", "ipi")
     write_ = libc.func("i", "write", "iPi")
+    lseek_ = libc.func("l", "lseek", "ili")
     close_ = libc.func("i", "close", "i")
     dup_ = libc.func("i", "dup", "i")
     access_ = libc.func("i", "access", "si")
@@ -244,6 +245,11 @@ def read(fd, n):
 
 def write(fd, buf):
     r = write_(fd, buf, len(buf))
+    check_error(r)
+    return r
+
+def lseek(fd, pos, how):
+    r = lseek_(fd, pos, how)
     check_error(r)
     return r
 
