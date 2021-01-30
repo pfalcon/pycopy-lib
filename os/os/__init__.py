@@ -134,12 +134,9 @@ else:
         buf = bytearray(512)
         return getcwd_(buf, 512)
 
-if hasattr(uos, "mkdir"):
-    mkdir = uos.mkdir
-else:
-    def mkdir(name, mode=0o777):
-        e = mkdir_(name, mode)
-        check_error(e)
+def mkdir(name, mode=0o777):
+    e = mkdir_(name, mode)
+    check_error(e)
 
 if hasattr(uos, "rename"):
     rename = uos.rename
