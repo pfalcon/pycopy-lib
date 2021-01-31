@@ -1,0 +1,9 @@
+srctype = pycopy-lib
+type = module
+version = 0.5.1
+author = Paul Sokolovsky
+desc = Baseline POSIX OS services for Pycopy (https://github.com/pfalcon/pycopy)
+long_desc = "uos2" provides subset of the API of the standard Python "os" \
+ module, pure wrappers for the most used POSIX functions. Conceptually, \
+ it is high-way between builtin "uos" and full-fledges "os" modules.
+depends = ffilib, errno
