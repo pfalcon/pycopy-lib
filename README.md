@@ -141,6 +141,7 @@ discovery:
 * ulogging - small subset of logging module
 * umqtt.robust
 * umqtt.simple
+* [uos2](uos2) - minimalist subset of the "os" module
 * upip - Pycopy package manager, modelled after "pip" tool
 * upysh - minimalistic filesystem shell using Python syntax
 * urequests - subset of "requests" module
