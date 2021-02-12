@@ -26,13 +26,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import pycopy
 import ubinascii
 
 
 def hex(s):
     s = ubinascii.hexlify(s)
-    s.__class__ = str
-    return s
+    return pycopy.icast(s, str)
 
 
 def fromhex(s):
