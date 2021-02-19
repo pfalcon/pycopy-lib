@@ -3,6 +3,12 @@ import os
 import ffilib
 
 
+F_GETFD = 1
+F_SETFD = 2
+F_GETFL = 3
+F_SETFL = 4
+
+
 libc = ffilib.libc()
 
 fcntl_l = libc.func("i", "fcntl", "iil")
