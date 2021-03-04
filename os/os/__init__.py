@@ -45,6 +45,7 @@ name = "posix"
 sep = const("/")
 curdir = const(".")
 pardir = const("..")
+devnull = const("/dev/null")
 linesep = const("\n")
 
 
