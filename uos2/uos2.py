@@ -51,6 +51,8 @@ O_TRUNC    = const(0o0001000)
 O_APPEND   = const(0o0002000)
 O_NONBLOCK = const(0o0004000)
 
+WNOHANG = const(1)
+
 
 _libc = ffilib.libc()
 
