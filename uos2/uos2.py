@@ -85,6 +85,8 @@ _system = _libc.func("i", "system", "s")
 _getenv = _libc.func("s", "getenv", "P")
 _putenv = _libc.func("i", "putenv", "s")
 
+strerror = _libc.func("s", "strerror", "i")  # nw
+
 
 def check_error(ret):
     # Return True is error was EINTR (which usually means that OS call
