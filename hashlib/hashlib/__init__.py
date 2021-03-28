@@ -1,3 +1,4 @@
+import pycopy
 import ubinascii
 try:
     import uhashlib
@@ -9,7 +10,7 @@ class _hd_mixin:
 
     def hexdigest(self):
         s = ubinascii.hexlify(self.digest())
-        s.__class__ = str
+        s = pycopy.icast(s, str)
         return s
 
 
