@@ -82,6 +82,9 @@ _waitpid = _libc.func("i", "waitpid", "ipi")
 _execvp = _libc.func("i", "execvp", "PP")
 _system = _libc.func("i", "system", "s")
 
+getpgid = _libc.func("i", "getpgid", "i")  # nw
+setsid = _libc.func("i", "setsid", "")  # nw
+
 _getenv = _libc.func("s", "getenv", "P")
 _putenv = _libc.func("i", "putenv", "s")
 
