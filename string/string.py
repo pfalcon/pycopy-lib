@@ -36,6 +36,15 @@ def encode(s, encoding="utf-8", errors="strict"):
     return _org_encode(s, encoding, errors)
 
 
+def isalnum(s):
+    for c in s:
+        if not (c.isalpha() or c.isdigit()):
+            return False
+    if not s:
+        return False
+    return True
+
+
 def isidentifier(s):
     if not s:
         return False
