@@ -1,0 +1,5 @@
+srctype = pycopy-lib
+type = module
+version = 0.1
+long_desc = Authentication handlers for "urequests" library, similar to requests.auth.
+depends = uwwwauth
