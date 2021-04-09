@@ -1,4 +1,10 @@
+# (c) 2016-2021 Paul Sokolovsky, MIT license, https://github.com/pfalcon/pycopy-lib
 import usocket
+
+
+class Request:
+    pass
+
 
 class Response:
 
@@ -32,7 +38,7 @@ class Response:
         return ujson.loads(self.content)
 
 
-def request(method, url, data=None, json=None, headers={}, stream=None, parse_headers=True):
+def request(method, url, data=None, json=None, headers={}, auth=None, stream=None, parse_headers=True):
     redir_cnt = 1
     if json is not None:
         assert data is None
@@ -56,6 +62,17 @@ def request(method, url, data=None, json=None, headers={}, stream=None, parse_he
         if ":" in host:
             host, port = host.split(":", 1)
             port = int(port)
+
+        if auth is not None:
+            req = Request()
+            req.method = method
+            req.url = url
+            if not headers:
+                # Fresh local dict, not a copy of anything.
+                headers = {}
+            req.headers = headers
+            req = auth(req)
+            headers = req.headers
 
         ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
         ai = ai[0]
