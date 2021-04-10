@@ -11,9 +11,9 @@ pycopy-lib currently offers 4 HTTP client modules:
 This README is intended to describe differences among them and help
 to choose the right module for a particular use.
 
-* ``urllib.urequest`` implements a subset of API CPython standard library
-  module urllib.request. This module is intended to be the most minimal
-  of all three and provide an efficient, stream-based API. It doesn't
+* ``urllib.urequest`` implements a subset of the API of CPython standard library
+  module ``urllib.request``. This module is intended to be the most minimal
+  of all modules listed and provide an efficient, stream-based API. It doesn't
   support automatic redirects or chunked transfer encoding.
 * ``urequests`` implements a subset of API of the popular 3rd-party package
   ``requests``. ``requests`` brags itself as "HTTP for Humans", which
@@ -33,9 +33,9 @@ Thus, the selection guide:
 * Whenever possible, use ``urllib.urequest``.
 * If you write a once-off, throw-away app where you don't care about
   efficiency, you can use ``urequests``.
-* If you wrote that for very small system and above didn't work, can
+* If you wrote that for very small system and the above didn't work, can
   give ``uurequests`` a try.
-* If you devel an async app, use ``uaiohttpclient``.
+* If you develop an async app, use ``uaiohttpclient``.
 * If you need support for more HTTP protocol features, use
   ``uaiohttpclient`` and write an async app.
 
@@ -47,5 +47,6 @@ Future of the modules:
   to match the upstream module, which will make it even less suitable for
   low-memory targets.
 * ``uurequests`` was snapshotted to address concern of such low-memory systems
-  support. It's static, and only critical bugfixes are intended to be applied.
+  support. It's static, and only small/important bugfixes are intended to be
+  applied.
 * ``uaiohttpclient`` may get updated as needed.
