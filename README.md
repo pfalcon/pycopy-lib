@@ -146,6 +146,7 @@ discovery:
 * upysh - minimalistic filesystem shell using Python syntax
 * urequests - subset of "requests" module
 * urlib.urequest - small subset of urlib.request module
+* [usubprocess](usubprocess) - small subset of "subprocess" module
 * utarfile - small subset of tarfile module
 * utokenize - simple tokenizer for Python source
 * uurequests - very small subset of "requests" module
