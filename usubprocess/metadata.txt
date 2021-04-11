@@ -1,0 +1,4 @@
+srctype = pycopy-lib
+type = module
+version = 0.2
+depends = uos2
