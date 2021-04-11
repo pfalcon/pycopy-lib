@@ -1,4 +1,4 @@
-import os
+import uos2 as os
 
 
 class SubprocessError(Exception):
