@@ -28,6 +28,7 @@
 
 import uarray as array
 import ustruct as struct
+import uctypes
 import errno as errno_
 import stat as stat_
 import uos
@@ -53,6 +54,7 @@ if libc:
     opendir_ = libc.func("P", "opendir", "s")
     readdir_ = libc.func("P", "readdir", "P")
     dup_ = libc.func("i", "dup", "i")
+    _environ_ptr = libc.var("P", "environ")
 
 
 def raise_error():
@@ -205,13 +207,27 @@ def spawnvp(mode, file, args):
     execvp(file, args)
 
 
-class _Environ:
 
-    def __getitem__(self, k):
-        r = getenv(k)
-        if r is None:
-            raise KeyError(k)
-        return r
+_ENV_STRUCT = {
+    "arr": (uctypes.ARRAY, 4096, (uctypes.PTR, uctypes.UINT8))
+}
+
+
+class _Environ(dict):
+
+    def __init__(self):
+        dict.__init__(self)
+        env = uctypes.struct(_environ_ptr.get(), _ENV_STRUCT)
+        for i in range(4096):
+            if int(env.arr[i]) == 0:
+                break
+            s = uctypes.bytes_at(env.arr[i]).decode()
+            k, v = s.split("=", 1)
+            dict.__setitem__(self, k, v)
+
+    def __setitem__(self, k, v):
+        putenv(k, v)
+        dict.__setitem__(self, k, v)
 
 
 environ = _Environ()
