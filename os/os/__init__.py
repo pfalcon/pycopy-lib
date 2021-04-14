@@ -54,6 +54,7 @@ if libc:
     opendir_ = libc.func("P", "opendir", "s")
     readdir_ = libc.func("P", "readdir", "P")
     dup_ = libc.func("i", "dup", "i")
+    _execvpe = libc.func("i", "execvpe", "PPP")  # non-POSIX
     _environ_ptr = libc.var("P", "environ")
 
 
@@ -193,6 +194,31 @@ def popen(cmd, mode="r"):
     else:
         close(o)
         return builtins.open(i, mode)
+
+
+def execvpe(f, args, env):
+    import uctypes
+    args_ = uarray.array("P", [0] * (len(args) + 1))
+    i = 0
+    for a in args:
+        args_[i] = uctypes.addressof(a)
+        i += 1
+    env_ = uarray.array("P", [0] * (len(env) + 1))
+    i = 0
+    if isinstance(env, list):
+        for s in env:
+            env_[i] = uctypes.addressof(s)
+            i += 1
+    else:
+        env_l = []  # so strings weren't gc'ed
+        for k, v in env.items():
+            s = "%s=%s" % (k, v)
+            env_l.append(s)
+            env_[i] = uctypes.addressof(s)
+            i += 1
+    r = _execvpe(f, args_, env_)
+    check_error(r)
+
 
 def spawnvp(mode, file, args):
     pid = fork()
