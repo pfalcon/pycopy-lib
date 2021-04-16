@@ -9,6 +9,7 @@ SIGABRT = 6
 SIGKILL = 9
 SIGPIPE = 13
 SIGTERM = 15
+SIGCHLD = 17
 SIGWINCH = 28
 
 libc = ffilib.libc()
