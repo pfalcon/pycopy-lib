@@ -51,7 +51,7 @@ class Method:
 
 class ServerProxy:
 
-    def __init__(self, uri, verbose=False):
+    def __init__(self, uri, verbose=False, allow_none=False):
         self.uri = uri
         self.verbose = verbose
 
