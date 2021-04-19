@@ -30,7 +30,7 @@ class Method:
 
         try:
             #print(f.read())
-            f = f.makefile()
+            f = uio.TextIOWrapper(f)
             tokenizer = xmltok2.tokenize(f)
             xmltok2.gfind(tokenizer, lambda ev: ev[0] == xmltok2.START_TAG and ev[2] == "value")
             ev = next(tokenizer)
