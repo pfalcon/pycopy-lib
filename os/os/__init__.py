@@ -233,6 +233,13 @@ def spawnvp(mode, file, args):
     execvp(file, args)
 
 
+def closerange(low, high):
+    for fd in range(low, high):
+        try:
+            close(fd)
+        except OSError:
+            pass
+
 
 _ENV_STRUCT = {
     "arr": (uctypes.ARRAY, 4096, (uctypes.PTR, uctypes.UINT8))
