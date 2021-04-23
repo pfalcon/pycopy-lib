@@ -159,6 +159,19 @@ def dup(fd):
     return r
 
 
+def WIFSIGNALED(st):
+    return st & 0x7f != 0
+
+def WIFEXITED(st):
+    return st & 0x7f == 0
+
+def WEXITSTATUS(st):
+    return st >> 8
+
+def WTERMSIG(st):
+    return st & 0x7f
+
+
 def fsencode(s):
     if type(s) is bytes:
         return s
