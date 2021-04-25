@@ -1,5 +1,5 @@
 srctype = pycopy-lib
 type = package
-version = 1.1
+version = 1.1.1
 author = Paul Sokolovsky
 depends = errno, stat, os.path, uos2
