@@ -91,12 +91,12 @@ _putenv = _libc.func("i", "putenv", "s")
 strerror = _libc.func("s", "strerror", "i")  # nw
 
 
-def check_error(ret):
-    # Return True is error was EINTR (which usually means that OS call
-    # should be restarted).
+def check_error(ret, hide_eintr=False):
+    # If hide_eintr is set and error was EINTR, return True. (Which usually
+    # means that OS call should be restarted).
     if ret == -1:
         e = uos.errno()
-        if e == errno.EINTR:
+        if hide_eintr and e == errno.EINTR:
             return True
         raise OSError(e)
 
