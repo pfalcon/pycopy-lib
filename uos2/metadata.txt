@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = module
-version = 0.5.5
+version = 0.5.6
 author = Paul Sokolovsky
 desc = Baseline POSIX OS services for Pycopy (https://github.com/pfalcon/pycopy)
 long_desc = "uos2" provides subset of the API of the standard Python "os" \
