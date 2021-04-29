@@ -219,6 +219,7 @@ class PCREPattern:
             beg, end = m.span()
             res += s[pos:beg]
             if callable(repl):
+                m.is_str = is_str
                 res += repl(m)
             elif "\\" in repl:
                 res += self._handle_repl_escapes(repl, m)
