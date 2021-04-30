@@ -200,7 +200,13 @@ class PCREPattern:
                 gr = int(gr)
             return match.group(gr) or b""
 
-        return sub(r"\\(0[0-7]*|\d+|g<.+?>|.)", handle_escape, repl)
+        is_str = isinstance(repl, str)
+        if is_str:
+            repl = repl.encode()
+        res = sub(r"\\(0[0-7]*|\d+|g<.+?>|.)", handle_escape, repl)
+        if is_str:
+            res = res.decode()
+        return res
 
     def subn(self, repl, s, count=0):
         is_str = isinstance(s, str)
