@@ -33,6 +33,9 @@ assert re.sub("a", "z", "caaab", 2) == "czzab"
 assert re.sub("a", "z", "caaab", 10) == "czzzb"
 assert re.sub(r"[ :/?&]", "_", "http://foo.ua/bar/?a=1&b=baz/") == "http___foo.ua_bar__a=1_b=baz_"
 assert re.sub("a", lambda m: m.group(0) * 2, "caaab") == "caaaaaab"
+# Callback should receive the same type as org string
+assert re.sub("a", lambda m: str(int(isinstance(m.group(0), str))), "caaab") == "c111b"
+assert re.sub(b"a", lambda m: str(int(isinstance(m.group(0), bytes))).encode(), b"abcda") == b"1bcd1"
 
 # subn
 
