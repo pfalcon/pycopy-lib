@@ -19,6 +19,9 @@ def isgeneratorfunction(obj):
 def isgenerator(obj):
     return isinstance(obj, type(lambda:(yield)()))
 
+iscoroutinefunction = isgeneratorfunction
+iscoroutine = isgenerator
+
 class _Class:
     def meth(): pass
 _Instance = _Class()
