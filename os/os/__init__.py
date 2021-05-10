@@ -260,21 +260,27 @@ _ENV_STRUCT = {
 }
 
 
-class _Environ(dict):
+class _Environ(object):
 
     def __init__(self):
-        dict.__init__(self)
+        self._data = dict()
         env = uctypes.struct(_environ_ptr.get(), _ENV_STRUCT)
         for i in range(4096):
             if int(env.arr[i]) == 0:
                 break
-            s = uctypes.bytes_at(env.arr[i]).decode()
+            # requires micropython change f20a730
+            s = uctypes.bytestring_at(int(env.arr[i])).decode()
             k, v = s.split("=", 1)
-            dict.__setitem__(self, k, v)
+            self._data[k] = v
+        self.__getitem__ = self._data.__getitem__
 
     def __setitem__(self, k, v):
-        putenv(k, v)
-        dict.__setitem__(self, k, v)
+        try:
+            uos2.putenv(k.encode(), v.encode())
+        except AttributeError:
+            # XXX is this right?
+            pass
+        self._data[k] = v
 
 
 environ = _Environ()
