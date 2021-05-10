@@ -9,7 +9,11 @@ Not implemented:
  - supress
 """
 
-class ContextDecorator(object):
+class AbstractContextManager(object):
+    "Compatibility"
+    pass
+
+class ContextDecorator(AbstractContextManager):
     "A base class or mixin that enables context managers to work as decorators."
 
     def _recreate_cm(self):
