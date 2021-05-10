@@ -24,6 +24,10 @@ def randint(start, stop):
 
 uniform = randint
 
+def random():
+    # single-precision float mantissa is 23 bits, add one to be safe
+    return getrandbits(24) / (1<<24)
+
 def shuffle(seq):
     l = len(seq)
     if l < 2:
@@ -39,6 +43,10 @@ def choice(seq):
 
 
 class Random:
+    @staticmethod
+    def random():
+        return random()
+
     @staticmethod
     def randrange(start, stop=None):
         return randrange(start, stop)
