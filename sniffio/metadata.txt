@@ -1,0 +1,3 @@
+srctype=async-ext
+type=module
+version = 0.0.2
