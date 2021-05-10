@@ -39,6 +39,8 @@ def _init(self, **kw):
 		if isinstance(v,attrib):
 			if hasattr(v,'factory'):
 				v = v.factory()
+			elif hasattr(v,'default_factory'):
+				v = v.default_factory()
 			else:
 				v = v.default
 				if isinstance(v,Factory):
