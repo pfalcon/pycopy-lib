@@ -1,5 +1,6 @@
 import os
 import ffilib
+from types import GenericAlias
 
 
 sep = "/"
@@ -96,3 +97,15 @@ def expanduser(s):
         # Sorry folks, follow conventions
         return "/home/" + s[1:]
     return s
+
+
+class PathLike:
+
+    """Abstract base class for implementing the file system path protocol."""
+
+    def __fspath__(self):
+        """Return the file system path representation of the object."""
+        raise NotImplementedError
+
+    __class_getitem__ = classmethod(GenericAlias)
+

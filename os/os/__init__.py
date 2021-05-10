@@ -37,6 +37,7 @@ from . import path
 from uos2 import *
 from uos2 import _exit, _libc as libc
 
+PathLike = path.PathLike
 
 P_WAIT = 0
 P_NOWAIT = 1
