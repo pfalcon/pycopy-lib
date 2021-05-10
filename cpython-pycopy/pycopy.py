@@ -24,8 +24,11 @@ def mem_free():
 def mem_alloc():
     return 1000000
 
-gc.mem_free = mem_free
-gc.mem_alloc = mem_alloc
+try:
+    gc.mem_free = mem_free
+    gc.mem_alloc = mem_alloc
+except AttributeError:
+    pass
 
 
 import pycopy_imphook
