@@ -254,6 +254,12 @@ def closerange(low, high):
             pass
 
 
+def fpathconf(fd, name):
+    if name == "PC_PIPE_BUF":
+        return 512
+    raise ValueError
+
+
 _ENV_STRUCT = {
     "arr": (uctypes.ARRAY, 4096, (uctypes.PTR, uctypes.UINT8))
 }
