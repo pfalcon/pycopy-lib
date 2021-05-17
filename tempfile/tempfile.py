@@ -2,6 +2,10 @@ import utime
 from uos2 import remove
 
 
+def gettempdir():
+    return "/tmp"
+
+
 def mktemp():
     return "/tmp/tmp%d" % utime.time()
 
