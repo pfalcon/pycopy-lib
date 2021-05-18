@@ -1833,7 +1833,7 @@ class timezone(tzinfo):
 
     @classmethod
     def _create(cls, offset, name=None):
-        self = tzinfo.__new__(cls)
+        self = object.__new__(cls)
         self._offset = offset
         self._name = name
         return self
