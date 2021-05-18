@@ -1,7 +1,7 @@
 import utime
-from . import simple
+from . import MQTTClient as BaseMQTTClient
 
-class MQTTClient(simple.MQTTClient):
+class MQTTClient(BaseMQTTClient):
 
     DELAY = 2
     DEBUG = False
