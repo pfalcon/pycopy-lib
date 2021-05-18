@@ -265,11 +265,25 @@ class _Environ(object):
     def __init__(self):
         self._data = dict()
         env = uctypes.struct(_environ_ptr.get(), _ENV_STRUCT)
+        try:
+            uctypes.bytestring_at
+        except AttributeError:
+            def getter(addr):
+                n = 0
+                while True:
+                    if addr[n] == 0:
+                        break
+                    n += 1
+                return uctypes.bytearray_at(int(addr),n).decode()
+        else:
+            def getter(addr):
+                return uctypes.bytestring_at(int(addr)).decode()
+
+            
         for i in range(4096):
             if int(env.arr[i]) == 0:
                 break
-            # requires micropython change f20a730
-            s = uctypes.bytestring_at(int(env.arr[i])).decode()
+            s = getter(int(env.arr[i])).decode()
             k, v = s.split("=", 1)
             self._data[k] = v
         self.__getitem__ = self._data.__getitem__
