@@ -2,12 +2,17 @@ import utime
 from uos2 import remove
 
 
+_cnt = 0
+
+
 def gettempdir():
     return "/tmp"
 
 
 def mktemp():
-    return "/tmp/tmp%d" % utime.time()
+    global _cnt
+    _cnt += 1
+    return "/tmp/tmp%d_%d" % (utime.time(), _cnt)
 
 
 def TemporaryFile(mode="w+b"):
