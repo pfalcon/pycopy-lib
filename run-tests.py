@@ -9,6 +9,7 @@ import os
 
 cnt_pass = 0
 cnt_fail = 0
+list_failed = []
 
 
 def run_one(fname, is_cpython):
@@ -35,6 +36,7 @@ def run_one(fname, is_cpython):
     else:
         print("FAIL")
         cnt_fail += 1
+        list_failed.append(org_fname)
 
 
 is_cpython = "cpython-" in os.getcwd()
@@ -52,3 +54,6 @@ for fname in glob.iglob("**/test*.py", recursive=True):
 
 
 print("Passed: %d, failed: %d" % (cnt_pass, cnt_fail))
+if list_failed:
+    list_failed.sort()
+    print("Failed tests:", " ".join(list_failed))
