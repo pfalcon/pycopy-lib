@@ -7,9 +7,12 @@ import glob
 import os
 
 
+skip_long = False
+
 cnt_pass = 0
 cnt_fail = 0
 list_failed = []
+list_skipped = []
 
 
 def run_one(fname, is_cpython):
@@ -39,6 +42,8 @@ def run_one(fname, is_cpython):
         list_failed.append(org_fname)
 
 
+skip_long = "--skip-long" in sys.argv
+
 is_cpython = "cpython-" in os.getcwd()
 
 cnt = 0
@@ -46,6 +51,10 @@ for fname in glob.iglob("**/test*.py", recursive=True):
     if fname.startswith("_/") or "/_/" in fname:
         continue
     if "testdata" in fname or "benchmark" in fname:
+        continue
+    if skip_long and os.path.exists(fname + ".long"):
+        print("%s: skip" % fname)
+        list_skipped.append(fname)
         continue
     run_one(fname, is_cpython or "cpython-" in fname)
     cnt += 1
