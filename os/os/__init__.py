@@ -271,7 +271,7 @@ class _Environ(object):
             def getter(addr):
                 n = 0
                 while True:
-                    if addr[n] == 0:
+                    if uctypes.bytes_at(int(addr)+n,1)[0] == 0:
                         break
                     n += 1
                 return uctypes.bytearray_at(int(addr),n).decode()
@@ -283,7 +283,7 @@ class _Environ(object):
         for i in range(4096):
             if int(env.arr[i]) == 0:
                 break
-            s = getter(int(env.arr[i])).decode()
+            s = getter(int(env.arr[i]))
             k, v = s.split("=", 1)
             self._data[k] = v
         self.__getitem__ = self._data.__getitem__
