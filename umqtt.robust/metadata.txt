@@ -4,3 +4,4 @@ version = 1.0.2
 author = Paul Sokolovsky
 desc = Lightweight MQTT client for Pycopy ("robust" version).
 long_desc = README.rst
+depends = umqtt
