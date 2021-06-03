@@ -5,9 +5,8 @@ print(inp)
 
 s = json.dumps(inp)
 print(s)
+assert s == '["foo", {"bar": ["baz", null, 1, 2]}]'
 
 outp = json.loads(s)
 print(outp)
-
-# Doesn't work because JSON doesn't have tuples
-#assert inp == outp
+assert outp == ['foo', {'bar': ['baz', None, 1, 2]}]
