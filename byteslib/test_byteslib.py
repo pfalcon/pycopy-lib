@@ -29,5 +29,5 @@
 import byteslib
 
 
-byteslib.hex(b"\xab\xcd") == "abcd"
-byteslib.fromhex("abcd") == b"\xab\xcd"
+assert byteslib.hex(b"\xab\xcd") == "abcd"
+assert byteslib.fromhex("abcd") == b"\xab\xcd"
