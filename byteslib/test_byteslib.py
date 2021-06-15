@@ -31,3 +31,5 @@ import byteslib
 
 assert byteslib.hex(b"\xab\xcd") == "abcd"
 assert byteslib.fromhex("abcd") == b"\xab\xcd"
+assert byteslib.decode(b"1234") == "1234"
+assert byteslib.decode(b"1234", "ascii", "strict") == "1234"
