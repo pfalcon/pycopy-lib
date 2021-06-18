@@ -23,7 +23,7 @@ def _setup():
 
     PATCHES = {
         str: (
-            string, ("encode", "expandtabs", "isidentifier", "ljust", "translate"),
+            string, ("encode", "expandtabs", "isalnum", "isidentifier", "ljust", "translate"),
         ),
         bytes: (
             byteslib, ("fromhex", "hex"),
