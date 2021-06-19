@@ -26,7 +26,7 @@ def _setup():
             string, ("encode", "expandtabs", "isalnum", "isidentifier", "ljust", "translate"),
         ),
         bytes: (
-            byteslib, ("fromhex", "hex"),
+            byteslib, ("decode", "fromhex", "hex"),
         ),
         set: (
             setlib, ("update", "union", "intersection_update", "intersection", "difference_update", "difference"),
