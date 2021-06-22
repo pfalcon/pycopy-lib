@@ -85,7 +85,12 @@ def realpath(path):
     if isinstance(path, str) or isinstance(path, bytes):
         realpath_ = libc.func("s", "realpath", "ss")
         # XXX: memory leak! should free() returned pointer, see man realpath
-        return realpath_(path, None)
+        res = realpath_(path, None)
+        if res is not None:
+            return res
+        # Assume that file doesn't exist, return abspath.
+        return abspath(path)
+
     raise TypeError
 
 def expanduser(s):
