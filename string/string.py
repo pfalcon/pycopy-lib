@@ -32,7 +32,7 @@ def translate(s, map):
 _org_encode = str.encode
 def encode(s, encoding="utf-8", errors="strict"):
     assert encoding in ("utf-8", "ascii", "us-ascii", "iso-8859-1"), "Unsupported encoding: %s" % encoding
-    assert errors in ("strict", "surrogateescape"), "Unsupported errors param: %s" % errors
+    assert errors in ("strict", "surrogateescape", "surrogatepass"), "Unsupported errors param: %s" % errors
     return _org_encode(s, encoding, errors)
 
 
