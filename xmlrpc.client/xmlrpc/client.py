@@ -9,6 +9,10 @@ class Method:
         self.server = server
         self.name = name
 
+    def __getattr__(self, attr):
+        self.name += "." + attr
+        return self
+
     def __call__(self, *args):
         buf = uio.StringIO()
         buf.write("<?xml version='1.0'?>\n<methodCall>\n<methodName>")
