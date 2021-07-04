@@ -3,8 +3,13 @@ import sys
 def format_tb(tb, limit):
     return ["traceback.format_tb() not implemented\n"]
 
-def format_exception_only(type, value):
-    return [repr(value) + "\n"]
+def format_exception_only(etype, value):
+    s = str(value)
+    t = type(value).__name__
+    if s:
+        return ["%s: %s\n" % (t, s)]
+    else:
+        return ["%s\n" % t]
 
 def format_exception(etype, value, tb, limit=None, chain=True):
     return format_exception_only(etype, value)
