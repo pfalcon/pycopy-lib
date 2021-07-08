@@ -161,25 +161,26 @@ class ArgumentParser:
         sys.stderr.write("error: %s\n" % msg)
         sys.exit(2)
 
-    def parse_args(self, args=None):
-        return self._parse_args_impl(args, False)
+    def parse_args(self, args=None, namespace=None):
+        return self._parse_args_impl(args, namespace, False)
 
-    def parse_known_args(self, args=None):
-        return self._parse_args_impl(args, True)
+    def parse_known_args(self, args=None, namespace=None):
+        return self._parse_args_impl(args, namespace, True)
 
-    def _parse_args_impl(self, args, return_unknown):
+    def _parse_args_impl(self, args, namespace, return_unknown):
         if args is None:
             args = sys.argv[1:]
         else:
             args = args[:]
+        if namespace is None:
+            namespace = Namespace()
         try:
-            return self._parse_args(args, return_unknown)
+            return self._parse_args(args, namespace, return_unknown)
         except _ArgError as e:
             self.usage(False)
             self.error(str(e))
 
-    def _parse_args(self, args, return_unknown):
-        argholder = Namespace()
+    def _parse_args(self, args, argholder, return_unknown):
         # add optional args with defaults
         for opt in self.opt:
             setattr(argholder, opt.dest, opt.default)
