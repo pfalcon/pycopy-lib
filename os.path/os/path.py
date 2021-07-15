@@ -90,6 +90,9 @@ def islink(path):
     except OSError:
         return False
 
+def isabs(path):
+    return path.startswith("/")
+
 def realpath(path):
     libc = ffilib.libc()
     if isinstance(path, str) or isinstance(path, bytes):
