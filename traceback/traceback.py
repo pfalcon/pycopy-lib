@@ -6,6 +6,12 @@ def format_tb(tb, limit):
 def format_exception_only(etype, value):
     s = str(value)
     t = type(value).__name__
+    try:
+        m = type(value).__module__
+        if m != "__main__" and m != "builtins":
+            t = m + "." + t
+    except:
+        pass
     if s:
         return ["%s: %s\n" % (t, s)]
     else:
