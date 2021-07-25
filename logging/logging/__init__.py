@@ -17,6 +17,10 @@ _level_dict = {
     DEBUG: "DEBUG",
 }
 
+
+_nameToLevel = {v: k for k, v in _level_dict.items()}
+
+
 def addLevelName(level, name):
     _level_dict[level] = name
 
