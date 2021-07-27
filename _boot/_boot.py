@@ -14,6 +14,7 @@ def _setup():
 
     builtins.vars = vars
     builtins.FileNotFoundError = OSError
+    builtins.IOError = OSError
 
     from micropython import writable_ns
     import sys
