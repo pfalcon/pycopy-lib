@@ -8,6 +8,11 @@ def vars(obj):
 def getrecursionlimit():
     return 100
 
+class Warning(Exception):
+    pass
+class RuntimeWarning(Warning):
+    pass
+
 
 def _setup():
     import builtins
@@ -15,6 +20,8 @@ def _setup():
     builtins.vars = vars
     builtins.FileNotFoundError = OSError
     builtins.IOError = OSError
+    builtins.Warning = Warning
+    builtins.RuntimeWarning = RuntimeWarning
 
     from micropython import writable_ns
     import sys
