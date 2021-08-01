@@ -1,4 +1,6 @@
 import sys
+import uio
+
 
 def format_tb(tb, limit):
     return ["traceback.format_tb() not implemented\n"]
@@ -18,7 +20,12 @@ def format_exception_only(etype, value):
         return ["%s\n" % t]
 
 def format_exception(etype, value, tb, limit=None, chain=True):
-    return format_exception_only(etype, value)
+    buf = uio.StringIO()
+    sys.print_exception(value, buf)
+    buf.seek(0)
+    tb = [l for l in buf]
+    tb = tb[:-1]
+    return tb + format_exception_only(etype, value)
 
 def print_exception(t, e, tb, limit=None, file=None, chain=True):
     if file is None:
