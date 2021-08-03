@@ -19,12 +19,9 @@ class Method:
         buf.write(self.name)
         buf.write("</methodName>\n<params>\n")
         for a in args:
-            buf.write("<param><value>")
-            if isinstance(a, int):
-                buf.write("<int>%s</int>" % a)
-            else:
-                raise NotImplementedError
-            buf.write("</value></param>\n")
+            buf.write("<param>")
+            self.dump(buf, a)
+            buf.write("</param>\n")
         buf.write("</params>\n</methodCall>\n")
         if self.server.verbose:
             print(buf.getvalue())
@@ -51,6 +48,23 @@ class Method:
         finally:
             #print("*", f.read())
             f.close()
+
+    def dump(self, buf, val):
+        buf.write("<value>")
+        if isinstance(val, int):
+            buf.write("<int>%s</int>" % val)
+        elif isinstance(val, str):
+            buf.write("<string>%s</string>" % val)
+        elif val is None:
+            buf.write("<nil/>")
+        elif isinstance(val, list):
+            buf.write("<array><data>")
+            for v in val:
+                self.dump(buf, v)
+            buf.write("</data></array>")
+        else:
+            raise NotImplementedError(repr(val))
+        buf.write("</value>")
 
 
 class ServerProxy:
