@@ -1,6 +1,42 @@
 import uio
 from urllib.urequest import urlopen
 import xmltok2
+from xmltok2 import START_TAG, END_TAG, TEXT
+
+
+class Lexer:
+
+    def __init__(self, gen):
+        self.gen = gen
+        self.next()
+
+    def next(self):
+        self.t = next(self.gen)
+        #print(self.t)
+
+    def match(self, what):
+        res = None
+        if what == START_TAG:
+            if self.t[0] == START_TAG:
+                res = self.t[2]
+        elif what == TEXT:
+            if self.t[0] == TEXT:
+                res = self.t[1]
+        elif what.startswith("/"):
+            if self.t[0] == END_TAG and self.t[2] == what[1:]:
+                res = True
+        else:
+            if self.t[0] == START_TAG and self.t[2] == what:
+                res = True
+        if res is not None:
+            self.next()
+        #print("match(%s)=%s" % (what, res))
+        return res
+
+    def expect(self, what):
+        res = self.match(what)
+        assert res is not None
+        return res
 
 
 class Method:
@@ -33,18 +69,9 @@ class Method:
             #print(f.read())
             f = uio.TextIOWrapper(f)
             tokenizer = xmltok2.tokenize(f)
-            xmltok2.gfind(tokenizer, lambda ev: ev[0] == xmltok2.START_TAG and ev[2] == "value")
-            ev = next(tokenizer)
-            assert ev[0] == xmltok2.START_TAG
-            typ = ev[2]
-            ev = next(tokenizer)
-            assert ev[0] == xmltok2.TEXT
-            val = ev[1]
-            if typ == "boolean":
-                assert val in ("0", "1")
-                return val == "1"
-            else:
-                assert NotImplementedError
+            xmltok2.gfind(tokenizer, lambda ev: ev[0] == xmltok2.START_TAG and ev[2] == "param")
+            val = self.parse(Lexer(tokenizer))
+            return val
         finally:
             #print("*", f.read())
             f.close()
@@ -65,6 +92,39 @@ class Method:
         else:
             raise NotImplementedError(repr(val))
         buf.write("</value>")
+
+    def parse(self, lex):
+        res = None
+        lex.expect("value")
+        typ = lex.expect(START_TAG)
+        if typ == "array":
+            res = []
+            lex.expect("data")
+            while not lex.match("/data"):
+                res.append(self.parse(lex))
+            lex.expect("/array")
+        elif typ == "struct":
+            res = {}
+            while not lex.match("/struct"):
+                lex.expect("member")
+                lex.expect("name")
+                key = lex.expect(TEXT)
+                lex.expect("/name")
+                res[key] = self.parse(lex)
+                lex.expect("/member")
+        elif typ == "int":
+            res = int(lex.expect(TEXT))
+            lex.expect("/int")
+        elif typ == "string":
+            res = lex.expect(TEXT)
+            lex.expect("/string")
+        elif typ == "boolean":
+            res = lex.expect(TEXT) == "1"
+            lex.expect("/boolean")
+        else:
+            raise NotImplementedError(typ)
+        lex.expect("/value")
+        return res
 
 
 class ServerProxy:
