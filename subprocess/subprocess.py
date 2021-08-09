@@ -1624,6 +1624,8 @@ class Popen(object):
                 if timeout is not None and timeout < 0:
                     raise TimeoutExpired(self.args, orig_timeout)
                 try:
+                    if timeout is not None:
+                        timeout = int(timeout * 1000)  # select.poll.poll() takes in ms
                     ready = poller.poll(timeout)
                 except select.error as e:
                     if e.args[0] == errno.EINTR:
