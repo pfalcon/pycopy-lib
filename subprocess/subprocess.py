@@ -1416,7 +1416,7 @@ class Popen(object):
 
                 # Wait for exec to fail or succeed; possibly raising an
                 # exception (limited in size)
-                data = bytearray()
+                data = b""
                 while True:
                     part = _eintr_retry_call(os.read, errpipe_read, 50000)
                     data += part
