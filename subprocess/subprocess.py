@@ -1567,10 +1567,10 @@ class Popen(object):
             if self.universal_newlines:
                 if stdout is not None:
                     stdout = self._translate_newlines(stdout,
-                                                      self.stdout.encoding)
+                                                      "utf-8")
                 if stderr is not None:
                     stderr = self._translate_newlines(stderr,
-                                                      self.stderr.encoding)
+                                                      "utf-8")
 
             return (stdout, stderr)
 
@@ -1617,7 +1617,7 @@ class Popen(object):
                 self._input_offset = 0
                 self._input = input
                 if self.universal_newlines:
-                    self._input = self._input.encode(self.stdin.encoding)
+                    self._input = self._input.encode()
 
             while self._fd2file:
                 timeout = self._remaining_time(endtime)
