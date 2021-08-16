@@ -1280,7 +1280,7 @@ class Popen(object):
                         else:
                             env_list = None  # Use execv instead of execve.
                         executable = os.fsencode(executable)
-                        if os.path.dirname(executable):
+                        if True or os.path.dirname(executable):
                             executable_list = (executable,)
                         else:
                             # This matches the behavior of os._execvpe().
