@@ -1,9 +1,9 @@
 HIGHEST_PROTOCOL = 0
 
-def dump(obj, f, proto=0):
+def dump(obj, f, protocol=0):
     f.write(repr(obj))
 
-def dumps(obj, proto=0):
+def dumps(obj, protocol=0):
     return repr(obj).encode()
 
 def load(f):
