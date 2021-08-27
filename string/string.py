@@ -74,3 +74,7 @@ def ljust(s, w, fill=" "):
     if len(s) >= w:
         return s
     return s + fill * (w - len(s))
+
+
+def capitalize(s):
+    return s[0].upper() + s[1:].lower()
