@@ -31,7 +31,7 @@ def _setup():
 
     PATCHES = {
         str: (
-            string, ("encode", "expandtabs", "isalnum", "isidentifier", "ljust", "translate"),
+            string, ("capitalize", "encode", "expandtabs", "isalnum", "isidentifier", "ljust", "translate"),
         ),
         bytes: (
             byteslib, ("decode", "fromhex", "hex"),
