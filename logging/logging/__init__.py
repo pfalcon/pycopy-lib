@@ -35,7 +35,7 @@ class Logger:
 
     def __init__(self, name):
         self.name = name
-        self.handlers = None
+        self.handlers = ()
         self.parent = None
 
     def _level_str(self, level):
@@ -89,7 +89,7 @@ class Logger:
         self.exc(sys.exc_info()[1], msg, *args)
 
     def addHandler(self, hdlr):
-        if self.handlers is None:
+        if self.handlers is ():
             self.handlers = []
         self.handlers.append(hdlr)
 
