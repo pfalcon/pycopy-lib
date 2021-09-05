@@ -24,6 +24,11 @@ _nameToLevel = {v: k for k, v in _level_dict.items()}
 def addLevelName(level, name):
     _level_dict[level] = name
 
+
+def getLevelName(lvl):
+    return _level_dict[lvl]
+
+
 class Logger:
 
     level = NOTSET
