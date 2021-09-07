@@ -1,6 +1,6 @@
 srctype = pycopy-lib
 type = package
-version = 0.7.3
+version = 0.7.4
 author = Stefan Lehmann, Paul Sokolovsky
 long_desc = README.rst
 depends = os
