@@ -36,6 +36,11 @@ def skip_unless_symlink(test):
 def create_empty_file(name):
     open(name, "w").close()
 
+
+def unlink(f):
+    os.unlink(f)
+
+
 @contextlib.contextmanager
 def disable_gc():
     have_gc = gc.isenabled()
