@@ -103,5 +103,9 @@ def findfile(f):
     return f
 
 
+def import_module(name):
+    return __import__(name)
+
+
 def cpython_only(f):
     return f
