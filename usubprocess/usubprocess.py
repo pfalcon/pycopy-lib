@@ -67,8 +67,9 @@ class Popen:
         return returncode
 
 
-def check_call(cmd, shell=False):
-    assert shell, "only shell=True is supported so far"
-    res = os.system(cmd)
-    if res:
-        raise CalledProcessError(res >> 8)
+def check_call(args, shell=False):
+    p = Popen(args, shell=shell)
+    p.communicate()
+    rc = p.wait()
+    if rc:
+        raise CalledProcessError(rc)
