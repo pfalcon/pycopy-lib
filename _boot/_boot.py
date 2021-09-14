@@ -52,6 +52,7 @@ def _setup():
     # to sys.stdout and friends. So, patch the module namespace directly.
     writable_ns(sys, True)
     sys.getrecursionlimit = getrecursionlimit
+    sys.executable = "pycopy-dev"
     writable_ns(sys, False)
 
 
