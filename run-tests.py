@@ -15,6 +15,10 @@ list_failed = []
 list_skipped = []
 
 
+def should_skip(fname):
+    return False
+
+
 def run_one(fname, is_cpython):
     global cnt_pass, cnt_fail
     org_fname = fname
@@ -52,7 +56,7 @@ for fname in glob.iglob("**/test*.py", recursive=True):
         continue
     if "testdata" in fname or "benchmark" in fname:
         continue
-    if skip_long and os.path.exists(fname + ".long"):
+    if should_skip(fname) or (skip_long and os.path.exists(fname + ".long")):
         print("%s: skip" % fname)
         list_skipped.append(fname)
         continue
