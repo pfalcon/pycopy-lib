@@ -107,7 +107,6 @@ else:
         dir = opendir_(path)
         if not dir:
             raise_error()
-        res = []
         dirent_fmt = "LLHB256s"
         while True:
             dirent = readdir_(dir)
