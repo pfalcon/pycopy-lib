@@ -70,3 +70,6 @@ print("Passed: %d, failed: %d" % (cnt_pass, cnt_fail))
 if list_failed:
     list_failed.sort()
     print("Failed tests:", " ".join(list_failed))
+if list_skipped:
+    list_skipped.sort()
+    print("Skipped tests:", " ".join(list_skipped))
