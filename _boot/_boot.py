@@ -53,6 +53,7 @@ def _setup():
     writable_ns(sys, True)
     sys.getrecursionlimit = getrecursionlimit
     sys.executable = "pycopy-dev"
+    sys.warnoptions = []
     writable_ns(sys, False)
 
 
