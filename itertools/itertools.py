@@ -88,3 +88,12 @@ def iter(*args):
             return v
 
     return _iter(args)
+
+
+def product(*iterables):
+    if not iterables:
+        yield ()
+        return
+    for i in iterables[0]:
+        for r in product(*iterables[1:]):
+            yield (i,) + r
