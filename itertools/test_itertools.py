@@ -20,3 +20,6 @@ assert list(itertools.accumulate([0])) == [0]
 assert list(itertools.accumulate([0, 2, 3])) == [0, 2, 5]
 assert list(itertools.accumulate(reversed([0, 2, 3]))) == [3, 5, 5]
 assert list(itertools.accumulate([1, 2, 3], lambda x, y: x * y)) == [1, 2, 6]
+
+assert list(itertools.product("ABCD", "xy")) == [('A', 'x'), ('A', 'y'), ('B', 'x'), ('B', 'y'), ('C', 'x'), ('C', 'y'), ('D', 'x'), ('D', 'y')]
+assert list(itertools.product()) == [()]
