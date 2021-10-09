@@ -73,3 +73,12 @@ def check_call(args, shell=False):
     rc = p.wait()
     if rc:
         raise CalledProcessError(rc)
+
+
+def check_output(args, shell=False):
+    p = Popen(args, stdout=PIPE, shell=shell)
+    output = p.communicate()[0]
+    rc = p.wait()
+    if rc:
+        raise CalledProcessError(rc, output)
+    return output
