@@ -234,7 +234,7 @@ class TestRunner:
         else:
             msg = "OK"
             if res.skippedNum > 0:
-                msg += " (%d skipped)" % res.skippedNum
+                msg += " (skipped=%d)" % res.skippedNum
             print(msg)
 
         return res
