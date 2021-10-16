@@ -1,4 +1,4 @@
 srctype = pycopy-lib
 type = module
 author = Pycopy Developers, CPython Developers
-version = 0.0.7
+version = 0.1
