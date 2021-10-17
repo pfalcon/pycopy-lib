@@ -143,6 +143,9 @@ class Handler:
     def setFormatter(self, fmt):
         self.formatter = fmt
 
+    def format(self, record):
+        return self.formatter.format(record)
+
 
 class StreamHandler(Handler):
     def __init__(self, stream=None):
