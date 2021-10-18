@@ -37,6 +37,7 @@ class Logger:
         self.name = name
         self.handlers = ()
         self.parent = None
+        self.propagate = True
 
     def _level_str(self, level):
         l = _level_dict.get(level)
