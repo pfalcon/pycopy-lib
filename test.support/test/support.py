@@ -104,8 +104,22 @@ def change_cwd(path, quiet=False):
         os.chdir(saved_dir)
 
 
-def findfile(f):
-    return f
+# CPython a454ef6985494ad894c5ec7ebe0ea4c824fc926d
+def findfile(file, here=__file__, subdir=None):
+    """Try to find a file on sys.path and the working directory.  If it is not
+    found the argument passed to the function is returned (this does not
+    necessarily signal failure; could still be the legitimate path)."""
+    #if os.path.isabs(file):
+    if file.startswith("/"):
+        return file
+    if subdir is not None:
+        file = os.path.join(subdir, file)
+    path = sys.path
+    path = [os.path.dirname(here)] + path
+    for dn in path:
+        fn = os.path.join(dn, file)
+        if os.path.exists(fn): return fn
+    return file
 
 
 def import_module(name):
