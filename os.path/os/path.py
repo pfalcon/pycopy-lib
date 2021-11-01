@@ -127,3 +127,34 @@ def commonprefix(m):
         if c != s2[i]:
             return s1[:i]
     return s1
+
+
+# From CPython git tag v3.4.10.
+def relpath(path, start=None):
+    """Return a relative version of a path"""
+
+    if not path:
+        raise ValueError("no path specified")
+
+    if isinstance(path, bytes):
+        curdir = b'.'
+        sep = b'/'
+        pardir = b'..'
+    else:
+        curdir = '.'
+        sep = '/'
+        pardir = '..'
+
+    if start is None:
+        start = curdir
+
+    start_list = [x for x in abspath(start).split(sep) if x]
+    path_list = [x for x in abspath(path).split(sep) if x]
+
+    # Work out how much of the filepath is shared by start and path.
+    i = len(commonprefix([start_list, path_list]))
+
+    rel_list = [pardir] * (len(start_list)-i) + path_list[i:]
+    if not rel_list:
+        return curdir
+    return join(*rel_list)
