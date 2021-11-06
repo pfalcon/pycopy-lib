@@ -7,14 +7,14 @@ import ucollections
 type_gen = type((lambda: (yield))())
 
 DEBUG = 0
-log = None
+_log = None
 
 def set_debug(val):
-    global DEBUG, log
+    global DEBUG, _log
     DEBUG = val
     if val:
         import ulogging
-        log = ulogging.getLogger("uasyncio.core")
+        _log = ulogging.getLogger("uasyncio.core")
 
 
 class CancelledError(Exception):
@@ -45,7 +45,7 @@ class EventLoop:
 
     def call_soon(self, callback, *args):
         if __debug__ and DEBUG:
-            log.debug("Scheduling in runq: %s", (callback, args))
+            _log.debug("Scheduling in runq: %s", (callback, args))
         self.runq.append(callback)
         if not isinstance(callback, type_gen):
             self.runq.append(args)
@@ -60,7 +60,7 @@ class EventLoop:
 
     def call_at_(self, time, callback, args=()):
         if __debug__ and DEBUG:
-            log.debug("Scheduling in waitq: %s", (time, callback, args))
+            _log.debug("Scheduling in waitq: %s", (time, callback, args))
         id = self.waitq.push(time, callback, args)
         if isinstance(callback, type_gen):
             prev = callback.pend_throw(id)
@@ -69,7 +69,7 @@ class EventLoop:
         # Default wait implementation, to be overriden in subclasses
         # with IO scheduling
         if __debug__ and DEBUG:
-            log.debug("Sleeping for: %s", delay)
+            _log.debug("Sleeping for: %s", delay)
         time.sleep_ms(delay)
 
     def run_forever(self):
@@ -88,13 +88,13 @@ class EventLoop:
                     prev = cur_task[1].pend_throw(None)
 
                 if __debug__ and DEBUG:
-                    log.debug("Moving from waitq to runq: %s", cur_task[1])
+                    _log.debug("Moving from waitq to runq: %s", cur_task[1])
                 self.call_soon(cur_task[1], *cur_task[2])
 
             # Process runq
             l = len(self.runq)
             if __debug__ and DEBUG:
-                log.debug("Entries in runq: %d", l)
+                _log.debug("Entries in runq: %d", l)
             while l:
                 cb = self.runq.popleft()
                 l -= 1
@@ -103,12 +103,12 @@ class EventLoop:
                     args = self.runq.popleft()
                     l -= 1
                     if __debug__ and DEBUG:
-                        log.info("Next callback to run: %s", (cb, args))
+                        _log.info("Next callback to run: %s", (cb, args))
                     cb(*args)
                     continue
 
                 if __debug__ and DEBUG:
-                    log.info("Next coroutine to run: %s", (cb, args))
+                    _log.info("Next coroutine to run: %s", (cb, args))
                 self.cur_task = cb
                 delay = 0
                 try:
@@ -117,7 +117,7 @@ class EventLoop:
                     else:
                         ret = cb.send(*args)
                     if __debug__ and DEBUG:
-                        log.info("Coroutine %s yield result: %s", cb, ret)
+                        _log.info("Coroutine %s yield result: %s", cb, ret)
                     if isinstance(ret, SysCall1):
                         arg = ret.arg
                         if isinstance(ret, SleepMs):
@@ -155,11 +155,11 @@ class EventLoop:
                         assert False, "Unsupported coroutine yield value: %r (of type %r)" % (ret, type(ret))
                 except StopIteration as e:
                     if __debug__ and DEBUG:
-                        log.debug("Coroutine finished: %s", cb)
+                        _log.debug("Coroutine finished: %s", cb)
                     continue
                 except CancelledError as e:
                     if __debug__ and DEBUG:
-                        log.debug("Coroutine cancelled: %s", cb)
+                        _log.debug("Coroutine cancelled: %s", cb)
                     continue
                 # Currently all syscalls don't return anything, so we don't
                 # need to feed anything to the next invocation of coroutine.
@@ -290,14 +290,14 @@ def wait_for_ms(coro, timeout):
     def waiter(coro, timeout_obj):
         res = yield from coro
         if __debug__ and DEBUG:
-            log.debug("waiter: cancelling %s", timeout_obj)
+            _log.debug("waiter: cancelling %s", timeout_obj)
         timeout_obj.coro = None
         return res
 
     def timeout_func(timeout_obj):
         if timeout_obj.coro:
             if __debug__ and DEBUG:
-                log.debug("timeout_func: cancelling %s", timeout_obj.coro)
+                _log.debug("timeout_func: cancelling %s", timeout_obj.coro)
             prev = timeout_obj.coro.pend_throw(TimeoutError())
             #print("prev pend", prev)
             if prev is None:
