@@ -66,6 +66,7 @@ ASCII = A = 0x4000
 UNICODE = U = 0x800
 
 PCRE_INFO_CAPTURECOUNT = 2
+PCRE_INFO_MATCHEMPTY = 25
 
 _UNESCAPE_DICT = const({
     b"\\": b"\\", b"n": b"\n", b"r": b"\r", b"t": b"\t",
@@ -253,7 +254,15 @@ class PCREPattern:
         res, cnt = self.subn(repl, s, count)
         return res
 
+    def _can_match_empty(self):
+        valref = array.array('i', [0])
+        pcre_fullinfo(self.obj, None, PCRE_INFO_MATCHEMPTY, valref)
+        return valref[0] != 0
+
     def split(self, s, maxsplit=0):
+        if self._can_match_empty():
+            raise ValueError("can't split on potentially empty matches")
+
         is_str = isinstance(s, str)
         if is_str:
             s = s.encode()
