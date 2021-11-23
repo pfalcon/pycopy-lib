@@ -32,6 +32,9 @@ def run_one(fname, is_cpython):
     if os.path.exists(org_fname + ".args"):
         with open(org_fname + ".args") as f:
             extra_args = f.readline().rstrip()
+        if extra_args == "SKIP":
+            print("skip")
+            return
     interp = "python3" if is_cpython else "pycopy"
     cmd = "cd %s; %s%s %s >/dev/null" % (path, interp, extra_args, fname)
     #print(cmd)
