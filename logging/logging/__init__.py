@@ -86,8 +86,13 @@ class Logger:
         sys.print_exception(e, buf)
         self.log(ERROR, msg + "\n" + buf.getvalue(), *args)
 
-    def exception(self, msg, *args):
-        self.exc(sys.exc_info()[1], msg, *args)
+    def exception(self, msg, ex=None, *args):
+        if hasattr(sys, 'exc_info'):
+            self.exc(sys.exc_info()[1], msg, *args)
+        elif ex != None:
+            self.exc(ex, msg, *args)
+        else:
+            raise Exception('Use exception(msg, ex=exception) or include exc_info in build')
 
     def addHandler(self, hdlr):
         if self.handlers is ():
@@ -159,7 +164,9 @@ class StreamHandler(Handler):
         self.flush()
 
     def flush(self):
-        self._stream.flush()
+        if hasattr(self._stream, 'flush'):
+            # Flush does not exist on sys.stderr, only flush if available
+            self._stream.flush()
 
 
 class FileHandler(StreamHandler):
