@@ -10,13 +10,15 @@ log.error("Test message4")
 log.critical("Test message5")
 logging.info("Test message6")
 
+ex2 = None
 try:
     1/0
 except Exception as ex:
+    ex2 = ex
     if hasattr(sys, 'exc_info'):
         # if sys has exc_info, the function can extract the last exception
         # included with #define MICROPY_PY_SYS_EXC_INFO (1) in board config
         log.exception("Some trouble (%s)", "expected")
     else:
         # Otherwise, add exception to logger
-        log.exception("Some trouble (%s)", ex, "expected")
+        log.exception("Some trouble (%s)", "expected")

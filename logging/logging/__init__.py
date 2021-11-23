@@ -86,13 +86,11 @@ class Logger:
         sys.print_exception(e, buf)
         self.log(ERROR, msg + "\n" + buf.getvalue(), *args)
 
-    def exception(self, msg, ex=None, *args):
+    def exception(self, msg, *args):
         if hasattr(sys, 'exc_info'):
             self.exc(sys.exc_info()[1], msg, *args)
-        elif ex != None:
-            self.exc(ex, msg, *args)
         else:
-            raise Exception('Use exception(msg, ex=exception) or include exc_info in build')
+            self.exc(Exception('Unknown'), msg, *args)
 
     def addHandler(self, hdlr):
         if self.handlers is ():
