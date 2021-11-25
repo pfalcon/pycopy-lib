@@ -194,9 +194,10 @@ class Formatter:
 
     converter = utime.localtime
 
-    def __init__(self, fmt=None, datefmt=None, style="%"):
+    def __init__(self, fmt=None, datefmt=None, style="%", max_len=100):
         self.fmt = fmt or "%(message)s"
         self.datefmt = datefmt
+        self.max_len = max_len
 
         if style not in ("%", "{"):
             raise ValueError("Style must be one of: %, {")
@@ -211,7 +212,9 @@ class Formatter:
 
     def format(self, record):
         # The message attribute of the record is computed using msg % args.
-        record.message = record.msg % record.args
+        record.message = record.msg[:self.max_len] % record.args
+        if len(record.msg) > self.max_len:
+            record.message += '...'
 
         # If the formatting string contains '(asctime)', formatTime() is called to
         # format the event time.
