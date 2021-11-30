@@ -17,3 +17,11 @@ class ChainMap:
 
     def __delitem__(self, k):
         del self.maps[0][k]
+
+    def items(self):
+        seen = set()
+        for m in self.maps:
+            for k, v in m.items():
+                if k not in seen:
+                    yield k, v
+                    seen.add(k)
