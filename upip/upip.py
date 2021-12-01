@@ -191,9 +191,9 @@ def get_latest_url_json(name):
 
 def get_url_simple(name, version):
     # Stupid PEP 503 normalization
-    name = name.replace("_", "-").replace(".", "-").lower()
-    f = url_open("https://pypi.org/simple/%s/" % name)
-    simple_lst_re = ure.compile('<a href="(.+?)%s-%s(.+?)#' % name, version.replace(".", "\."))
+    url_name = name.replace("_", "-").replace(".", "-").lower()
+    f = url_open("https://pypi.org/simple/%s/" % url_name)
+    simple_lst_re = ure.compile('<a href="((.+?)' + name.replace(".", "\.") + '-' + version.replace(".", "\.") + '(.+?))#')
     try:
         match_url = None
         while 1:
