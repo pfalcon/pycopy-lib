@@ -1,9 +1,3 @@
-"""Concrete date/time and related types.
-
-See http://www.iana.org/time-zones/repository/tz-link.html for
-time zone and DST data sources.
-"""
-
 import time as _time
 import math as _math
 
@@ -13,15 +7,6 @@ def _cmp(x, y):
 MINYEAR = 1
 MAXYEAR = 9999
 _MAXORDINAL = 3652059 # date.max.toordinal()
-
-# Utility functions, adapted from Python's Demo/classes/Dates.py, which
-# also assumes the current Gregorian calendar indefinitely extended in
-# both directions.  Difference:  Dates.py calls January 1 of year 0 day
-# number 1.  The code here calls January 1 of year 1 day number 1.  This is
-# to match the definition of the "proleptic Gregorian" calendar in Dershowitz
-# and Reingold's "Calendrical Calculations", where it's the base calendar
-# for all computations.  See the book for algorithms for converting between
-# proleptic Gregorian ordinals and many other calendar systems.
 
 _DAYS_IN_MONTH = [None, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -43,21 +28,17 @@ def _days_before_year(year):
 
 def _days_in_month(year, month):
     "year, month -> number of days in that month in that year."
-    assert 1 <= month <= 12, month
     if month == 2 and _is_leap(year):
         return 29
     return _DAYS_IN_MONTH[month]
 
 def _days_before_month(year, month):
     "year, month -> number of days in year preceding first day of month."
-    assert 1 <= month <= 12, 'month must be in 1..12'
     return _DAYS_BEFORE_MONTH[month] + (month > 2 and _is_leap(year))
 
 def _ymd2ord(year, month, day):
     "year, month, day -> ordinal, considering 01-Jan-0001 as day 1."
-    assert 1 <= month <= 12, 'month must be in 1..12'
     dim = _days_in_month(year, month)
-    assert 1 <= day <= dim, ('day must be in 1..%d' % dim)
     return (_days_before_year(year) +
             _days_before_month(year, month) +
             day)
@@ -66,81 +47,31 @@ _DI400Y = _days_before_year(401)    # number of days in 400 years
 _DI100Y = _days_before_year(101)    #    "    "   "   " 100   "
 _DI4Y   = _days_before_year(5)      #    "    "   "   "   4   "
 
-# A 4-year cycle has an extra leap day over what we'd get from pasting
-# together 4 single years.
-assert _DI4Y == 4 * 365 + 1
-
-# Similarly, a 400-year cycle has an extra leap day over what we'd get from
-# pasting together 4 100-year cycles.
-assert _DI400Y == 4 * _DI100Y + 1
-
-# OTOH, a 100-year cycle has one fewer leap day than we'd get from
-# pasting together 25 4-year cycles.
-assert _DI100Y == 25 * _DI4Y - 1
-
 def _ord2ymd(n):
-    "ordinal -> (year, month, day), considering 01-Jan-0001 as day 1."
-
-    # n is a 1-based index, starting at 1-Jan-1.  The pattern of leap years
-    # repeats exactly every 400 years.  The basic strategy is to find the
-    # closest 400-year boundary at or before n, then work with the offset
-    # from that boundary to n.  Life is much clearer if we subtract 1 from
-    # n first -- then the values of n at 400-year boundaries are exactly
-    # those divisible by _DI400Y:
-    #
-    #     D  M   Y            n              n-1
-    #     -- --- ----        ----------     ----------------
-    #     31 Dec -400        -_DI400Y       -_DI400Y -1
-    #      1 Jan -399         -_DI400Y +1   -_DI400Y      400-year boundary
-    #     ...
-    #     30 Dec  000        -1             -2
-    #     31 Dec  000         0             -1
-    #      1 Jan  001         1              0            400-year boundary
-    #      2 Jan  001         2              1
-    #      3 Jan  001         3              2
-    #     ...
-    #     31 Dec  400         _DI400Y        _DI400Y -1
-    #      1 Jan  401         _DI400Y +1     _DI400Y      400-year boundary
     n -= 1
     n400, n = divmod(n, _DI400Y)
     year = n400 * 400 + 1   # ..., -399, 1, 401, ...
 
-    # Now n is the (non-negative) offset, in days, from January 1 of year, to
-    # the desired date.  Now compute how many 100-year cycles precede n.
-    # Note that it's possible for n100 to equal 4!  In that case 4 full
-    # 100-year cycles precede the desired day, which implies the desired
-    # day is December 31 at the end of a 400-year cycle.
     n100, n = divmod(n, _DI100Y)
 
-    # Now compute how many 4-year cycles precede it.
     n4, n = divmod(n, _DI4Y)
 
-    # And now how many single years.  Again n1 can be 4, and again meaning
-    # that the desired day is December 31 at the end of the 4-year cycle.
     n1, n = divmod(n, 365)
 
     year += n100 * 100 + n4 * 4 + n1
     if n1 == 4 or n100 == 4:
-        assert n == 0
         return year-1, 12, 31
 
-    # Now the year is correct, and n is the offset from January 1.  We find
-    # the month via an estimate that's either exact or one too large.
     leapyear = n1 == 3 and (n4 != 24 or n100 == 3)
-    assert leapyear == _is_leap(year)
     month = (n + 50) >> 5
     preceding = _DAYS_BEFORE_MONTH[month] + (month > 2 and leapyear)
     if preceding > n:  # estimate is too large
         month -= 1
         preceding -= _DAYS_IN_MONTH[month] + (month == 2 and leapyear)
     n -= preceding
-    assert 0 <= n < _days_in_month(year, month)
 
-    # Now the year and month are correct, and n is the offset from the
-    # start of that month:  we're done!
     return year, month, n+1
 
-# Month and day names.  For localized versions, see the calendar module.
 _MONTHNAMES = [None, "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 _DAYNAMES = [None, "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -152,20 +83,16 @@ def _build_struct_time(y, m, d, hh, mm, ss, dstflag):
     return _time.struct_time((y, m, d, hh, mm, ss, wday, dnum, dstflag))
 
 def _format_time(hh, mm, ss, us):
-    # Skip trailing microseconds when us==0.
     result = "%02d:%02d:%02d" % (hh, mm, ss)
     if us:
         result += ".%06d" % us
     return result
 
-# Correctly substitute for %z and %Z escapes in strftime formats.
 def _wrap_strftime(object, format, timetuple):
-    # Don't call utcoffset() or tzname() unless actually needed.
     freplace = None # the string to use for %f
     zreplace = None # the string to use for %z
     Zreplace = None # the string to use for %Z
 
-    # Scan format for %z and %Z escapes, replacing as needed.
     newformat = []
     push = newformat.append
     i, n = 0, len(format)
@@ -192,10 +119,8 @@ def _wrap_strftime(object, format, timetuple):
                                     offset = -offset
                                     sign = '-'
                                 h, m = divmod(offset, timedelta(hours=1))
-                                assert not m % timedelta(minutes=1), "whole minute"
                                 m //= timedelta(minutes=1)
                                 zreplace = '%c%02d%02d' % (sign, h, m)
-                    assert '%' not in zreplace
                     newformat.append(zreplace)
                 elif ch == 'Z':
                     if Zreplace is None:
@@ -227,14 +152,7 @@ def _check_tzname(name):
         raise TypeError("tzinfo.tzname() must return None or string, "
                         "not '%s'" % type(name))
 
-# name is the offset-producing method, "utcoffset" or "dst".
-# offset is what it returned.
-# If offset isn't None or timedelta, raises TypeError.
-# If offset is None, returns None.
-# Else offset is checked for being in range, and a whole # of minutes.
-# If it is, its integer value is returned.  Else ValueError is raised.
 def _check_utc_offset(name, offset):
-    assert name in ("utcoffset", "dst")
     if offset is None:
         return
     if not isinstance(offset, timedelta):
@@ -280,126 +198,59 @@ def _cmperror(x, y):
                     type(x).__name__, type(y).__name__))
 
 class timedelta:
-    """Represent the difference between two datetime objects.
-
-    Supported operators:
-
-    - add, subtract timedelta
-    - unary plus, minus, abs
-    - compare to timedelta
-    - multiply, divide by int
-
-    In addition, datetime supports subtraction of two datetime objects
-    returning a timedelta, and addition or subtraction of a datetime
-    and a timedelta giving a datetime.
-
-    Representation: (days, seconds, microseconds).  Why?  Because I
-    felt like it.
-    """
-    __slots__ = '_days', '_seconds', '_microseconds'
-
     def __new__(cls, days=0, seconds=0, microseconds=0,
                 milliseconds=0, minutes=0, hours=0, weeks=0):
-        # Doing this efficiently and accurately in C is going to be difficult
-        # and error-prone, due to ubiquitous overflow possibilities, and that
-        # C double doesn't have enough bits of precision to represent
-        # microseconds over 10K years faithfully.  The code here tries to make
-        # explicit where go-fast assumptions can be relied on, in order to
-        # guide the C implementation; it's way more convoluted than speed-
-        # ignoring auto-overflow-to-long idiomatic Python could be.
-
-        # XXX Check that all inputs are ints or floats.
-
-        # Final values, all integer.
-        # s and us fit in 32-bit signed ints; d isn't bounded.
         d = s = us = 0
 
-        # Normalize everything to days, seconds, microseconds.
         days += weeks*7
         seconds += minutes*60 + hours*3600
         microseconds += milliseconds*1000
 
-        # Get rid of all fractions, and normalize s and us.
-        # Take a deep breath <wink>.
         if isinstance(days, float):
             dayfrac, days = _math.modf(days)
             daysecondsfrac, daysecondswhole = _math.modf(dayfrac * (24.*3600.))
-            assert daysecondswhole == int(daysecondswhole)  # can't overflow
             s = int(daysecondswhole)
-            assert days == int(days)
             d = int(days)
         else:
             daysecondsfrac = 0.0
             d = days
-        assert isinstance(daysecondsfrac, float)
-        assert abs(daysecondsfrac) <= 1.0
-        assert isinstance(d, int)
-        assert abs(s) <= 24 * 3600
-        # days isn't referenced again before redefinition
 
         if isinstance(seconds, float):
             secondsfrac, seconds = _math.modf(seconds)
-            assert seconds == int(seconds)
             seconds = int(seconds)
             secondsfrac += daysecondsfrac
-            assert abs(secondsfrac) <= 2.0
         else:
             secondsfrac = daysecondsfrac
-        # daysecondsfrac isn't referenced again
-        assert isinstance(secondsfrac, float)
-        assert abs(secondsfrac) <= 2.0
 
-        assert isinstance(seconds, int)
         days, seconds = divmod(seconds, 24*3600)
         d += days
         s += int(seconds)    # can't overflow
-        assert isinstance(s, int)
-        assert abs(s) <= 2 * 24 * 3600
-        # seconds isn't referenced again before redefinition
 
         usdouble = secondsfrac * 1e6
-        assert abs(usdouble) < 2.1e6    # exact value not critical
-        # secondsfrac isn't referenced again
 
         if isinstance(microseconds, float):
             microseconds += usdouble
             microseconds = round(microseconds, 0)
             seconds, microseconds = divmod(microseconds, 1e6)
-            assert microseconds == int(microseconds)
-            assert seconds == int(seconds)
             days, seconds = divmod(seconds, 24.*3600.)
-            assert days == int(days)
-            assert seconds == int(seconds)
             d += int(days)
             s += int(seconds)   # can't overflow
-            assert isinstance(s, int)
-            assert abs(s) <= 3 * 24 * 3600
         else:
             seconds, microseconds = divmod(microseconds, 1000000)
             days, seconds = divmod(seconds, 24*3600)
             d += days
             s += int(seconds)    # can't overflow
-            assert isinstance(s, int)
-            assert abs(s) <= 3 * 24 * 3600
             microseconds = float(microseconds)
             microseconds += usdouble
             microseconds = round(microseconds, 0)
-        assert abs(s) <= 3 * 24 * 3600
-        assert abs(microseconds) < 3.1e6
 
         # Just a little bit of carrying possible for microseconds and seconds.
-        assert isinstance(microseconds, float)
-        assert int(microseconds) == microseconds
         us = int(microseconds)
         seconds, us = divmod(us, 1000000)
         s += seconds    # cant't overflow
-        assert isinstance(s, int)
         days, s = divmod(s, 24*3600)
         d += days
 
-        assert isinstance(d, int)
-        assert isinstance(s, int) and 0 <= s < 24*3600
-        assert isinstance(us, int) and 0 <= us < 1000000
 
         self = object.__new__(cls)
 
@@ -591,7 +442,6 @@ class timedelta:
             _cmperror(self, other)
 
     def _cmp(self, other):
-        assert isinstance(other, timedelta)
         return _cmp(self._getstate(), other._getstate())
 
     def __hash__(self):
@@ -817,7 +667,6 @@ class date:
         return NotImplemented
 
     def _cmp(self, other):
-        assert isinstance(other, date)
         y, m, d = self._year, self._month, self._day
         y2, m2, d2 = other._year, other._month, other._day
         return _cmp((y, m, d), (y2, m2, d2))
@@ -957,59 +806,10 @@ class tzinfo:
                                  "results; cannot convert")
         return dt + dtdst
 
-    # Pickle support.
-
-    def __reduce__(self):
-        getinitargs = getattr(self, "__getinitargs__", None)
-        if getinitargs:
-            args = getinitargs()
-        else:
-            args = ()
-        getstate = getattr(self, "__getstate__", None)
-        if getstate:
-            state = getstate()
-        else:
-            state = getattr(self, "__dict__", None) or None
-        if state is None:
-            return (self.__class__, args)
-        else:
-            return (self.__class__, args, state)
-
 _tzinfo_class = tzinfo
 
 class time:
-    """Time with time zone.
-
-    Constructors:
-
-    __new__()
-
-    Operators:
-
-    __repr__, __str__
-    __cmp__, __hash__
-
-    Methods:
-
-    strftime()
-    isoformat()
-    utcoffset()
-    tzname()
-    dst()
-
-    Properties (readonly):
-    hour, minute, second, microsecond, tzinfo
-    """
-
     def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
-        """Constructor.
-
-        Arguments:
-
-        hour, minute (required)
-        second, microsecond (default to zero)
-        tzinfo (default to None)
-        """
         self = object.__new__(cls)
         if isinstance(hour, bytes) and len(hour) == 6:
             # Pickle support
@@ -1027,27 +827,22 @@ class time:
     # Read-only field accessors
     @property
     def hour(self):
-        """hour (0-23)"""
         return self._hour
 
     @property
     def minute(self):
-        """minute (0-59)"""
         return self._minute
 
     @property
     def second(self):
-        """second (0-59)"""
         return self._second
 
     @property
     def microsecond(self):
-        """microsecond (0-999999)"""
         return self._microsecond
 
     @property
     def tzinfo(self):
-        """timezone info object"""
         return self._tzinfo
 
     # Standard conversions, __hash__ (and helpers)
@@ -1091,7 +886,6 @@ class time:
             _cmperror(self, other)
 
     def _cmp(self, other, allow_mixed=False):
-        assert isinstance(other, time)
         mytz = self._tzinfo
         ottz = other._tzinfo
         myoff = otoff = None
@@ -1119,13 +913,11 @@ class time:
                     (othhmm, other._second, other._microsecond))
 
     def __hash__(self):
-        """Hash."""
         tzoff = self.utcoffset()
         if not tzoff: # zero or None
             return hash(self._getstate()[0])
         h, m = divmod(timedelta(hours=self.hour, minutes=self.minute) - tzoff,
                       timedelta(hours=1))
-        assert not m % timedelta(minutes=1), "whole minute"
         m //= timedelta(minutes=1)
         if 0 <= h < 24:
             return hash(time(h, m, self.second, self.microsecond))
@@ -1134,7 +926,6 @@ class time:
     # Conversion to string
 
     def _tzstr(self, sep=":"):
-        """Return formatted timezone offset (+xx:xx) or None."""
         off = self.utcoffset()
         if off is not None:
             if off.days < 0:
@@ -1143,14 +934,11 @@ class time:
             else:
                 sign = "+"
             hh, mm = divmod(off, timedelta(hours=1))
-            assert not mm % timedelta(minutes=1), "whole minute"
             mm //= timedelta(minutes=1)
-            assert 0 <= hh < 24
             off = "%s%02d%s%02d" % (sign, hh, sep, mm)
         return off
 
     def __repr__(self):
-        """Convert to formal string, for repr()."""
         if self._microsecond != 0:
             s = ", %d, %d" % (self._second, self._microsecond)
         elif self._second != 0:
@@ -1160,16 +948,10 @@ class time:
         s= "%s(%d, %d%s)" % ('datetime.' + self.__class__.__name__,
                              self._hour, self._minute, s)
         if self._tzinfo is not None:
-            assert s[-1:] == ")"
             s = s[:-1] + ", tzinfo=%r" % self._tzinfo + ")"
         return s
 
     def isoformat(self):
-        """Return the time formatted according to ISO.
-
-        This is 'HH:MM:SS.mmmmmm+zz:zz', or 'HH:MM:SS+zz:zz' if
-        self.microsecond == 0.
-        """
         s = _format_time(self._hour, self._minute, self._second,
                          self._microsecond)
         tz = self._tzstr()
@@ -1180,11 +962,6 @@ class time:
     __str__ = isoformat
 
     def strftime(self, fmt):
-        """Format using strftime().  The date part of the timestamp passed
-        to underlying strftime should not be used.
-        """
-        # The year must be >= 1000 else Python's strftime implementation
-        # can raise a bogus exception.
         timetuple = (1900, 1, 1,
                      self._hour, self._minute, self._second,
                      0, 1, -1)
@@ -1198,8 +975,6 @@ class time:
     # Timezone functions
 
     def utcoffset(self):
-        """Return the timezone offset in minutes east of UTC (negative west of
-        UTC)."""
         if self._tzinfo is None:
             return None
         offset = self._tzinfo.utcoffset(None)
@@ -1207,12 +982,6 @@ class time:
         return offset
 
     def tzname(self):
-        """Return the timezone name.
-
-        Note that the name is 100% informational -- there's no requirement that
-        it mean anything in particular. For example, "GMT", "UTC", "-500",
-        "-5:00", "EDT", "US/Eastern", "America/New York" are all valid replies.
-        """
         if self._tzinfo is None:
             return None
         name = self._tzinfo.tzname(None)
@@ -1220,14 +989,6 @@ class time:
         return name
 
     def dst(self):
-        """Return 0 if DST is not in effect, or the DST offset (in minutes
-        eastward) if DST is in effect.
-
-        This is purely informational; the DST offset has already been added to
-        the UTC offset returned by utcoffset() if applicable, so there's no
-        need to consult dst() unless you're interested in displaying the DST
-        info.
-        """
         if self._tzinfo is None:
             return None
         offset = self._tzinfo.dst(None)
@@ -1236,7 +997,6 @@ class time:
 
     def replace(self, hour=None, minute=None, second=None, microsecond=None,
                 tzinfo=True):
-        """Return a new time with new values for the specified fields."""
         if hour is None:
             hour = self.hour
         if minute is None:
@@ -1290,15 +1050,6 @@ time.max = time(23, 59, 59, 999999)
 time.resolution = timedelta(microseconds=1)
 
 class datetime(date):
-    """datetime(year, month, day[, hour[, minute[, second[, microsecond[,tzinfo]]]]])
-
-    The year, month and day arguments are required. tzinfo may be None, or an
-    instance of a tzinfo subclass. The remaining arguments may be ints.
-    """
-
-    __slots__ = date.__slots__ + (
-        '_hour', '_minute', '_second',
-        '_microsecond', '_tzinfo')
     def __new__(cls, year, month=None, day=None, hour=0, minute=0, second=0,
                 microsecond=0, tzinfo=None):
         if isinstance(year, bytes) and len(year) == 10:
@@ -1319,36 +1070,26 @@ class datetime(date):
     # Read-only field accessors
     @property
     def hour(self):
-        """hour (0-23)"""
         return self._hour
 
     @property
     def minute(self):
-        """minute (0-59)"""
         return self._minute
 
     @property
     def second(self):
-        """second (0-59)"""
         return self._second
 
     @property
     def microsecond(self):
-        """microsecond (0-999999)"""
         return self._microsecond
 
     @property
     def tzinfo(self):
-        """timezone info object"""
         return self._tzinfo
 
     @classmethod
     def fromtimestamp(cls, t, tz=None):
-        """Construct a datetime from a POSIX timestamp (like time.time()).
-
-        A timezone info object may be passed in as well.
-        """
-
         _check_tzinfo_arg(tz)
 
         converter = _time.localtime if tz is None else _time.gmtime
@@ -1356,10 +1097,6 @@ class datetime(date):
         t, frac = divmod(t, 1.0)
         us = int(frac * 1e6)
 
-        # If timestamp is less than one microsecond smaller than a
-        # full second, us can be rounded up to 1000000.  In this case,
-        # roll over to seconds, otherwise, ValueError is raised
-        # by the constructor.
         if us == 1000000:
             t += 1
             us = 0
@@ -1461,7 +1198,6 @@ class datetime(date):
 
     def replace(self, year=None, month=None, day=None, hour=None,
                 minute=None, second=None, microsecond=None, tzinfo=True):
-        """Return a new datetime with new values for the specified fields."""
         if year is None:
             year = self.year
         if month is None:
@@ -1541,17 +1277,6 @@ class datetime(date):
             self._year)
 
     def isoformat(self, sep='T'):
-        """Return the time formatted according to ISO.
-
-        This is 'YYYY-MM-DD HH:MM:SS.mmmmmm', or 'YYYY-MM-DD HH:MM:SS' if
-        self.microsecond == 0.
-
-        If self.tzinfo is not None, the UTC offset is also attached, giving
-        'YYYY-MM-DD HH:MM:SS.mmmmmm+HH:MM' or 'YYYY-MM-DD HH:MM:SS+HH:MM'.
-
-        Optional argument sep specifies the separator between date and
-        time, default 'T'.
-        """
         s = ("%04d-%02d-%02d%s" % (self._year, self._month, self._day,
                                   sep) +
                 _format_time(self._hour, self._minute, self._second,
@@ -1564,13 +1289,11 @@ class datetime(date):
             else:
                 sign = "+"
             hh, mm = divmod(off, timedelta(hours=1))
-            assert not mm % timedelta(minutes=1), "whole minute"
             mm //= timedelta(minutes=1)
             s += "%s%02d:%02d" % (sign, hh, mm)
         return s
 
     def __repr__(self):
-        """Convert to formal string, for repr()."""
         L = [self._year, self._month, self._day, # These are never zero
              self._hour, self._minute, self._second, self._microsecond]
         if L[-1] == 0:
@@ -1580,7 +1303,6 @@ class datetime(date):
         s = ", ".join(map(str, L))
         s = "%s(%s)" % ('datetime.' + self.__class__.__name__, s)
         if self._tzinfo is not None:
-            assert s[-1:] == ")"
             s = s[:-1] + ", tzinfo=%r" % self._tzinfo + ")"
         return s
 
@@ -1595,8 +1317,6 @@ class datetime(date):
         return _strptime._strptime_datetime(cls, date_string, format)
 
     def utcoffset(self):
-        """Return the timezone offset in minutes east of UTC (negative west of
-        UTC)."""
         if self._tzinfo is None:
             return None
         offset = self._tzinfo.utcoffset(self)
@@ -1604,25 +1324,11 @@ class datetime(date):
         return offset
 
     def tzname(self):
-        """Return the timezone name.
-
-        Note that the name is 100% informational -- there's no requirement that
-        it mean anything in particular. For example, "GMT", "UTC", "-500",
-        "-5:00", "EDT", "US/Eastern", "America/New York" are all valid replies.
-        """
         name = _call_tzinfo_method(self._tzinfo, "tzname", self)
         _check_tzname(name)
         return name
 
     def dst(self):
-        """Return 0 if DST is not in effect, or the DST offset (in minutes
-        eastward) if DST is in effect.
-
-        This is purely informational; the DST offset has already been added to
-        the UTC offset returned by utcoffset() if applicable, so there's no
-        need to consult dst() unless you're interested in displaying the DST
-        info.
-        """
         if self._tzinfo is None:
             return None
         offset = self._tzinfo.dst(self)
@@ -1680,7 +1386,6 @@ class datetime(date):
             _cmperror(self, other)
 
     def _cmp(self, other, allow_mixed=False):
-        assert isinstance(other, datetime)
         mytz = self._tzinfo
         ottz = other._tzinfo
         myoff = otoff = None
@@ -1839,7 +1544,6 @@ class timezone(tzinfo):
         return self
 
     def __getinitargs__(self):
-        """pickle support"""
         if self._name is None:
             return (self._offset,)
         return (self._offset, self._name)
@@ -1853,15 +1557,6 @@ class timezone(tzinfo):
         return hash(self._offset)
 
     def __repr__(self):
-        """Convert to formal string, for repr().
-
-        >>> tz = timezone.utc
-        >>> repr(tz)
-        'datetime.timezone.utc'
-        >>> tz = timezone(timedelta(hours=-5), 'EST')
-        >>> repr(tz)
-        "datetime.timezone(datetime.timedelta(-1, 68400), 'EST')"
-        """
         if self is self.utc:
             return 'datetime.timezone.utc'
         if self._name is None:
@@ -1920,219 +1615,3 @@ timezone.utc = timezone._create(timedelta(0))
 timezone.min = timezone._create(timezone._minoffset)
 timezone.max = timezone._create(timezone._maxoffset)
 _EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
-"""
-Some time zone algebra.  For a datetime x, let
-    x.n = x stripped of its timezone -- its naive time.
-    x.o = x.utcoffset(), and assuming that doesn't raise an exception or
-          return None
-    x.d = x.dst(), and assuming that doesn't raise an exception or
-          return None
-    x.s = x's standard offset, x.o - x.d
-
-Now some derived rules, where k is a duration (timedelta).
-
-1. x.o = x.s + x.d
-   This follows from the definition of x.s.
-
-2. If x and y have the same tzinfo member, x.s = y.s.
-   This is actually a requirement, an assumption we need to make about
-   sane tzinfo classes.
-
-3. The naive UTC time corresponding to x is x.n - x.o.
-   This is again a requirement for a sane tzinfo class.
-
-4. (x+k).s = x.s
-   This follows from #2, and that datimetimetz+timedelta preserves tzinfo.
-
-5. (x+k).n = x.n + k
-   Again follows from how arithmetic is defined.
-
-Now we can explain tz.fromutc(x).  Let's assume it's an interesting case
-(meaning that the various tzinfo methods exist, and don't blow up or return
-None when called).
-
-The function wants to return a datetime y with timezone tz, equivalent to x.
-x is already in UTC.
-
-By #3, we want
-
-    y.n - y.o = x.n                             [1]
-
-The algorithm starts by attaching tz to x.n, and calling that y.  So
-x.n = y.n at the start.  Then it wants to add a duration k to y, so that [1]
-becomes true; in effect, we want to solve [2] for k:
-
-   (y+k).n - (y+k).o = x.n                      [2]
-
-By #1, this is the same as
-
-   (y+k).n - ((y+k).s + (y+k).d) = x.n          [3]
-
-By #5, (y+k).n = y.n + k, which equals x.n + k because x.n=y.n at the start.
-Substituting that into [3],
-
-   x.n + k - (y+k).s - (y+k).d = x.n; the x.n terms cancel, leaving
-   k - (y+k).s - (y+k).d = 0; rearranging,
-   k = (y+k).s - (y+k).d; by #4, (y+k).s == y.s, so
-   k = y.s - (y+k).d
-
-On the RHS, (y+k).d can't be computed directly, but y.s can be, and we
-approximate k by ignoring the (y+k).d term at first.  Note that k can't be
-very large, since all offset-returning methods return a duration of magnitude
-less than 24 hours.  For that reason, if y is firmly in std time, (y+k).d must
-be 0, so ignoring it has no consequence then.
-
-In any case, the new value is
-
-    z = y + y.s                                 [4]
-
-It's helpful to step back at look at [4] from a higher level:  it's simply
-mapping from UTC to tz's standard time.
-
-At this point, if
-
-    z.n - z.o = x.n                             [5]
-
-we have an equivalent time, and are almost done.  The insecurity here is
-at the start of daylight time.  Picture US Eastern for concreteness.  The wall
-time jumps from 1:59 to 3:00, and wall hours of the form 2:MM don't make good
-sense then.  The docs ask that an Eastern tzinfo class consider such a time to
-be EDT (because it's "after 2"), which is a redundant spelling of 1:MM EST
-on the day DST starts.  We want to return the 1:MM EST spelling because that's
-the only spelling that makes sense on the local wall clock.
-
-In fact, if [5] holds at this point, we do have the standard-time spelling,
-but that takes a bit of proof.  We first prove a stronger result.  What's the
-difference between the LHS and RHS of [5]?  Let
-
-    diff = x.n - (z.n - z.o)                    [6]
-
-Now
-    z.n =                       by [4]
-    (y + y.s).n =               by #5
-    y.n + y.s =                 since y.n = x.n
-    x.n + y.s =                 since z and y are have the same tzinfo member,
-                                    y.s = z.s by #2
-    x.n + z.s
-
-Plugging that back into [6] gives
-
-    diff =
-    x.n - ((x.n + z.s) - z.o) =     expanding
-    x.n - x.n - z.s + z.o =         cancelling
-    - z.s + z.o =                   by #2
-    z.d
-
-So diff = z.d.
-
-If [5] is true now, diff = 0, so z.d = 0 too, and we have the standard-time
-spelling we wanted in the endcase described above.  We're done.  Contrarily,
-if z.d = 0, then we have a UTC equivalent, and are also done.
-
-If [5] is not true now, diff = z.d != 0, and z.d is the offset we need to
-add to z (in effect, z is in tz's standard time, and we need to shift the
-local clock into tz's daylight time).
-
-Let
-
-    z' = z + z.d = z + diff                     [7]
-
-and we can again ask whether
-
-    z'.n - z'.o = x.n                           [8]
-
-If so, we're done.  If not, the tzinfo class is insane, according to the
-assumptions we've made.  This also requires a bit of proof.  As before, let's
-compute the difference between the LHS and RHS of [8] (and skipping some of
-the justifications for the kinds of substitutions we've done several times
-already):
-
-    diff' = x.n - (z'.n - z'.o) =           replacing z'.n via [7]
-            x.n  - (z.n + diff - z'.o) =    replacing diff via [6]
-            x.n - (z.n + x.n - (z.n - z.o) - z'.o) =
-            x.n - z.n - x.n + z.n - z.o + z'.o =    cancel x.n
-            - z.n + z.n - z.o + z'.o =              cancel z.n
-            - z.o + z'.o =                      #1 twice
-            -z.s - z.d + z'.s + z'.d =          z and z' have same tzinfo
-            z'.d - z.d
-
-So z' is UTC-equivalent to x iff z'.d = z.d at this point.  If they are equal,
-we've found the UTC-equivalent so are done.  In fact, we stop with [7] and
-return z', not bothering to compute z'.d.
-
-How could z.d and z'd differ?  z' = z + z.d [7], so merely moving z' by
-a dst() offset, and starting *from* a time already in DST (we know z.d != 0),
-would have to change the result dst() returns:  we start in DST, and moving
-a little further into it takes us out of DST.
-
-There isn't a sane case where this can happen.  The closest it gets is at
-the end of DST, where there's an hour in UTC with no spelling in a hybrid
-tzinfo class.  In US Eastern, that's 5:MM UTC = 0:MM EST = 1:MM EDT.  During
-that hour, on an Eastern clock 1:MM is taken as being in standard time (6:MM
-UTC) because the docs insist on that, but 0:MM is taken as being in daylight
-time (4:MM UTC).  There is no local time mapping to 5:MM UTC.  The local
-clock jumps from 1:59 back to 1:00 again, and repeats the 1:MM hour in
-standard time.  Since that's what the local clock *does*, we want to map both
-UTC hours 5:MM and 6:MM to 1:MM Eastern.  The result is ambiguous
-in local time, but so it goes -- it's the way the local clock works.
-
-When x = 5:MM UTC is the input to this algorithm, x.o=0, y.o=-5 and y.d=0,
-so z=0:MM.  z.d=60 (minutes) then, so [5] doesn't hold and we keep going.
-z' = z + z.d = 1:MM then, and z'.d=0, and z'.d - z.d = -60 != 0 so [8]
-(correctly) concludes that z' is not UTC-equivalent to x.
-
-Because we know z.d said z was in daylight time (else [5] would have held and
-we would have stopped then), and we know z.d != z'.d (else [8] would have held
-and we have stopped then), and there are only 2 possible values dst() can
-return in Eastern, it follows that z'.d must be 0 (which it is in the example,
-but the reasoning doesn't depend on the example -- it depends on there being
-two possible dst() outcomes, one zero and the other non-zero).  Therefore
-z' must be in standard time, and is the spelling we want in this case.
-
-Note again that z' is not UTC-equivalent as far as the hybrid tzinfo class is
-concerned (because it takes z' as being in standard time rather than the
-daylight time we intend here), but returning it gives the real-life "local
-clock repeats an hour" behavior when mapping the "unspellable" UTC hour into
-tz.
-
-When the input is 6:MM, z=1:MM and z.d=0, and we stop at once, again with
-the 1:MM standard time spelling we want.
-
-So how can this break?  One of the assumptions must be violated.  Two
-possibilities:
-
-1) [2] effectively says that y.s is invariant across all y belong to a given
-   time zone.  This isn't true if, for political reasons or continental drift,
-   a region decides to change its base offset from UTC.
-
-2) There may be versions of "double daylight" time where the tail end of
-   the analysis gives up a step too early.  I haven't thought about that
-   enough to say.
-
-In any case, it's clear that the default fromutc() is strong enough to handle
-"almost all" time zones:  so long as the standard offset is invariant, it
-doesn't matter if daylight time transition points change from year to year, or
-if daylight time is skipped in some years; it doesn't matter how large or
-small dst() may get within its bounds; and it doesn't even matter if some
-perverse time zone returns a negative dst()).  So a breaking case must be
-pretty bizarre, and a tzinfo subclass can override fromutc() if it is.
-"""
-try:
-    from _datetime import *
-except ImportError:
-    pass
-else:
-    # Clean up unused names
-    del (_DAYNAMES, _DAYS_BEFORE_MONTH, _DAYS_IN_MONTH,
-         _DI100Y, _DI400Y, _DI4Y, _MAXORDINAL, _MONTHNAMES,
-         _build_struct_time, _call_tzinfo_method, _check_date_fields,
-         _check_time_fields, _check_tzinfo_arg, _check_tzname,
-         _check_utc_offset, _cmp, _cmperror, _date_class, _days_before_month,
-         _days_before_year, _days_in_month, _format_time, _is_leap,
-         _isoweek1monday, _math, _ord2ymd, _time, _time_class, _tzinfo_class,
-         _wrap_strftime, _ymd2ord)
-    # XXX Since import * above excludes names that start with _,
-    # docstring does not get overwritten. In the future, it may be
-    # appropriate to maintain a single module level docstring and
-    # remove the following line.
-    from _datetime import __doc__
