@@ -1,7 +1,4 @@
 # coding: utf-8
-from __future__ import absolute_import, division, print_function
-
-import abc
 
 import attr
 
@@ -48,28 +45,6 @@ class Outcome:
         if self._unwrapped:
             raise AlreadyUsedError
         self._unwrapped = True
-
-    @abc.abstractmethod
-    def unwrap(self):
-        """Return or raise the contained value or exception.
-
-        These two lines of code are equivalent::
-
-           x = fn(*args)
-           x = outcome.capture(fn, *args).unwrap()
-
-        """
-
-    @abc.abstractmethod
-    def send(self, gen):
-        """Send or throw the contained value or exception into the given
-        generator object.
-
-        Args:
-          gen: A generator object supporting ``.send()`` and ``.throw()``
-              methods.
-
-        """
 
 
 @attr.s(frozen=True, repr=False, slots=True, init=False)

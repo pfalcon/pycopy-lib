@@ -1,4 +1,3 @@
-import abc
 
 from ._sync import Error as ErrorBase
 from ._sync import Outcome as OutcomeBase
@@ -35,17 +34,7 @@ async def acapture(async_fn, *args, **kwargs):
 
 
 class Outcome(OutcomeBase):
-    @abc.abstractmethod
-    async def asend(self, agen):
-        """Send or throw the contained value or exception into the given async
-        generator object.
-
-        Args:
-          agen: An async generator object supporting ``.asend()`` and
-              ``.athrow()`` methods.
-
-        """
-
+    pass
 
 class Value(Outcome, ValueBase):
     async def asend(self, agen):
