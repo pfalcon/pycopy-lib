@@ -1,5 +1,4 @@
 class deque:
-
     def __init__(self, iterable=None):
         if iterable is None:
             self.q = []

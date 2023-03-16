@@ -9,9 +9,11 @@ Not implemented:
  - supress
 """
 
+
 class AbstractContextManager(object):
     "Compatibility"
     pass
+
 
 class ContextDecorator(AbstractContextManager):
     "A base class or mixin that enables context managers to work as decorators."
@@ -32,6 +34,7 @@ class ContextDecorator(AbstractContextManager):
         def inner(*args, **kwds):
             with self._recreate_cm():
                 return func(*args, **kwds)
+
         return inner
 
 
@@ -105,6 +108,8 @@ def contextmanager(func):
             <cleanup>
 
     """
+
     def helper(*args, **kwds):
         return _GeneratorContextManager(func, *args, **kwds)
+
     return helper

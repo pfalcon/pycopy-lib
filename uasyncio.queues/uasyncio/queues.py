@@ -1,4 +1,5 @@
 from collections.deque import deque
+
 from uasyncio.core import sleep
 
 
@@ -21,6 +22,7 @@ class Queue:
     with qsize(), since your single-threaded uasyncio application won't be
     interrupted between calling qsize() and doing an operation on the Queue.
     """
+
     _attempt_delay = 0.1
 
     def __init__(self, maxsize=0):

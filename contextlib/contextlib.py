@@ -9,8 +9,9 @@ Not implemented:
 
 import sys
 from collections import deque
-from ucontextlib import *
 from functools import wraps
+
+from ucontextlib import *
 
 
 class AbstractAsyncContextManager(object):
@@ -35,10 +36,13 @@ class closing(object):
             f.close()
 
     """
+
     def __init__(self, thing):
         self.thing = thing
+
     def __enter__(self):
         return self.thing
+
     def __exit__(self, *exc_info):
         self.thing.close()
 
@@ -77,6 +81,7 @@ class _AsyncGeneratorContextManager(AbstractAsyncContextManager):
     def __init__(self, func, args, kwds):
         self.gen = func(*args, **kwds)
         self.func, self.args, self.kwds = func, args, kwds
+
     async def __aenter__(self):
         try:
             return await self.gen.__anext__()
@@ -146,9 +151,11 @@ def asynccontextmanager(func):
         finally:
             <cleanup>
     """
+
     @wraps(func)
     def helper(*args, **kwds):
         return _AsyncGeneratorContextManager(func, args, kwds)
+
     return helper
 
 
@@ -163,6 +170,7 @@ class _BaseExitStack:
     def _create_cb_wrapper(callback, *args, **kwds):
         def _exit_wrapper(exc_type, exc, tb):
             callback(*args, **kwds)
+
         return _exit_wrapper
 
     def __init__(self):
@@ -230,6 +238,7 @@ class _BaseExitStack:
     def _push_exit_callback(self, callback, is_sync=True):
         self._exit_callbacks.append((is_sync, callback))
 
+
 # Inspired by discussions on http://bugs.python.org/issue13585
 class ExitStack(_BaseExitStack, AbstractContextManager):
     """Context manager for dynamic management of a stack of exit callbacks.
@@ -251,6 +260,7 @@ class ExitStack(_BaseExitStack, AbstractContextManager):
         # We manipulate the exception state so it behaves as though
         # we were actually nesting multiple with statements
         frame_exc = sys.exc_info()[1]
+
         def _fix_exception_context(new_exc, old_exc):
             # Context may not be correct, so find the end of the chain
             while 1:
@@ -298,6 +308,7 @@ class ExitStack(_BaseExitStack, AbstractContextManager):
         """Immediately unwind the context stack."""
         self.__exit__(None, None, None)
 
+
 # Inspired by discussions on https://bugs.python.org/issue29302
 class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
     """Async context manager for dynamic management of a stack of exit
@@ -320,6 +331,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
     def _create_async_cb_wrapper(callback, *args, **kwds):
         async def _exit_wrapper(exc_type, exc, tb):
             await callback(*args, **kwds)
+
         return _exit_wrapper
 
     async def enter_async_context(self, cm):
@@ -384,6 +396,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
         # We manipulate the exception state so it behaves as though
         # we were actually nesting multiple with statements
         frame_exc = sys.exc_info()[1]
+
         def _fix_exception_context(new_exc, old_exc):
             # Context may not be correct, so find the end of the chain
             while 1:
@@ -431,6 +444,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
                 raise
         return received_exc and suppressed_exc
 
+
 class nullcontext(AbstractContextManager):
     """Context manager that does no additional processing.
 
@@ -450,4 +464,3 @@ class nullcontext(AbstractContextManager):
 
     def __exit__(self, *excinfo):
         pass
-

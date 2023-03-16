@@ -4,6 +4,7 @@
 # This is going to be just import-all for other modules in a namespace package
 import ucollections
 from ucollections import OrderedDict
+
 try:
     from .defaultdict import defaultdict
 except ImportError:
@@ -13,11 +14,14 @@ try:
 except ImportError:
     pass
 
+
 class Mapping:
     pass
 
+
 class MutableMapping:
     pass
+
 
 def namedtuple(name, fields):
     _T = ucollections.namedtuple(name, fields)
@@ -30,14 +34,18 @@ def namedtuple(name, fields):
 
     return t
 
+
 class Sequence:
     pass
+
 
 class MutableSequence:
     pass
 
+
 class Set:
     pass
+
 
 class MutableSet:
     pass
