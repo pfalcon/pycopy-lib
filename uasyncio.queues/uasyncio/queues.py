@@ -41,7 +41,7 @@ class Queue:
 
         Usage::
 
-            item = yield from queue.get()
+            item = await queue.get()
         """
         if not self._queue:
             self._empty.push(core.cur_task)
@@ -69,7 +69,7 @@ class Queue:
 
         Usage::
 
-            yield from queue.put(item)
+            await queue.put(item)
         """
         if self.maxsize and self.qsize() >= self.maxsize:
             self._full.push(core.cur_task)
