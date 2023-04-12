@@ -17,20 +17,11 @@ from urllib.parse import quote_from_bytes as urlquote_from_bytes
 
 
 supports_symlinks = True
-if os.name == 'nt':
-    import nt
-    if sys.getwindowsversion()[:2] >= (6, 0):
-        from nt import _getfinalpathname
-    else:
-        supports_symlinks = False
-        _getfinalpathname = None
-else:
-    nt = None
 
 
 __all__ = [
-    "PurePath", "PurePosixPath", "PureWindowsPath",
-    "Path", "PosixPath", "WindowsPath",
+    "PurePath", "PurePosixPath",
+    "Path", "PosixPath",
     ]
 
 #
@@ -119,178 +110,13 @@ class _Flavour(object):
         return drv2, root2, parts2
 
 
-class _WindowsFlavour(_Flavour):
-    # Reference for Windows paths can be found at
-    # http://msdn.microsoft.com/en-us/library/aa365247%28v=vs.85%29.aspx
-
-    sep = '\\'
-    altsep = '/'
-    has_drv = True
-    pathmod = ntpath
-
-    is_supported = (os.name == 'nt')
-
-    drive_letters = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    ext_namespace_prefix = '\\\\?\\'
-
-    reserved_names = (
-        {'CON', 'PRN', 'AUX', 'NUL'} |
-        {'COM%d' % i for i in range(1, 10)} |
-        {'LPT%d' % i for i in range(1, 10)}
-        )
-
-    # Interesting findings about extended paths:
-    # - '\\?\c:\a', '//?/c:\a' and '//?/c:/a' are all supported
-    #   but '\\?\c:/a' is not
-    # - extended paths are always absolute; "relative" extended paths will
-    #   fail.
-
-    def splitroot(self, part, sep=sep):
-        first = part[0:1]
-        second = part[1:2]
-        if (second == sep and first == sep):
-            # XXX extended paths should also disable the collapsing of "."
-            # components (according to MSDN docs).
-            prefix, part = self._split_extended_path(part)
-            first = part[0:1]
-            second = part[1:2]
-        else:
-            prefix = ''
-        third = part[2:3]
-        if (second == sep and first == sep and third != sep):
-            # is a UNC path:
-            # vvvvvvvvvvvvvvvvvvvvv root
-            # \\machine\mountpoint\directory\etc\...
-            #            directory ^^^^^^^^^^^^^^
-            index = part.find(sep, 2)
-            if index != -1:
-                index2 = part.find(sep, index + 1)
-                # a UNC path can't have two slashes in a row
-                # (after the initial two)
-                if index2 != index + 1:
-                    if index2 == -1:
-                        index2 = len(part)
-                    if prefix:
-                        return prefix + part[1:index2], sep, part[index2+1:]
-                    else:
-                        return part[:index2], sep, part[index2+1:]
-        drv = root = ''
-        if second == ':' and first in self.drive_letters:
-            drv = part[:2]
-            part = part[2:]
-            first = third
-        if first == sep:
-            root = first
-            part = part.lstrip(sep)
-        return prefix + drv, root, part
-
-    def casefold(self, s):
-        return s.lower()
-
-    def casefold_parts(self, parts):
-        return [p.lower() for p in parts]
-
-    def compile_pattern(self, pattern):
-        return re.compile(fnmatch.translate(pattern), re.IGNORECASE).fullmatch
-
-    def resolve(self, path, strict=False):
-        s = str(path)
-        if not s:
-            return os.getcwd()
-        previous_s = None
-        if _getfinalpathname is not None:
-            if strict:
-                return self._ext_to_normal(_getfinalpathname(s))
-            else:
-                tail_parts = []  # End of the path after the first one not found
-                while True:
-                    try:
-                        s = self._ext_to_normal(_getfinalpathname(s))
-                    except FileNotFoundError:
-                        previous_s = s
-                        s, tail = os.path.split(s)
-                        tail_parts.append(tail)
-                        if previous_s == s:
-                            return path
-                    else:
-                        return os.path.join(s, *reversed(tail_parts))
-        # Means fallback on absolute
-        return None
-
-    def _split_extended_path(self, s, ext_prefix=ext_namespace_prefix):
-        prefix = ''
-        if s.startswith(ext_prefix):
-            prefix = s[:4]
-            s = s[4:]
-            if s.startswith('UNC\\'):
-                prefix += s[:3]
-                s = '\\' + s[3:]
-        return prefix, s
-
-    def _ext_to_normal(self, s):
-        # Turn back an extended path into a normal DOS-like path
-        return self._split_extended_path(s)[1]
-
-    def is_reserved(self, parts):
-        # NOTE: the rules for reserved names seem somewhat complicated
-        # (e.g. r"..\NUL" is reserved but not r"foo\NUL").
-        # We err on the side of caution and return True for paths which are
-        # not considered reserved by Windows.
-        if not parts:
-            return False
-        if parts[0].startswith('\\\\'):
-            # UNC paths are never reserved
-            return False
-        return parts[-1].partition('.')[0].upper() in self.reserved_names
-
-    def make_uri(self, path):
-        # Under Windows, file URIs use the UTF-8 encoding.
-        drive = path.drive
-        if len(drive) == 2 and drive[1] == ':':
-            # It's a path on a local drive => 'file:///c:/a/b'
-            rest = path.as_posix()[2:].lstrip('/')
-            return 'file:///%s/%s' % (
-                drive, urlquote_from_bytes(rest.encode('utf-8')))
-        else:
-            # It's a path on a network drive => 'file://host/share/a/b'
-            return 'file:' + urlquote_from_bytes(path.as_posix().encode('utf-8'))
-
-    def gethomedir(self, username):
-        if 'USERPROFILE' in os.environ:
-            userhome = os.environ['USERPROFILE']
-        elif 'HOMEPATH' in os.environ:
-            try:
-                drv = os.environ['HOMEDRIVE']
-            except KeyError:
-                drv = ''
-            userhome = drv + os.environ['HOMEPATH']
-        else:
-            raise RuntimeError("Can't determine home directory")
-
-        if username:
-            # Try to guess user home directory.  By default all users
-            # directories are located in the same place and are named by
-            # corresponding usernames.  If current user home directory points
-            # to nonstandard place, this guess is likely wrong.
-            if os.environ['USERNAME'] != username:
-                drv, root, parts = self.parse_parts((userhome,))
-                if parts[-1] != os.environ['USERNAME']:
-                    raise RuntimeError("Can't determine home directory "
-                                       "for %r" % username)
-                parts[-1] = username
-                if drv or root:
-                    userhome = drv + root + self.join(parts[1:])
-                else:
-                    userhome = self.join(parts)
-        return userhome
-
 class _PosixFlavour(_Flavour):
     sep = '/'
     altsep = ''
     has_drv = False
     pathmod = posixpath
 
-    is_supported = (os.name != 'nt')
+    is_supported = True
 
     def splitroot(self, part, sep=sep):
         if part and part[0] == sep:
@@ -449,17 +275,10 @@ class _NormalAccessor(_Accessor):
 
     mkdir = os.mkdir
 
-    if nt:
-        if supports_symlinks:
-            symlink = os.symlink
-        else:
-            def symlink(a, b, target_is_directory):
-                raise NotImplementedError("symlink() not available on this system")
-    else:
-        # Under POSIX, os.symlink() takes two args
-        @staticmethod
-        def symlink(a, b, target_is_directory):
-            return os.symlink(a, b)
+    # Under POSIX, os.symlink() takes two args
+    @staticmethod
+    def symlink(a, b, target_is_directory):
+        return os.symlink(a, b)
 
     utime = os.utime
 
@@ -660,10 +479,9 @@ class PurePath(object):
     """Base class for manipulating paths without I/O.
 
     PurePath represents a filesystem path and offers operations which
-    don't imply any actual filesystem I/O.  Depending on your system,
-    instantiating a PurePath will return either a PurePosixPath or a
-    PureWindowsPath object.  You can also instantiate either of these classes
-    directly, regardless of your system.
+    don't imply any actual filesystem I/O.  Instantiating a PurePath will
+    return a PurePosixPath object.  You can also instantiate either of
+    these classes directly, regardless of your system.
     """
     __slots__ = (
         '_drv', '_root', '_parts',
@@ -677,7 +495,7 @@ class PurePath(object):
         new PurePath object.
         """
         if cls is PurePath:
-            cls = PureWindowsPath if os.name == 'nt' else PurePosixPath
+            cls = PurePosixPath
         return cls._from_parts(args)
 
     def __reduce__(self):
@@ -1059,16 +877,6 @@ class PurePosixPath(PurePath):
     __slots__ = ()
 
 
-class PureWindowsPath(PurePath):
-    """PurePath subclass for Windows systems.
-
-    On a Windows system, instantiating a PurePath should return this object.
-    However, you can also instantiate it directly on any system.
-    """
-    _flavour = _windows_flavour
-    __slots__ = ()
-
-
 # Filesystem-accessing classes
 
 
@@ -1076,10 +884,9 @@ class Path(PurePath):
     """PurePath subclass that can make system calls.
 
     Path represents a filesystem path but unlike PurePath, also offers
-    methods to do system calls on path objects. Depending on your system,
-    instantiating a Path will return either a PosixPath or a WindowsPath
-    object. You can also instantiate a PosixPath or WindowsPath directly,
-    but cannot instantiate a WindowsPath on a POSIX system or vice versa.
+    methods to do system calls on path objects. Instantiating a Path will
+    return a PosixPath object. You can also instantiate a PosixPath
+    directly.
     """
     __slots__ = (
         '_accessor',
@@ -1087,7 +894,7 @@ class Path(PurePath):
 
     def __new__(cls, *args, **kwargs):
         if cls is Path:
-            cls = WindowsPath if os.name == 'nt' else PosixPath
+            cls = PosixPath
         self = cls._from_parts(args, init=False)
         if not self._flavour.is_supported:
             raise NotImplementedError("cannot instantiate %r on your system"
@@ -1209,8 +1016,6 @@ class Path(PurePath):
         # XXX untested yet!
         if self.is_absolute():
             return self
-        # FIXME this must defer to the specific flavour (and, under Windows,
-        # use nt._getfullpathname())
         obj = self._from_parts([os.getcwd()] + self._parts, init=False)
         obj._init(template=self)
         return obj
@@ -1585,12 +1390,3 @@ class PosixPath(Path, PurePosixPath):
     """
     __slots__ = ()
 
-class WindowsPath(Path, PureWindowsPath):
-    """Path subclass for Windows systems.
-
-    On a Windows system, instantiating a Path should return this object.
-    """
-    __slots__ = ()
-
-    def is_mount(self):
-        raise NotImplementedError("Path.is_mount() is unsupported on this system")
