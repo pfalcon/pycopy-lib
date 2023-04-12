@@ -82,7 +82,7 @@ class Queue:
 
         If no free slot is immediately available, raise QueueFull.
         """
-        if self.qsize() >= self.maxsize and self.maxsize:
+        if self.maxsize and self.qsize() >= self.maxsize:
             raise QueueFull()
         self._put(val)
 
