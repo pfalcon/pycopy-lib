@@ -1,7 +1,6 @@
 """Implementation of JSONDecoder
 """
 import re
-import sys
 
 from json import scanner
 try:
@@ -13,7 +12,9 @@ __all__ = ['JSONDecoder']
 
 FLAGS = re.VERBOSE | re.MULTILINE | re.DOTALL
 
-NaN, PosInf, NegInf = float('nan'), float('inf'), float('-inf')
+NaN = float('nan')
+PosInf = float('inf')
+NegInf = float('-inf')
 
 
 def linecol(doc, pos):
@@ -56,6 +57,16 @@ BACKSLASH = {
     '"': '"', '\\': '\\', '/': '/',
     'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t',
 }
+
+def _decode_uXXXX(s, pos):
+    esc = s[pos + 1:pos + 5]
+    if len(esc) == 4 and esc[1] not in 'xX':
+        try:
+            return int(esc, 16)
+        except ValueError:
+            pass
+    msg = "Invalid \\uXXXX escape"
+    raise ValueError(errmsg(msg, s, pos))
 
 def py_scanstring(s, end, strict=True,
         _b=BACKSLASH, _m=STRINGCHUNK.match):
@@ -106,25 +117,14 @@ def py_scanstring(s, end, strict=True,
                 raise ValueError(errmsg(msg, s, end))
             end += 1
         else:
-            esc = s[end + 1:end + 5]
-            next_end = end + 5
-            if len(esc) != 4:
-                msg = "Invalid \\uXXXX escape"
-                raise ValueError(errmsg(msg, s, end))
-            uni = int(esc, 16)
-            if 0xd800 <= uni <= 0xdbff:
-                msg = "Invalid \\uXXXX\\uXXXX surrogate pair"
-                if not s[end + 5:end + 7] == '\\u':
-                    raise ValueError(errmsg(msg, s, end))
-                esc2 = s[end + 7:end + 11]
-                if len(esc2) != 4:
-                    raise ValueError(errmsg(msg, s, end))
-                uni2 = int(esc2, 16)
-                uni = 0x10000 + (((uni - 0xd800) << 10) | (uni2 - 0xdc00))
-                next_end += 6
+            uni = _decode_uXXXX(s, end)
+            end += 5
+            if 0xd800 <= uni <= 0xdbff and s[end:end + 2] == '\\u':
+                uni2 = _decode_uXXXX(s, end + 1)
+                if 0xdc00 <= uni2 <= 0xdfff:
+                    uni = 0x10000 + (((uni - 0xd800) << 10) | (uni2 - 0xdc00))
+                    end += 6
             char = chr(uni)
-
-            end = next_end
         _append(char)
     return ''.join(chunks), end
 
@@ -187,8 +187,8 @@ def JSONObject(s_and_end, strict, scan_once, object_hook, object_pairs_hook,
 
         try:
             value, end = scan_once(s, end)
-        except StopIteration:
-            raise ValueError(errmsg("Expecting object", s, end))
+        except StopIteration as err:
+            raise ValueError(errmsg("Expecting value", s, err.value)) from None
         pairs_append((key, value))
         try:
             nextchar = s[end]
@@ -231,8 +231,8 @@ def JSONArray(s_and_end, scan_once, _w=WHITESPACE.match, _ws=WHITESPACE_STR):
     while True:
         try:
             value, end = scan_once(s, end)
-        except StopIteration:
-            raise ValueError(errmsg("Expecting object", s, end))
+        except StopIteration as err:
+            raise ValueError(errmsg("Expecting value", s, err.value)) from None
         _append(value)
         nextchar = s[end:end + 1]
         if nextchar in _ws:
@@ -242,7 +242,7 @@ def JSONArray(s_and_end, scan_once, _w=WHITESPACE.match, _ws=WHITESPACE_STR):
         if nextchar == ']':
             break
         elif nextchar != ',':
-            raise ValueError(errmsg("Expecting ',' delimiter", s, end))
+            raise ValueError(errmsg("Expecting ',' delimiter", s, end - 1))
         try:
             if s[end] in _ws:
                 end += 1
@@ -357,6 +357,6 @@ class JSONDecoder(object):
         """
         try:
             obj, end = self.scan_once(s, idx)
-        except StopIteration:
-            raise ValueError("No JSON object could be decoded")
+        except StopIteration as err:
+            raise ValueError(errmsg("Expecting value", s, err.value)) from None
         return obj, end

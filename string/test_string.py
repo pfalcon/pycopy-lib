@@ -24,3 +24,5 @@ assert ljust("foo", 2) == "foo"
 assert ljust("foo", 5, "-") == "foo--"
 
 assert encode("foo", "utf-8", "strict") == b"foo"
+
+assert capitalize("fOOBar_123") == "Foobar_123"

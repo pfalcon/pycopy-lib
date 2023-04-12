@@ -30,7 +30,7 @@ def ismethod(obj):
     return isinstance(obj, type(_Instance.meth))
 
 def isroutine(obj):
-    return isfunction(obj) or ismethod(obj)
+    return isfunction(obj) or isgeneratorfunction(obj) or ismethod(obj)
 
 def isclass(obj):
     return isinstance(obj, type)

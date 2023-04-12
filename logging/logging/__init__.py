@@ -17,8 +17,17 @@ _level_dict = {
     DEBUG: "DEBUG",
 }
 
+
+_nameToLevel = {v: k for k, v in _level_dict.items()}
+
+
 def addLevelName(level, name):
     _level_dict[level] = name
+
+
+def getLevelName(lvl):
+    return _level_dict[lvl]
+
 
 class Logger:
 
@@ -26,8 +35,9 @@ class Logger:
 
     def __init__(self, name):
         self.name = name
-        self.handlers = None
+        self.handlers = ()
         self.parent = None
+        self.propagate = True
 
     def _level_str(self, level):
         l = _level_dict.get(level)
@@ -80,7 +90,7 @@ class Logger:
         self.exc(sys.exc_info()[1], msg, *args)
 
     def addHandler(self, hdlr):
-        if self.handlers is None:
+        if self.handlers is ():
             self.handlers = []
         self.handlers.append(hdlr)
 
@@ -133,6 +143,9 @@ class Handler:
 
     def setFormatter(self, fmt):
         self.formatter = fmt
+
+    def format(self, record):
+        return self.formatter.format(record)
 
 
 class StreamHandler(Handler):

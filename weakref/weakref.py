@@ -3,6 +3,9 @@
 # provide real weak references, and thus will hoard memory!
 #
 
+WeakKeyDictionary = dict
+
+
 def proxy(obj, cb=None):
     return obj
 

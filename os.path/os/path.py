@@ -42,6 +42,16 @@ def split(path):
         head = "/"
     return (head, r[1])
 
+
+def splitext(path):
+    r = path.rsplit(".", 1)
+    if len(r) == 1:
+        return path, ""
+    if not r[0]:
+        return path, ""
+    return r[0], "." + r[1]
+
+
 def splitdrive(path):
     return "", path
 
@@ -81,12 +91,20 @@ def islink(path):
     except OSError:
         return False
 
+def isabs(path):
+    return path.startswith("/")
+
 def realpath(path):
     libc = ffilib.libc()
     if isinstance(path, str) or isinstance(path, bytes):
         realpath_ = libc.func("s", "realpath", "ss")
         # XXX: memory leak! should free() returned pointer, see man realpath
-        return realpath_(path, None)
+        res = realpath_(path, None)
+        if res is not None:
+            return res
+        # Assume that file doesn't exist, return abspath.
+        return abspath(path)
+
     raise TypeError
 
 def expanduser(s):
@@ -109,3 +127,46 @@ class PathLike:
 
     __class_getitem__ = classmethod(GenericAlias)
 
+
+# From CPython git tag v3.4.10.
+# Return the longest prefix of all list elements.
+def commonprefix(m):
+    "Given a list of pathnames, returns the longest common leading component"
+    if not m: return ''
+    s1 = min(m)
+    s2 = max(m)
+    for i, c in enumerate(s1):
+        if c != s2[i]:
+            return s1[:i]
+    return s1
+
+
+# From CPython git tag v3.4.10.
+def relpath(path, start=None):
+    """Return a relative version of a path"""
+
+    if not path:
+        raise ValueError("no path specified")
+
+    if isinstance(path, bytes):
+        curdir = b'.'
+        sep = b'/'
+        pardir = b'..'
+    else:
+        curdir = '.'
+        sep = '/'
+        pardir = '..'
+
+    if start is None:
+        start = curdir
+
+    start_list = [x for x in abspath(start).split(sep) if x]
+    path_list = [x for x in abspath(path).split(sep) if x]
+
+    # Work out how much of the filepath is shared by start and path.
+    i = len(commonprefix([start_list, path_list]))
+
+    rel_list = [pardir] * (len(start_list)-i) + path_list[i:]
+    if not rel_list:
+        return curdir
+    return join(*rel_list)

@@ -20,7 +20,8 @@ def skip_fqdn(buf):
         buf.read(sz)
 
 
-def make_req(buf, fqdn, is_ipv6):
+# unicast param is for mDNS queries.
+def make_req(buf, fqdn, is_ipv6, unicast=False):
     typ = 1  # A
     if is_ipv6:
         typ = 28  # AAAA
@@ -35,7 +36,8 @@ def make_req(buf, fqdn, is_ipv6):
 
     write_fqdn(buf, fqdn)
     buf.writebin(">H", typ)
-    buf.writebin(">H", 1)  # Class
+    # unicast resp + class
+    buf.writebin(">H", 0x8001 if unicast else 1)
 
 
 def parse_resp(buf, is_ipv6):

@@ -108,7 +108,6 @@ else:
         dir = opendir_(path)
         if not dir:
             raise_error()
-        res = []
         dirent_fmt = "LLHB256s"
         while True:
             dirent = readdir_(dir)
@@ -253,6 +252,12 @@ def closerange(low, high):
             close(fd)
         except OSError:
             pass
+
+
+def fpathconf(fd, name):
+    if name == "PC_PIPE_BUF":
+        return 512
+    raise ValueError
 
 
 _ENV_STRUCT = {

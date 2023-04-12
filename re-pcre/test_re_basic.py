@@ -51,8 +51,10 @@ assert re.sub('(?m)^(?!$)', '--', 'foo\n  \na', 2) == '--foo\n--  \na'
 
 # split
 
-assert re.split('x*', 'foo') == ['foo']
-assert re.split("(?m)^$", "foo\n\nbar\n") == ["foo\n\nbar\n"]
+# Splitting on potentially empty matches is currently disabled.
+#assert re.split('x*', 'foo') == ['foo']
+#assert re.split("(?m)^$", "foo\n\nbar\n") == ["foo\n\nbar\n"]
+
 assert re.split('\W+', 'Words, words, words.') == ['Words', 'words', 'words', '']
 assert re.split('(\W+)', 'Words, words, words.') == ['Words', ', ', 'words', ', ', 'words', '.', '']
 assert re.split('\W+', 'Words, words, words.', 1) == ['Words', 'words, words.']

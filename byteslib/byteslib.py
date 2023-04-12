@@ -30,6 +30,14 @@ import pycopy
 import ubinascii
 
 
+# In case it's overriden later
+_org_decode = bytes.decode
+def decode(b, encoding="utf-8", errors="strict"):
+    assert encoding in ("utf-8", "ascii", "us-ascii"), "Unsupported encoding: %s" % encoding
+    assert errors in ("strict", "surrogateescape", "surrogatepass"), "Unsupported errors param: %s" % errors
+    return _org_decode(b, encoding, errors)
+
+
 def hex(s):
     s = ubinascii.hexlify(s)
     return pycopy.icast(s, str)

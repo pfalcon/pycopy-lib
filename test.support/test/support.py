@@ -36,6 +36,11 @@ def skip_unless_symlink(test):
 def create_empty_file(name):
     open(name, "w").close()
 
+
+def unlink(f):
+    os.unlink(f)
+
+
 @contextlib.contextmanager
 def disable_gc():
     have_gc = gc.isenabled()
@@ -63,6 +68,11 @@ def captured_output(stream_name):
 
 def captured_stderr():
     return captured_output("stderr")
+
+
+def strip_python_stderr(s):
+    return s.strip()
+
 
 def requires_IEEE_754(f):
     return f
@@ -94,8 +104,26 @@ def change_cwd(path, quiet=False):
         os.chdir(saved_dir)
 
 
-def findfile(f):
-    return f
+# CPython a454ef6985494ad894c5ec7ebe0ea4c824fc926d
+def findfile(file, here=__file__, subdir=None):
+    """Try to find a file on sys.path and the working directory.  If it is not
+    found the argument passed to the function is returned (this does not
+    necessarily signal failure; could still be the legitimate path)."""
+    #if os.path.isabs(file):
+    if file.startswith("/"):
+        return file
+    if subdir is not None:
+        file = os.path.join(subdir, file)
+    path = sys.path
+    path = [os.path.dirname(here)] + path
+    for dn in path:
+        fn = os.path.join(dn, file)
+        if os.path.exists(fn): return fn
+    return file
+
+
+def import_module(name):
+    return __import__(name)
 
 
 def cpython_only(f):

@@ -1,4 +1,5 @@
 srctype = pycopy-lib
 type = package
-version = 0.2.2
+version = 0.2.5
+author = Paul Sokolovsky, CPython Developers
 depends = unittest, io, os, contextlib

@@ -8,12 +8,20 @@ def vars(obj):
 def getrecursionlimit():
     return 100
 
+class Warning(Exception):
+    pass
+class RuntimeWarning(Warning):
+    pass
+
 
 def _setup():
     import builtins
 
     builtins.vars = vars
     builtins.FileNotFoundError = OSError
+    builtins.IOError = OSError
+    builtins.Warning = Warning
+    builtins.RuntimeWarning = RuntimeWarning
 
     from micropython import writable_ns
     import sys
@@ -23,10 +31,10 @@ def _setup():
 
     PATCHES = {
         str: (
-            string, ("encode", "expandtabs", "isidentifier", "ljust", "translate"),
+            string, ("capitalize", "encode", "expandtabs", "isalnum", "isidentifier", "ljust", "translate"),
         ),
         bytes: (
-            byteslib, ("fromhex", "hex"),
+            byteslib, ("decode", "fromhex", "hex"),
         ),
         set: (
             setlib, ("update", "union", "intersection_update", "intersection", "difference_update", "difference"),
@@ -44,6 +52,8 @@ def _setup():
     # to sys.stdout and friends. So, patch the module namespace directly.
     writable_ns(sys, True)
     sys.getrecursionlimit = getrecursionlimit
+    sys.executable = "pycopy-dev"
+    sys.warnoptions = []
     writable_ns(sys, False)
 
 

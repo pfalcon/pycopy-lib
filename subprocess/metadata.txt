@@ -1,0 +1,4 @@
+srctype = cpython
+type = module
+version = 3.4-1
+extra_modules = _posixsubprocess

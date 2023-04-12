@@ -42,6 +42,17 @@ class TestCase:
     def __init__(self):
         pass
 
+    def addCleanup(self, func, *args, **kwargs):
+        if not hasattr(self, "_cleanups"):
+            self._cleanups = []
+        self._cleanups.append((func, args, kwargs))
+
+    def doCleanups(self):
+        if hasattr(self, "_cleanups"):
+            while self._cleanups:
+                func, args, kwargs = self._cleanups.pop()
+                func(*args, **kwargs)
+
     def subTest(self, msg=None, **params):
         return NullContext()
 
@@ -206,6 +217,19 @@ def skipUnless(cond, msg):
     return skip(msg)
 
 
+def expectedFailure(test):
+
+    def test_exp_fail(*args, **kwargs):
+        try:
+            test(*args, **kwargs)
+        except:
+            pass
+        else:
+            assert False, "unexpected success"
+
+    return test_exp_fail
+
+
 class TestSuite:
     def __init__(self):
         self._tests = []
@@ -214,7 +238,7 @@ class TestSuite:
 
     def run(self, result):
         for c in self._tests:
-            result.exceptions.extend(run_suite(c, result))
+            run_suite(c, result)
         return result
 
 
@@ -223,16 +247,22 @@ class TestRunner:
         res = TestResult()
         suite.run(res)
 
+        res.printErrors()
+        print("----------------------------------------------------------------------")
         print("Ran %d tests\n" % res.testsRun)
         if res.failuresNum > 0 or res.errorsNum > 0:
             print("FAILED (failures=%d, errors=%d)" % (res.failuresNum, res.errorsNum))
         else:
             msg = "OK"
             if res.skippedNum > 0:
-                msg += " (%d skipped)" % res.skippedNum
+                msg += " (skipped=%d)" % res.skippedNum
             print(msg)
 
         return res
+
+
+TextTestRunner = TestRunner
+
 
 class TestResult:
     def __init__(self):
@@ -240,10 +270,30 @@ class TestResult:
         self.failuresNum = 0
         self.skippedNum = 0
         self.testsRun = 0
-        self.exceptions = []
+        self.errors = []
+        self.failures = []
 
     def wasSuccessful(self):
         return self.errorsNum == 0 and self.failuresNum == 0
+
+    def printErrors(self):
+        print()
+        self.printErrorList(self.errors)
+        self.printErrorList(self.failures)
+
+    def printErrorList(self, lst):
+        sep = "----------------------------------------------------------------------"
+        for c, e in lst:
+            print("======================================================================")
+            print(c)
+            print(sep)
+            print(e)
+
+    def __repr__(self):
+        # Format is compatible with CPython.
+        return "<unittest.result.TestResult run=%d errors=%d failures=%d>" % (
+            self.testsRun, self.errorsNum, self.failuresNum
+        )
 
 
 def capture_exc(e):
@@ -257,6 +307,10 @@ def capture_exc(e):
 
 # TODO: Uncompliant
 def run_suite(c, test_result):
+    if isinstance(c, TestSuite):
+        c.run(test_result)
+        return
+
     if isinstance(c, type):
         o = c()
     else:
@@ -264,11 +318,8 @@ def run_suite(c, test_result):
     set_up = getattr(o, "setUp", lambda: None)
     tear_down = getattr(o, "tearDown", lambda: None)
     exceptions = []
-    for name in dir(o):
-        if name.startswith("test"):
-            m = getattr(o, name)
-            if not callable(m):
-                continue
+
+    def run_one(m):
             print("%s (%s) ..." % (name, c.__qualname__), end="")
             set_up()
             try:
@@ -279,14 +330,32 @@ def run_suite(c, test_result):
                 print(" skipped:", e.args[0])
                 test_result.skippedNum += 1
             except Exception as ex:
-                exceptions.append(capture_exc(ex))
-                print(" FAIL")
-                test_result.failuresNum += 1
+                ex_str = capture_exc(ex)
+                if isinstance(ex, AssertionError):
+                    test_result.failuresNum += 1
+                    test_result.failures.append(((name, c), ex_str))
+                    print(" FAIL")
+                else:
+                    test_result.errorsNum += 1
+                    test_result.errors.append(((name, c), ex_str))
+                    print(" ERROR")
                 # Uncomment to investigate failure in detail
                 #raise
-                continue
             finally:
                 tear_down()
+                o.doCleanups()
+
+    if hasattr(o, "runTest"):
+        name = str(o)
+        run_one(o.runTest)
+        return
+
+    for name in dir(o):
+        if name.startswith("test"):
+            m = getattr(o, name)
+            if not callable(m):
+                continue
+            run_one(m)
     return exceptions
 
 
@@ -303,9 +372,5 @@ def main(module="__main__"):
         suite.addTest(c)
     runner = TestRunner()
     result = runner.run(suite)
-    if result.exceptions:
-        sep = "\n----------------------------------------------------------------------\n"
-        print(sep)
-        print(sep.join(result.exceptions))
     # Terminate with non zero return code in case of failures
-    sys.exit(result.failuresNum > 0)
+    sys.exit(result.failuresNum or result.errorsNum)
