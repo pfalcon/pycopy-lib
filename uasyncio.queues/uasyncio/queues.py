@@ -1,6 +1,6 @@
 from collections.deque import deque
 
-from uasyncio.core import sleep
+from uasyncio import core
 
 
 class QueueEmpty(Exception):
@@ -23,14 +23,17 @@ class Queue:
     interrupted between calling qsize() and doing an operation on the Queue.
     """
 
-    _attempt_delay = 0.1
-
     def __init__(self, maxsize=0):
         self.maxsize = maxsize
         self._queue = deque()
+        self._full = core.TaskQueue()
+        self._empty = core.TaskQueue()
 
     def _get(self):
-        return self._queue.popleft()
+        res = self._queue.popleft()
+        if self._full.peek():
+            core._task_queue.push(self._full.pop())
+        return res
 
     def get(self):
         """Returns generator, which can be used for getting (and removing)
@@ -40,8 +43,11 @@ class Queue:
 
             item = yield from queue.get()
         """
-        while not self._queue:
-            yield from sleep(self._attempt_delay)
+        if not self._queue:
+            self._empty.push(core.cur_task)
+            core.cur_task.data = self._empty
+            yield
+
         return self._get()
 
     def get_nowait(self):
@@ -54,6 +60,8 @@ class Queue:
         return self._get()
 
     def _put(self, val):
+        if self._empty.peek():
+            core._task_queue.push(self._empty.pop())
         self._queue.append(val)
 
     def put(self, val):
@@ -63,8 +71,10 @@ class Queue:
 
             yield from queue.put(item)
         """
-        while self.qsize() >= self.maxsize and self.maxsize:
-            yield from sleep(self._attempt_delay)
+        if self.maxsize and self.qsize() >= self.maxsize:
+            self._full.push(core.cur_task)
+            core.cur_task.data = self._full
+            yield
         self._put(val)
 
     def put_nowait(self, val):
