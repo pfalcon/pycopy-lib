@@ -11,7 +11,7 @@ import sys
 from collections import deque
 from functools import wraps
 
-from ucontextlib import *
+from ucontextlib import AbstractContextManager, MethodType
 
 
 class AbstractAsyncContextManager(object):
@@ -287,7 +287,7 @@ class ExitStack(_BaseExitStack, AbstractContextManager):
                     suppressed_exc = True
                     pending_raise = False
                     exc_details = (None, None, None)
-            except:
+            except:  # noqa:E722
                 new_exc_details = sys.exc_info()
                 # simulate the stack of exceptions by setting the context
                 _fix_exception_context(new_exc_details[1], exc_details[1])
@@ -427,7 +427,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
                     suppressed_exc = True
                     pending_raise = False
                     exc_details = (None, None, None)
-            except:
+            except:  # noqa:E722
                 new_exc_details = sys.exc_info()
                 # simulate the stack of exceptions by setting the context
                 _fix_exception_context(new_exc_details[1], exc_details[1])
