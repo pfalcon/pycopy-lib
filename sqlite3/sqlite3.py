@@ -115,13 +115,14 @@ class Cursor:
             t = sqlite3_column_type(self.stmnt, i)
             #print("type", t)
             if t == SQLITE_INTEGER:
-                res.append(sqlite3_column_int(self.stmnt, i))
+                v = sqlite3_column_int(self.stmnt, i)
             elif t == SQLITE_FLOAT:
-                res.append(sqlite3_column_double(self.stmnt, i))
+                v = sqlite3_column_double(self.stmnt, i)
             elif t == SQLITE_TEXT:
-                res.append(sqlite3_column_text(self.stmnt, i))
+                v = sqlite3_column_text(self.stmnt, i)
             else:
                 raise NotImplementedError
+            res.append(v)
         return tuple(res)
 
     def fetchone(self):
