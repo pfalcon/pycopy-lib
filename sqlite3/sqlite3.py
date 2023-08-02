@@ -27,6 +27,8 @@ sqlite3_step = sq3.func("i", "sqlite3_step", "p")
 sqlite3_column_count = sq3.func("i", "sqlite3_column_count", "p")
 #int sqlite3_column_type(sqlite3_stmt*, int iCol);
 sqlite3_column_type = sq3.func("i", "sqlite3_column_type", "pi")
+#const char *sqlite3_column_name(sqlite3_stmt*, int N)
+sqlite3_column_name = sq3.func("s", "sqlite3_column_name", "pi")
 sqlite3_column_int = sq3.func("i", "sqlite3_column_int", "pi")
 # using "d" return type gives wrong results
 sqlite3_column_double = sq3.func("d", "sqlite3_column_double", "pi")
@@ -65,13 +67,19 @@ def check_error(db, s):
         raise Error(s, sqlite3_errmsg(db))
 
 
+# Used as a sentinel value so far.
+class Row:
+    pass
+
+
 class Connection:
 
     def __init__(self, h):
         self.h = h
+        self.row_factory = None
 
     def cursor(self):
-        return Cursor(self.h)
+        return Cursor(self.h, self.row_factory)
 
     def close(self):
         s = sqlite3_close(self.h)
@@ -80,8 +88,9 @@ class Connection:
 
 class Cursor:
 
-    def __init__(self, h):
+    def __init__(self, h, row_factory):
         self.h = h
+        self.row_factory = row_factory
         self.stmnt = None
 
     def execute(self, sql, params=None):
@@ -110,7 +119,11 @@ class Cursor:
         check_error(self.h, s)
 
     def make_row(self):
-        res = []
+        is_dict = self.row_factory is Row
+        if is_dict:
+            res = {}
+        else:
+            res = []
         for i in range(self.num_cols):
             t = sqlite3_column_type(self.stmnt, i)
             #print("type", t)
@@ -122,8 +135,14 @@ class Cursor:
                 v = sqlite3_column_text(self.stmnt, i)
             else:
                 raise NotImplementedError
-            res.append(v)
-        return tuple(res)
+            if is_dict:
+                res[sqlite3_column_name(self.stmnt, i)] = v
+            else:
+                res.append(v)
+        if is_dict:
+            return res
+        else:
+            return tuple(res)
 
     def fetchone(self):
         res = sqlite3_step(self.stmnt)
