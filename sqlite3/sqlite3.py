@@ -133,8 +133,10 @@ class Cursor:
                 v = sqlite3_column_double(self.stmnt, i)
             elif t == SQLITE_TEXT:
                 v = sqlite3_column_text(self.stmnt, i)
+            elif t == SQLITE_NULL:
+                v = None
             else:
-                raise NotImplementedError
+                raise NotImplementedError(t)
             if is_dict:
                 res[sqlite3_column_name(self.stmnt, i)] = v
             else:
