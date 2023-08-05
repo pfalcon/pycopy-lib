@@ -115,8 +115,10 @@ class Cursor:
         return self
 
     def close(self):
-        s = sqlite3_finalize(self.stmnt)
-        check_error(self.h, s)
+        if self.stmnt is not None:
+            s = sqlite3_finalize(self.stmnt)
+            self.stmnt = None
+            check_error(self.h, s)
 
     def make_row(self):
         is_dict = self.row_factory is Row
