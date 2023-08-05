@@ -29,7 +29,7 @@ sqlite3_column_count = sq3.func("i", "sqlite3_column_count", "p")
 sqlite3_column_type = sq3.func("i", "sqlite3_column_type", "pi")
 #const char *sqlite3_column_name(sqlite3_stmt*, int N)
 sqlite3_column_name = sq3.func("s", "sqlite3_column_name", "pi")
-sqlite3_column_int = sq3.func("i", "sqlite3_column_int", "pi")
+sqlite3_column_int64 = sq3.func("q", "sqlite3_column_int64", "pi")
 # using "d" return type gives wrong results
 sqlite3_column_double = sq3.func("d", "sqlite3_column_double", "pi")
 sqlite3_column_text = sq3.func("s", "sqlite3_column_text", "pi")
@@ -130,7 +130,7 @@ class Cursor:
             t = sqlite3_column_type(self.stmnt, i)
             #print("type", t)
             if t == SQLITE_INTEGER:
-                v = sqlite3_column_int(self.stmnt, i)
+                v = sqlite3_column_int64(self.stmnt, i)
             elif t == SQLITE_FLOAT:
                 v = sqlite3_column_double(self.stmnt, i)
             elif t == SQLITE_TEXT:
