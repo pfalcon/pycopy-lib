@@ -59,6 +59,7 @@ class Type: pass
 IO = _SubSingleton
 TextIO = IO[str]
 BinaryIO = IO[bytes]
+class TypeAlias: pass
 
 AnyStr = TypeVar("AnyStr", str, bytes)
 

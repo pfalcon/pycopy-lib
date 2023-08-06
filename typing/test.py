@@ -24,6 +24,8 @@ ConnectionOptions = Dict[str, str]
 Address = Tuple[str, int]
 Server = Tuple[Address, ConnectionOptions]
 Tuple[int, ...]
+Name: TypeAlias = str
+
 
 def broadcast_message(message: str, servers: List[Server]) -> None:
     ...
