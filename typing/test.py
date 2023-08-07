@@ -18,11 +18,14 @@ def scale(scalar: float, vector: Vector) -> Vector:
 new_vector = scale(2.0, [1.0, -4.2, 5.4])
 assert new_vector == [2.0, -8.4, 10.8]
 
+assert NewType("Id", int) == int
 
 ConnectionOptions = Dict[str, str]
 Address = Tuple[str, int]
 Server = Tuple[Address, ConnectionOptions]
 Tuple[int, ...]
+Name: TypeAlias = str
+
 
 def broadcast_message(message: str, servers: List[Server]) -> None:
     ...

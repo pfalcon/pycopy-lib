@@ -8,6 +8,9 @@ _SubSingleton = _Subscriptable()
 def TypeVar(new_type, *types):
     return None
 
+def NewType(name, tp):
+    return tp
+
 class Any: pass
 Text = str
 class NoReturn: pass
@@ -56,6 +59,7 @@ class Type: pass
 IO = _SubSingleton
 TextIO = IO[str]
 BinaryIO = IO[bytes]
+class TypeAlias: pass
 
 AnyStr = TypeVar("AnyStr", str, bytes)
 
