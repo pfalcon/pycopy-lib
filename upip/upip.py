@@ -24,8 +24,6 @@ gzdict_buf = None
 
 file_buf = bytearray(512)
 
-simple_lst_re = ure.compile('<a href="(.+?)#')
-
 
 class NotFoundError(Exception):
     pass
@@ -191,19 +189,20 @@ def get_latest_url_json(name):
     assert len(packages) == 1
     return packages[0]["url"]
 
-def get_latest_url_simple(name):
+def get_url_simple(name, version):
     # Stupid PEP 503 normalization
-    name = name.replace("_", "-").replace(".", "-").lower()
-    f = url_open("https://pypi.org/simple/%s/" % name)
+    url_name = name.replace("_", "-").replace(".", "-").lower()
+    f = url_open("https://pypi.org/simple/%s/" % url_name)
+    simple_lst_re = ure.compile('<a href="((.+?)' + name.replace(".", "\.") + '-' + version.replace(".", "\.") + '(.+?))#')
     try:
-        last_url = None
+        match_url = None
         while 1:
             l = f.readline().decode()
             if not l: break
             m = simple_lst_re.search(l)
             if m:
-                last_url = m.group(1)
-        return last_url
+                match_url = m.group(1)
+        return match_url
     finally:
         f.close()
 
@@ -216,7 +215,12 @@ def fatal(msg, exc=None):
 
 def install_pkg(pkg_spec, install_path):
     #package_url = get_latest_url_json(pkg_spec)
-    package_url = get_latest_url_simple(pkg_spec)
+    package = pkg_spec.split("==")
+    package_name = package[0]
+    package_version = ""
+    if len(package) == 2:
+        package_version = package[1]
+    package_url = get_url_simple(package_name, package_version)
 
     print("Installing %s from %s" % (pkg_spec, package_url))
     package_fname = op_basename(package_url)
