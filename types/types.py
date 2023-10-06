@@ -16,7 +16,9 @@ try:
 except:
     CodeType = None  # TODO: Add better sentinel which can't match anything
 
-MappingProxyType = None  # TODO: Add better sentinel which can't match anything
+# TODO: Add better sentinel which can't match anything
+def MappingProxyType(x):
+    return x
 SimpleNamespace = None  # TODO: Add better sentinel which can't match anything
 
 def _g():
@@ -34,6 +36,8 @@ BuiltinFunctionType = type(len)
 BuiltinMethodType = type([].append)     # Same as BuiltinFunctionType
 
 ModuleType = type(sys)
+class GenericAlias:
+    pass
 
 try:
     raise TypeError

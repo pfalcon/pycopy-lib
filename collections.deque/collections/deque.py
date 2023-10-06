@@ -1,10 +1,12 @@
 class deque:
-
     def __init__(self, iterable=None):
         if iterable is None:
             self.q = []
         else:
             self.q = list(iterable)
+
+    def clear(self):
+        self.q = []
 
     def popleft(self):
         return self.q.pop(0)

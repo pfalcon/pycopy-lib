@@ -157,6 +157,11 @@ class TestCase:
             msg = "Expected %r to be in %r" % (x, y)
         assert x in y, msg
 
+    def assertNotIn(self, x, y, msg=''):
+        if not msg:
+            msg = "Expected %r to be in %r" % (x, y)
+        assert x not in y, msg
+
     def assertIsInstance(self, x, y, msg=''):
         assert isinstance(x, y), msg
 
@@ -175,6 +180,22 @@ class TestCase:
 
     def assertWarns(self, warn):
         return NullContext()
+
+    def assertRaisesRegex(self, exc, regexp, func=None, *args, **kwargs):
+        import re
+        if func is None:
+            return AssertRaisesContext(exc)
+
+        try:
+            func(*args, **kwargs)
+            assert False, "%r not raised" % exc
+        except Exception as e:
+            if not isinstance(e, exc):
+                raise
+            r = re.compile(exc_re)
+            if r.search(repr(e)):
+                return
+            raise
 
 
 def skip(msg):

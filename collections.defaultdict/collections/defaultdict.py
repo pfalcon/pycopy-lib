@@ -35,6 +35,12 @@ class defaultdict:
             raise KeyError(key)
         return self.default_factory()
 
+    def __len__(self):
+        return len(self.d)
+
+    def __bool__(self):
+        return bool(self.d)
+
     def keys(self):
         return self.d.keys()
 

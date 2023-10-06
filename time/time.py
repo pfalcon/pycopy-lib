@@ -8,6 +8,8 @@ import _libc
 
 libc = ffilib.libc()
 
+from utime import ticks_add, ticks_diff, ticks_ms, ticks_us, ticks_cpu
+
 # struct tm *gmtime(const time_t *timep);
 # struct tm *localtime(const time_t *timep);
 # size_t strftime(char *s, size_t max, const char *format,

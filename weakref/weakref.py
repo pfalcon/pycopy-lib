@@ -8,3 +8,7 @@ WeakKeyDictionary = dict
 
 def proxy(obj, cb=None):
     return obj
+
+WeakKeyDictionary = dict
+WeakValueDictionary = dict
+WeakSet = set

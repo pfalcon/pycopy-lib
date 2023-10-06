@@ -1,11 +1,16 @@
+TYPE_CHECKING = False
+
 class _Subscriptable:
 
     def __getitem__(self, sub):
-        return None
+        return _SubSingleton
+
+    def __class_getitem__(self, sub):
+        return _Subscriptable
 
 _SubSingleton = _Subscriptable()
 
-def TypeVar(new_type, *types):
+def TypeVar(new_type, *types, **kw):
     return None
 
 class Any: pass
@@ -14,40 +19,41 @@ class NoReturn: pass
 class ClassVar: pass
 Union = _SubSingleton
 Optional = _SubSingleton
-Generic = _SubSingleton
+Generic = _Subscriptable
 NamedTuple = _SubSingleton
 class Hashable: pass
 class Awaitable: pass
 class Coroutine: pass
 class AsyncIterable: pass
 class AsyncIterator: pass
-class Iterable: pass
-class Iterator: pass
-class Reversible: pass
-class Sized: pass
-class Container: pass
-class Collection: pass
-Callable = _SubSingleton
-AbstractSet = _SubSingleton
-MutableSet = _SubSingleton
-Mapping = _SubSingleton
-MutableMapping = _SubSingleton
-Sequence = _SubSingleton
-MutableSequence = _SubSingleton
-class ByteString: pass
-Tuple = _SubSingleton
-List = _SubSingleton
-class Deque: pass
-Set = _SubSingleton
-FrozenSet = _SubSingleton
-class MappingView: pass
-class KeysView: pass
-class ItemsView: pass
-class ValuesView: pass
-class ContextManager: pass
-class AsyncContextManager: pass
-Dict = _SubSingleton
-DefaultDict = _SubSingleton
+Iterable = _Subscriptable
+Iterator = _Subscriptable
+Literal = _Subscriptable
+Reversible = _Subscriptable
+Sized = _Subscriptable
+Container = _Subscriptable
+Collection = _Subscriptable
+Callable = _Subscriptable
+AbstractSet = _Subscriptable
+MutableSet = _Subscriptable
+Mapping = _Subscriptable
+MutableMapping = _Subscriptable
+Sequence = _Subscriptable
+MutableSequence = _Subscriptable
+ByteString = _Subscriptable
+Tuple = _Subscriptable
+List = _Subscriptable
+Deque = _Subscriptable
+Set = _Subscriptable
+FrozenSet = _Subscriptable
+MappingView = _Subscriptable
+KeysView = _Subscriptable
+ItemsView = _Subscriptable
+ValuesView = _Subscriptable
+ContextManager = _Subscriptable
+AsyncContextManager = _Subscriptable
+Dict = _Subscriptable
+DefaultDict = _Subscriptable
 class Counter: pass
 class ChainMap: pass
 class Generator: pass

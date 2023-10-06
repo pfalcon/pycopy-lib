@@ -37,17 +37,18 @@ from . import path
 from uos2 import *
 from uos2 import _exit, _libc as libc
 
+PathLike = path.PathLike
 
 P_WAIT = 0
 P_NOWAIT = 1
 
-error = const(OSError)
+error = OSError
 name = "posix"
-sep = const("/")
-curdir = const(".")
-pardir = const("..")
-devnull = const("/dev/null")
-linesep = const("\n")
+sep = "/"
+curdir = "."
+pardir = ".."
+devnull = "/dev/null"
+linesep = "\n"
 
 
 if libc:
@@ -264,21 +265,41 @@ _ENV_STRUCT = {
 }
 
 
-class _Environ(dict):
+class _Environ(object):
 
     def __init__(self):
-        dict.__init__(self)
+        self._data = dict()
         env = uctypes.struct(_environ_ptr.get(), _ENV_STRUCT)
+        try:
+            uctypes.bytestring_at
+        except AttributeError:
+            def getter(addr):
+                n = 0
+                while True:
+                    if uctypes.bytes_at(int(addr)+n,1)[0] == 0:
+                        break
+                    n += 1
+                return uctypes.bytearray_at(int(addr),n).decode()
+        else:
+            def getter(addr):
+                return uctypes.bytestring_at(int(addr)).decode()
+
+            
         for i in range(4096):
             if int(env.arr[i]) == 0:
                 break
-            s = uctypes.bytes_at(env.arr[i]).decode()
+            s = getter(int(env.arr[i]))
             k, v = s.split("=", 1)
-            dict.__setitem__(self, k, v)
+            self._data[k] = v
+        self.__getitem__ = self._data.__getitem__
 
     def __setitem__(self, k, v):
-        putenv(k, v)
-        dict.__setitem__(self, k, v)
+        try:
+            uos2.putenv(k.encode(), v.encode())
+        except AttributeError:
+            # XXX is this right?
+            pass
+        self._data[k] = v
 
 
 environ = _Environ()

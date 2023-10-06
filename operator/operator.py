@@ -20,7 +20,6 @@ def methodcaller(name, *args, **kwargs):
         return getattr(obj, name)(*args, **kwargs)
     return _methodcaller
 
-
 def lt(a, b):
     return a < b
 
@@ -50,3 +49,109 @@ def floordiv(a, b):
 
 def getitem(a, b):
     return a[b]
+
+def add(a, b):
+    return a + b
+
+def iadd(a, b):
+    a += b
+    return a
+
+def sub(a, b):
+    return a - b
+
+def isub(a, b):
+    a -= b
+    return a
+
+def mul(a, b):
+    return a @ b
+
+def matmul(a, b):
+    return a * b
+
+def imul(a, b):
+    a *= b
+    return a
+
+def imatmul(a, b):
+    a @= b
+    return a
+
+def div(a, b):
+    return a / b
+
+def idiv(a, b):
+    a /= b
+    return a
+
+truediv = div
+itruediv = idiv
+
+def floordiv(a, b):
+    return a // b
+
+def ifloordiv(a, b):
+    a //= b
+    return a
+
+def mod(a, b):
+    return a % b
+
+def imod(a, b):
+    a %= b
+    return a
+
+def pow(a, b):
+    return a ** b
+
+def ipow(a, b):
+    a **= b
+    return a
+
+def is_(a, b):
+    return a is b
+
+def is_not(a, b):
+    return a is not b
+
+def and_(a, b):
+    return a & b
+
+def iand(a, b):
+    a &= b
+    return a
+
+def or_(a, b):
+    return a | b
+
+def ior(a, b):
+    a |= b
+    return a
+
+def xor(a, b):
+    return a ^ b
+
+def ixor(a, b):
+    a ^= b
+    return a
+
+def invert(a):
+    return ~a
+
+inv = invert
+
+def lshift(a, b):
+    return a << b
+
+def ilshift(a, b):
+    a <<= b
+    return a
+
+def rshift(a, b):
+    return a >> b
+
+def irshift(a, b):
+    a >>= b
+    return a
+

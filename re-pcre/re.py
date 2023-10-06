@@ -68,10 +68,10 @@ UNICODE = U = 0x800
 PCRE_INFO_CAPTURECOUNT = 2
 PCRE_INFO_MATCHEMPTY = 25
 
-_UNESCAPE_DICT = const({
+_UNESCAPE_DICT = {
     b"\\": b"\\", b"n": b"\n", b"r": b"\r", b"t": b"\t",
     b"v": b"\v", b"f": b"\f", b"a": b"\a", b"b": b"\b"
-})
+}
 
 
 class error(Exception):

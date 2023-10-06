@@ -12,6 +12,8 @@ SIGTERM = 15
 SIGCHLD = 17
 SIGWINCH = 28
 
+default_int_handler = SIG_IGN
+
 libc = ffilib.libc()
 
 signal_i = libc.func("i", "signal", "ii")
@@ -19,7 +21,6 @@ signal_p = libc.func("i", "signal", "ip")
 siginterrupt = libc.func("i", "siginterrupt", "ii")
 
 _hmap = {}
-
 
 def signal(n, handler):
     if isinstance(handler, int):
@@ -33,3 +34,7 @@ def signal(n, handler):
     _hmap[n] = cb
     siginterrupt(n, True)
     return signal_p(n, cb)
+
+def getsignal(n):
+    return _sigs.get(n, SIG_DFL)
+
